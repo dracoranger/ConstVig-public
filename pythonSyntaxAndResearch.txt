@@ -1,0 +1,72 @@
+Python information
+
+**Child processes**-
+  Child processes are processes spawned to allow for parallelism or for stablility, since one process death does not necessarily ensure that everything determines
+  for parallelism- multiprocessing module https://docs.python.org/3/library/multiprocessing.html
+  simple subprocesses for stability - https://docs.python.org/3/library/subprocess.html
+
+  major difference is how much abstraction there is on the module, with multiprocessing being more abstracted
+  we may be able to use multiprocessing with networking incoming, networking outgoing, and filesystem parsing.
+  Basically, queue input from network incoming to file system (for any recon or useful information, plus updates to attack strats), and from file system (which picks up the attacks in file) to outgoing (runs them as their own child process)
+
+**Timing**-
+  https://docs.python.org/3/library/time.html?highlight=time#module-time
+  https://docs.python.org/3/library/timeit.html
+  do not rely on time to schedule processes.  I had an idea to reduce comutational complexity by sleeping the main function, but that is a really bad identical
+  time.sleep(num) - basically makes the program not do anything for a time. Can exit by throwing an exception, which can be user defined
+  time.time() - seconds since unix epoch
+  timeit module is apparently more accurate
+
+**Error checking**- basically, when something fails, it sends an error to the console and quits the program.
+  This is bad when you have a complicated and large program.
+
+  https://docs.python.org/3/tutorial/errors.html#errors-and-exceptions
+
+  Error handling and checking are ways to prevent these from substantially affecting the overall system
+  Testing should prevent syntax errors, but we will need to have fairly comprihensive exception checks
+
+  Exceptions that can be raised https://docs.python.org/3/library/exceptions.html
+
+  I recommend that we have the following exception handlers
+  ValueError on user input
+  KeyboardInterrupt - if a user calls it, we may want to close gracefully
+  Recursion error- or alter sys.getrecursionlimit()
+  TypeError- if you don't use check_input in utils, this is probably necessary in most functions that take in input from other functions
+  ChildProcessError- whenever a child process is created of altered
+  ConnectionAbortedError-  \
+  ConnectionRefusedError-    > on any connection attempt
+  ConnectionResetError-    /
+  FileNotFoundError- when opening a file, make sure that it exists, necessary for bootup
+
+  Syntax
+    #user generated exceptions
+    class Error(Exception):
+      '''base class for exceptions that we're using'''
+      pass
+    class UserGeneratedExceptionError(Error):
+    Attributes:
+      """
+      expression -- input expression in which the error occurred
+      message -- explanation of the error
+      """
+
+      def __init__(self, expression, message):
+        self.expression = expression
+        self.message = message
+
+
+    try:
+      <whatever code that might cause it to fail>
+    except ErrorType as var:
+      <do stuff to fix>
+    except ErrorType2:
+      <other fixes>
+    except:
+      <any other errors>
+      pass
+    else:
+      <try was successful and do actions>
+    finally:
+      <does action before any of the except clauses>
+
+    pass says just keep going
