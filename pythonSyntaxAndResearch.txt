@@ -32,7 +32,7 @@ Python information
   KeyboardInterrupt - if a user calls it, we may want to close gracefully
   Recursion error- or alter sys.getrecursionlimit()
   TypeError- if you don't use check_input in utils, this is probably necessary in most functions that take in input from other functions
-  ChildProcessError- whenever a child process is created of altered
+  ChildProcessError- whenever a child process is created or altered
   ConnectionAbortedError-  \
   ConnectionRefusedError-    > on any connection attempt
   ConnectionResetError-    /

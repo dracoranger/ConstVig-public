@@ -7,16 +7,15 @@ main.py
 #time
 #easysockets?
 
-#any global constants
-PATH = ''#file path of function
-SETTINGS = ''#name of function
-DEATH_LIMIT = 5
-ROUND_LENGTH = 30
-ROUND_NUMBER = 0
-TIME_BETWEEN_CHECK = 5
+#any global constants- there should be none
+#might need log file location
+LOG_FILE = ''
+PATH = ''#file path of settings file
 
 #structures
-TARGET#
+class TARGET: #
+    def __init__():
+        self.ip= 0 #make attack vars, need to make integrate well with networking pieces
 #targets, array of target?
 '''
 main function
@@ -49,59 +48,126 @@ sync timer?  Probably not necessary on same system
 
 '''
 def main():
-    ROUND_LENGTH, ROUND_NUMBER, TARGETS, ADDITONAL = parse(PATH, SETTINGS)
+
+    SETTING = ''#name of settings file
+    DEATH_LIMIT = 5
+    ROUND_LENGTH = [300]#array of round lengths
+    round_number = 0
+    SAFETY_BUFFER = 30
+    TIME_BETWEEN_CHECK = 5
+
+    logBuffer = ''
+    SETTINGS = [PATH, SETTINGS, DEATH_LIMIT, ROUND_LENGTH, round_number, TIME_BETWEEN_CHECK, LOG_FILE]
+
+    ROUND_LENGTH, ROUND_NUMBER, TARGETS, ADDITONAL = parse_settings(PATH, SETTINGS)#additional is a temp name here
 
     setSettings=settings(ADDITONAL)#changes the settings outside the major timing results and attacking method
 
+    if LOG_FILE == "":
+        LOG_FILE = setLogFile(PATH)
+        logBuffer='Began operations at '+str(time.time())
+        success = log(LOG_FILE, logBuffer)
+        if success != 1:
+            print("log failure")
     #generate children
     childMaster[5]
-    childMaster[0]=childUI#user input allows for input at any time, rather than needing to wait
-    childMaster[1]=childNI#Network IN, detects and stores network flows into system.  May want to integrate with wireshark
-    childMaster[2]=childNO#Network OUT, launches attacks
-    childMaster[3]=childParse#deals with updates to the settings file, new files put into attacks folder
+    try:
+        childMaster[0]=subprocess.run(childUI)#user input allows for input at any time, rather than needing to wait
+                                              #send stdout to buffer, to write to log
+    except ChildProcessError:
+        #run debug process and try again later
+    except:
+        #something else went wrong, try to make better
+
+    try:
+        childMaster[1]=childNI#Network IN, detects and stores network flows into system.  May want to integrate with wireshark
+    except ChildProcessError:
+        #run debug process and try again later
+    except:
+        #something else went wrong, try to make better
+    try:
+        childMaster[2]=childNO#Network OUT, launches attacks
+    except ChildProcessError:
+        #run debug process and try again later
+    except:
+        #something else went wrong, try to make better
+
+    try:
+        childMaster[3]=childParse#deals with updates to the settings file, new files put into attacks folder
+    except ChildProcessError:
+        #run debug process and try again later
+    except:
+        #something else went wrong, try to make better
+
     childHackArray[]# push down to network outgoing? Stores each hack, ensures that failing hack only kills itself, not everything.
 
-    lastTime= time.time()
 
     for i in range(0, ROUND_NUMBER):
-        #wait on user input, returns from NI or NO
-        #push information to logging
-        #if time is > TIME_BETWEEN_CHECK
-            #iterate through childMaster, check that all are alive
-            #if one is dead, try to restart
-            #check how many times that child has died
-                #if child is above limit, alert user and ask if push through anyway
-            #write to error log (call error, which pushes it to child process)
-            #Alert user if necessary
-            #write last actions of children so can resume from that point ? is this necessary
+        timeStart = time.time()
+        while(time.time() - timeStart < ROUND_LENGTH[i] + SAFETY_BUFFER):
+
+            #wait on user input, returns from NI or NO
+            #push information to logging
+            #if time is > TIME_BETWEEN_CHECK
+                #iterate through childMaster, check that all are alive
+                #if one is dead, try to restart
+                #check how many times that child has died
+                    #if child is above limit, alert user and ask if push through anyway
+                #write to error log (call error, which pushes it to child process)
+                #Alert user if necessary
+                #write last actions of children so can resume from that point ? is this necessary
 
 
     #round length is minutes? seconds? per round, and controls how often the NO runs, and how often NI detects
     #round number determines the number of rounds
     #Target num data structure that contains information on who to attack, who not to attack, expected operating systems, attacks to ignore, more data will be there.
 '''
-error catching function
-TODO: can you even have an error catching function or is it try and catch
-
-'''
-def error():
-
-
-'''
 logging function:
-
+takes in input and LOG_FILE and appends inpu to the current logging file
 
 '''
 def log(inpu):
-    if(!utlilites.check_input('str',inpu))
+    if(utlilites.check_input('str',inpu)):
+        temp=open(PATH+LOG_FILE,"r+")#should take care of the LOG_FILE not being created
+        temp.write(inpu+'\n')
+        temp.close()
         #FAIL RETURN TO START!
+        return 1
+    else:
+        return -1
 
 '''
 UI
+Debugging function while the actual user input child is being generated
+'''
+def guiMinus():
 
 '''
-def ui():
+Creates and returns the log file
+'''
+def setLogFile(path):
+    ret = -1
+    if(utlilites.check_input('str',path)):
+        nam = 'log'+ time.strftime('%d_%h_%m')
+        ret= nam
+    temp=open(path+nam,'w+')
+    temp.close()
+    return ret
 
 '''
-
+parses the settings file, returns it as array
 '''
+def parse_settings(path, name):
+    current_setting=''
+    if(utlilites.check_input('str',path)):
+        if(utlilites.check_input('str',name)):
+            file = open(path+name,'r')
+            for i in file.read():
+                if current_setting = '':
+                    current_setting = i[:-1]
+                elif current_setting = PLACEHOLDER:
+                    #do stuff
+                elif current_setting = PLACEHOLDER:
+                    #do stuff
+                else:
+                    log(LOG_FILE, 'Unknown Setting')
