@@ -14,10 +14,33 @@ PATH = ''#file path of settings file
 CHILD_NUM= 5
 
 #structures
-class TARGET: #
+class TARGET: #target data, such as IP and type
     def __init__():
         self.ip= 0 #make attack vars, need to make integrate well with networking pieces
 #targets, array of target?
+
+class CHILD:
+    def __init__(nam):
+        self.name=nam
+        self.alive=False
+        self.keepRunning=True
+        self.deaths=0
+
+    def inc_deaths():
+        deaths = deaths + 1
+    def reset_deaths():
+        deaths = 0
+    def is_alive():
+        return alive
+    def is_keep_running():
+        return keepRunning
+    def update_is_alive(bytesFromProcessExitCode):
+        if(bytesFromProcessExitCode): #TODO make this functional
+            self.alive = False
+        else:
+            self.alive = True
+    def toggle_keep_running:
+        self.keepRunning = !self.keepRunning
 '''
 main function
 
@@ -77,10 +100,10 @@ def main():
             print("log failure")
     #generate children
     childMaster[CHILD_NUM]
-    childMaster[0]=utilities.create_child('childUI.py')
+    childMaster[0]=utilities.create_child('childFS.py')
     childMaster[1]=utilities.create_child('childNI.py')
     childMaster[2]=utilities.create_child('childNO.py')
-    childMaster[3]=utilities.create_child('childFS.py')
+    childMaster[3]=utilities.create_child('childUI.py')
 
     childHackArray=[0]# push down to network outgoing? Stores each hack, ensures that failing hack only kills itself, not everything.
 
@@ -91,13 +114,13 @@ def main():
 
             #wait on user input, returns from NI or NO
             #push information to logging
-            if(time.time()-timeStart >= TIME_BETWEEN_CHECK)
-                for(child in CHILD_NUM)
-                    if(run_child[n])
-                        if(child.isDead)
+            if(time.time()-timeStart >= TIME_BETWEEN_CHECK):
+                for child in range (0, CHILD_NUM):
+                    if(run_child[n]):
+                        if(child.isDead):
                             childMaster[n]=subprocess.run(childn)
                             child_num_deaths[n]+=1
-                            log("%s has died. Total deaths for %s: %d" child.toString, child.toString, child_num_deaths[n])
+                            log("%s has died. Total deaths for %s: %d" + child.toString, child.toString, child_num_deaths[n])
                             #(call error, which pushes it to child process)
                         if(child_num_deaths[n] >= DEATH_LIMIT)
                             continue = input("%s has died %d times. Continue anyways (y/n)?", child.toString, child_num_deaths[n])
