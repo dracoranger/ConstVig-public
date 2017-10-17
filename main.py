@@ -26,6 +26,10 @@ class CHILD:
         self.keepRunning=True
         self.deaths=0
 
+    def get_name():
+        return name
+    def num_deaths():
+        return deaths
     def inc_deaths():
         deaths = deaths + 1
     def reset_deaths():
@@ -115,16 +119,16 @@ def main():
             #wait on user input, returns from NI or NO
             #push information to logging
             if(time.time()-timeStart >= TIME_BETWEEN_CHECK):
-                for child in range (0, CHILD_NUM):
-                    if(run_child[n]):
-                        if(child.isDead):
-                            childMaster[n]=subprocess.run(childn)
-                            child_num_deaths[n]+=1
-                            log("%s has died. Total deaths for %s: %d" + child.toString, child.toString, child_num_deaths[n])
+                for child in childMaster):
+                    if child.is_keep_running():
+                        if not child.is_alive():
+                            childMaster[n]=subprocess.run(childn) #*****
+                            child.inc_deaths()
+                            log("%s has died. Total deaths for %s: %d" + child.get_name(), child.get_name(), child.num_deaths())
                             #(call error, which pushes it to child process)
-                        if(child_num_deaths[n] >= DEATH_LIMIT)
-                            continue = input("%s has died %d times. Continue anyways (y/n)?", child.toString, child_num_deaths[n])
-                            if continue == 'n' run_child[n] = False
+                        if(child.num_deaths() >= DEATH_LIMIT)
+                            continue = input("%s has died %d times. Continue anyways (y/n)?", child.get_name(), child.num_deaths())
+                            if continue == 'n' child.toggle_keep_running()
                         #Alert user if necessary
                         #write last actions of children so can resume from that point ? is this necessary
 
