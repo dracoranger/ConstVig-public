@@ -122,9 +122,12 @@ def main():
                     if(child.isDead)
                         childMaster[n]=subprocess.run(childn)
                         child_num_deaths[n]+=1
+                        log("%s has died. Total deaths for %s: %d" child.toString, child.toString, child_num_deaths[n])
+                        #(call error, which pushes it to child process)
                     if(child_num_deaths[n] >= DEATH_LIMIT)
-                        #alert user and ask if push through anyway
-                    #write to error log (call error, which pushes it to child process)
+                        continue = input("%s has died %d times. Continue anyways (y/n)?", child.toString, child_num_deaths[n])
+                        if continue == 'y' #continue trying to run the child
+                        else #give up
                     #Alert user if necessary
                     #write last actions of children so can resume from that point ? is this necessary
 
