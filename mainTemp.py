@@ -54,10 +54,9 @@ def main():
     DEATH_LIMIT = 5
     ROUND_LENGTH = [300]#array of round lengths
     round_number = 0
-    SAFETY_BUFFER = 30
+    SAFETY_BUFFER = 30 # extra time allocated in case program is started early
     TIME_BETWEEN_CHECK = 5
     child_num_deaths[CHILD_NUM]
-
 
     logBuffer = ''
     SETTINGS = [PATH, SETTINGS, DEATH_LIMIT, ROUND_LENGTH, round_number, TIME_BETWEEN_CHECK, LOG_FILE]
@@ -79,7 +78,7 @@ def main():
                                               #send stdout to buffer, to write to log
     except ChildProcessError:
         #run debug process and try again later
-        logBuffer = logBuffer + "UI Error: Failed to init"
+        logBuffer=logBuffer+"UI Error: Failed to init"
     except as otr:
         #something else went wrong, try to make better
         logBuffer=logBuffer+"UI Error: " + otr.message() #think this is the syntax
@@ -117,16 +116,14 @@ def main():
 
             #wait on user input, returns from NI or NO
             #push information to logging
-            if(time.time()-timStart >= TIME_BETWEEN_CHECK)
-                for(child in CHILD_NUM)
-                    if(child.isDead)
-                        childMaster[n]=subprocess.run(childn)
-                        child_num_deaths[n]+=1
-                    if(child_num_deaths[n] >= DEATH_LIMIT)
-                        #alert user and ask if push through anyway
-                    #write to error log (call error, which pushes it to child process)
-                    #Alert user if necessary
-                    #write last actions of children so can resume from that point ? is this necessary
+            #if time is > TIME_BETWEEN_CHECK
+                #iterate through childMaster, check that all are alive
+                #if one is dead, try to restart
+                #check how many times that child has died
+                    #if child is above limit, alert user and ask if push through anyway
+                #write to error log (call error, which pushes it to child process)
+                #Alert user if necessary
+                #write last actions of children so can resume from that point ? is this necessary
 
 
     #round length is minutes? seconds? per round, and controls how often the NO runs, and how often NI detects
