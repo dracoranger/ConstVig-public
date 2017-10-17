@@ -38,10 +38,10 @@ Output: connection to child input/output
 This function takes in a file to run and runs it, passing in the output and input to a location that you can use
 TODO figure out how to properly sync error logging
 '''
-def create_child(inp):
+def create_child(inp, otherArguments):
     ret = -1
     if check_input('str', inp):
-        run = 'python '+inp+'.py'
+        run = 'python '+inp+'.py '+otherArguments
         try:
             ret = subprocess.run(run, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
                 #send stdout to buffer, to write to log
