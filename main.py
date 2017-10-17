@@ -57,7 +57,9 @@ def main():
     SAFETY_BUFFER = 30
     TIME_BETWEEN_CHECK = 5
     child_num_deaths[CHILD_NUM]
-    run_child = [True, True, True, True, True]
+    for i in range(0, CHILD_NUM):
+        child_num_deaths.append(0)
+        run_child.append(True)
 
 
     logBuffer = ''
@@ -75,41 +77,12 @@ def main():
             print("log failure")
     #generate children
     childMaster[CHILD_NUM]
-    try:
-        childMaster[0]=subprocess.run('python childUI.py',stdin=subprocess.PIPE,stdout=subprocess.PIPE)#user input allows for input at any time, rather than needing to wait
-                                              #send stdout to buffer, to write to log
-    except ChildProcessError:
-        #run debug process and try again later
-        logBuffer = logBuffer + "UI Error: Failed to init"
-    except as otr:
-        #something else went wrong, try to make better
-        logBuffer=logBuffer+"UI Error: " + otr.message() #think this is the syntax
-    try:
-        childMaster[1]=subprocess.run('python childNI.py',stdin=subprocess.PIPE,stdout=subprocess.PIPE)#Network IN, detects and stores network flows into system.  May want to integrate with wireshark
-    except ChildProcessError:
-        #run debug process and try again later
-        logBuffer=logBuffer+"NI Error: Failed to init"
-    except as otr:
-        #something else went wrong, try to make better
-        logBuffer=logBuffer+"UI Error: " + otr.message() #think this is the syntax
-    try:
-        childMaster[2]=subprocess.run('python childNO.py',stdin=subprocess.PIPE,stdout=subprocess.PIPE)#Network OUT, launches attacks
-    except ChildProcessError:
-        #run debug process and try again later
-        logBuffer=logBuffer+"NO Error: Failed to init"
-    except as otr:
-        #something else went wrong, try to make better
-        logBuffer=logBuffer+"UI Error: " + otr.message() #think this is the syntax
-    try:
-        childMaster[3]=subprocess.run('python filesystem.py',stdin=subprocess.PIPE,stdout=subprocess.PIPE)#deals with updates to the settings file, new files put into attacks folder
-    except ChildProcessError:
-        #run debug process and try again later
-        logBuffer=logBuffer+"FILE_SYS Error: Failed to init"
-    except as otr:
-        #something else went wrong, try to make better
-        logBuffer=logBuffer+"UI Error: " + otr.message() #think this is the syntax
+    childMaster[0]=utilities.create_child('childUI.py')
+    childMaster[1]=utilities.create_child('childNI.py')
+    childMaster[2]=utilities.create_child('childNO.py')
+    childMaster[3]=utilities.create_child('childFS.py')
 
-    childHackArray[]# push down to network outgoing? Stores each hack, ensures that failing hack only kills itself, not everything.
+    childHackArray=[0]# push down to network outgoing? Stores each hack, ensures that failing hack only kills itself, not everything.
 
 
     for i in range(0, ROUND_NUMBER):

@@ -5,7 +5,7 @@ stores any functions that should be used across all systems in a local manner
 '''
 
 #imports
-
+import subprocess
 # struct target
 
 def parser(path, inpu):
@@ -15,7 +15,7 @@ def parser(path, inpu):
     use = ''
     for i in file():
         use=use + i.read
-    return inp
+    return inpu
 
 '''
 
@@ -27,5 +27,35 @@ def check_input(expected, recieved):
     ret = False
     if isinstance(expected) == isinstance(recieved):
         ret = True
+
+    return ret
+
+
+'''
+Creator: Tate Bowers
+Input: process name
+Output: connection to child input/output
+This function takes in a file to run and runs it, passing in the output and input to a location that you can use
+TODO figure out how to properly sync error logging
+'''
+def create_child(inp):
+    ret = -1
+    if check_input('str', inp):
+        run = 'python '+inp+'.py'
+        try:
+            ret = subprocess.run(run, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+                #send stdout to buffer, to write to log
+        except ChildProcessError:
+            print('scream and run')
+            #run debug process and try again later
+            #logBuffer = logBuffer + "UI Error: Failed to init"
+            #try this
+                #try
+                #except ChildProcessError
+                #except as otr: again
+            #seems like it would be a good idea to push this to a function.
+        #except:
+            #something else went wrong, try to make better
+            #logBuffer=logBuffer+"UI Error: " + sys.exc_info()[0]#think this is the syntax
 
     return ret
