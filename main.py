@@ -6,12 +6,13 @@ main.py
 #Utilities function
 #time
 #easysockets?
+import time, utilities, timeit, os, subprocess
 
 #any global constants- there should be none
 #might need log file location
-LOG_FILE = ''
-PATH = ''#file path of settings file
-CHILD_NUM= 5
+LOG_FILE = 'log'
+PATH = os.path.dirname(os.path.realpath(__file__))#file path of settings file
+CHILD_NUM= 4
 
 #structures
 class TARGET: #target data, such as IP and type
@@ -21,26 +22,42 @@ class TARGET: #target data, such as IP and type
 
 class CHILD:
     def __init__(nam):
-        self.name=nam
-        self.alive=False
-        self.keepRunning=True
-        self.deaths=0
+        self.name = nam
+        self.alive = False
+        self.keepRunning = True
+        self.deaths = 0
+        self.process = utilities.create_child(name)
 
     def inc_deaths():
         deaths = deaths + 1
+
     def reset_deaths():
         deaths = 0
+
+    def get_deaths():
+        return deaths
+
+    def get_name():
+        return name
+
     def is_alive():
         return alive
+
     def is_keep_running():
         return keepRunning
+
     def update_is_alive(bytesFromProcessExitCode):
         if(bytesFromProcessExitCode): #TODO make this functional
             self.alive = False
         else:
             self.alive = True
-    def toggle_keep_running:
-        self.keepRunning = !self.keepRunning
+
+    def toggle_keep_running():
+        if(self.keepRunning):
+            self.keepRunning = False
+        else:
+            self.keepRunning = True
+
 '''
 main function
 
@@ -79,13 +96,14 @@ def main():
     round_number = 0
     SAFETY_BUFFER = 30
     TIME_BETWEEN_CHECK = 5
-    child_num_deaths[CHILD_NUM]
-    for i in range(0, CHILD_NUM):
-        child_num_deaths.append(0)
-        run_child.append(True)
+    #Unnessary because of struct addition
+    #child_num_deaths[CHILD_NUM]
+    #for i in range(0, CHILD_NUM):
+    #    child_num_deaths.append(0)
+    #    run_child.append(True)
 
-
-    logBuffer = ''
+    #is dealt with in log()
+    #logBuffer = ''
     SETTINGS = [PATH, SETTINGS, DEATH_LIMIT, ROUND_LENGTH, round_number, TIME_BETWEEN_CHECK, LOG_FILE]
 
     ROUND_LENGTH, ROUND_NUMBER, TARGETS, ADDITONAL = parse_settings(PATH, SETTINGS)#additional is a temp name here
@@ -94,18 +112,16 @@ def main():
 
     if LOG_FILE == "":
         LOG_FILE = setLogFile(PATH)
-        logBuffer='Began operations at '+str(time.time())
-        success = log(LOG_FILE, logBuffer)
+        success = log('Began operations at '+str(time.time()))
         if success != 1:
             print("log failure")
     #generate children
-    childMaster[CHILD_NUM]
-    childMaster[0]=utilities.create_child('childFS.py')
-    childMaster[1]=utilities.create_child('childNI.py')
-    childMaster[2]=utilities.create_child('childNO.py')
-    childMaster[3]=utilities.create_child('childUI.py')
 
-    childHackArray=[0]# push down to network outgoing? Stores each hack, ensures that failing hack only kills itself, not everything.
+    childMaster = [CHILD('childFS.py'),CHILD('childNI.py')]
+    childMaster.append(CHILD('childNO.py'))
+    childMaster.append(CHILD('childUI.py'))
+
+    #childHackArray=[0]# push down to network outgoing? Stores each hack, ensures that failing hack only kills itself, not everything.
 
 
     for i in range(0, ROUND_NUMBER):
@@ -114,19 +130,33 @@ def main():
 
             #wait on user input, returns from NI or NO
             #push information to logging
-            if(time.time()-timeStart >= TIME_BETWEEN_CHECK):
-                for child in range (0, CHILD_NUM):
-                    if(run_child[n]):
-                        if(child.isDead):
-                            childMaster[n]=subprocess.run(childn)
-                            child_num_deaths[n]+=1
-                            log("%s has died. Total deaths for %s: %d" + child.toString, child.toString, child_num_deaths[n])
-                            #(call error, which pushes it to child process)
-                        if(child_num_deaths[n] >= DEATH_LIMIT)
-                            continue = input("%s has died %d times. Continue anyways (y/n)?", child.toString, child_num_deaths[n])
-                            if continue == 'n' run_child[n] = False
-                        #Alert user if necessary
-                        #write last actions of children so can resume from that point ? is this necessary
+            if time.time()-timeStart >= TIME_BETWEEN_CHECK:
+                for child in childMaster:
+                    outpu=''
+                    inpu=''#need to figure out how to replace with necessary data
+                #for num in range (0, CHILD_NUM):
+                    #if childMaster[num].:
+                    if child.is_alive():
+                        inpu=get_input()
+                        output= child.process.Popen.communicate(inpu)
+                    else:
+                        child.inc_deaths()
+                        log("%s has died. Total deaths for %s: %d" + child.get_name(), child.get_name(), child.get_deaths())
+                        if child.get_deaths() > DEATH_LIMIT:
+                            cont = input("%s has died %d times. Continue anyways (y/n)?", child.get_name(), child.get_deaths())
+                            if cont[:1].toUpper() == "N":
+                                child.toggle_keep_running()
+                        '''
+                        childMaster[n]=subprocess.run(childn)
+                        child_num_deaths[n]+=1
+                        log("%s has died. Total deaths for %s: %d" + child.toString, child.toString, child_num_deaths[n])
+                        #(call error, which pushes it to child process)
+                    if(child_num_deaths[n] >= DEATH_LIMIT)
+                        continue = input("%s has died %d times. Continue anyways (y/n)?", child.toString, child_num_deaths[n])
+                        if continue == 'n' run_child[n] = False
+                        '''
+                    #Alert user if necessary
+                    #write last actions of children so can resume from that point ? is this necessary
 
 
     #round length is minutes? seconds? per round, and controls how often the NO runs, and how often NI detects
@@ -152,7 +182,7 @@ UI
 Debugging function while the actual user input child is being generated
 '''
 def guiMinus():
-
+    return ''
 '''
 Creates and returns the log file
 '''
@@ -170,15 +200,27 @@ parses the settings file, returns it as array
 '''
 def parse_settings(path, name):
     current_setting=''
+    PLACEHOLDER=''
+    makeHappy=0
     if(utlilites.check_input('str',path)):
         if(utlilites.check_input('str',name)):
-            file = open(path+name,'r')
-            for i in file.read():
-                if current_setting = '':
+            fil = open(path+name,'r')
+            for i in fil.read():
+                if current_setting == '':
                     current_setting = i[:-1]
-                elif current_setting = PLACEHOLDER:
+                elif current_setting == PLACEHOLDER:
                     #do stuff
-                elif current_setting = PLACEHOLDER:
+                    makeHappy = makeHappy + 1
+                elif current_setting == PLACEHOLDER:
                     #do stuff
+                    makeHappy = makeHappy + 1
                 else:
-                    log(LOG_FILE, 'Unknown Setting')
+                    log('Unknown Setting')
+
+'''
+gets data from the command buffer
+TODO: fill out logic
+'''
+def get_input():
+    #list of queues?
+    return ''
