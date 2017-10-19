@@ -128,6 +128,7 @@ def main():
                             #(call error, which pushes it to child process)
                         if(child.num_deaths() >= DEATH_LIMIT)
                             continue = input("%s has died %d times. Continue anyways (y/n)?", child.get_name(), child.num_deaths())
+                            #TODO utilize the UI child to interact with the user
                             if continue == 'n' child.toggle_keep_running()
                         #Alert user if necessary
                         #write last actions of children so can resume from that point ? is this necessary

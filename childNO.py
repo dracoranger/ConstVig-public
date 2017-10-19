@@ -1,8 +1,15 @@
-import argparse, socket, sys
+import argparse, socket, sys, utilities
 
 '''
 NetworkOut
 '''
+
+def main(cmd):
+    if check_input((str), cmd)
+        return cmd
+    else
+        return "error"
+
 
 def NetworkOut(host, port, bytecount=16, data):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
