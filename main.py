@@ -134,7 +134,7 @@ def main():
 
             #wait on user input, returns from NI or NO
             #push information to logging
-<<<<<<< HEAD
+
             if time.time()-timeStart >= TIME_BETWEEN_CHECK:
                 for child in childMaster:
                     outpu=''
@@ -162,22 +162,6 @@ def main():
                         '''
                     #Alert user if necessary
                     #write last actions of children so can resume from that point ? is this necessary
-=======
-            if(time.time()-timeStart >= TIME_BETWEEN_CHECK):
-                for child in childMaster):
-                    if child.is_keep_running():
-                        if not child.is_alive():
-                            childMaster[n]=subprocess.run(childn) #*****
-                            child.inc_deaths()
-                            log("%s has died. Total deaths for %s: %d" + child.get_name(), child.get_name(), child.num_deaths())
-                            #(call error, which pushes it to child process)
-                        if(child.num_deaths() >= DEATH_LIMIT)
-                            continue = input("%s has died %d times. Continue anyways (y/n)?", child.get_name(), child.num_deaths())
-                            #TODO utilize the UI child to interact with the user
-                            if continue == 'n' child.toggle_keep_running()
-                        #Alert user if necessary
-                        #write last actions of children so can resume from that point ? is this necessary
->>>>>>> f4b9b4252ab39a84c2e12f94c3966bef51ca3076
 
 
     #round length is minutes? seconds? per round, and controls how often the NO runs, and how often NI detects
