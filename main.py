@@ -6,13 +6,18 @@ main.py
 #Utilities function
 #time
 #easysockets?
-import time, utilities, timeit, os, subprocess
+import time
+import timeit
+import os
+import subprocess
+import utilities
+
 
 #any global constants- there should be none
 #might need log file location
 LOG_FILE = 'log'
 PATH = os.path.dirname(os.path.realpath(__file__))#file path of settings file
-CHILD_NUM= 4
+CHILD_NUM = 4
 
 #structures
 class TARGET: #target data, such as IP and type
@@ -26,10 +31,10 @@ class CHILD:
         self.alive = False
         self.keepRunning = True
         self.deaths = 0
-        self.process = utilities.create_child(name)
+        self.process = utilities.create_child(name,'')
 
     def get_name():
-        return name
+        return self.name
     def num_deaths():
         return deaths
     def inc_deaths():
@@ -121,7 +126,7 @@ def main():
             print("log failure")
     #generate children
 
-    childMaster = [CHILD('childFS.py'),CHILD('childNI.py')]
+    childMaster = [CHILD('childFS.py'), CHILD('childNI.py')]
     childMaster.append(CHILD('childNO.py'))
     childMaster.append(CHILD('childUI.py'))
 
@@ -137,16 +142,18 @@ def main():
 
             if time.time()-timeStart >= TIME_BETWEEN_CHECK:
                 for child in childMaster:
-                    outpu=''
-                    inpu=''#need to figure out how to replace with necessary data
+                    outpu = ''
+                    inpu = ''#need to figure out how to replace with necessary data
                 #for num in range (0, CHILD_NUM):
                     #if childMaster[num].:
                     if child.is_alive():
-                        inpu=get_input()
-                        output= child.process.Popen.communicate(inpu)
+                        inpu = get_input()
+                        outpu = child.process.Popen.communicate(inpu)
+                        #TODO make outpu useful
                     else:
                         child.inc_deaths()
-                        log("%s has died. Total deaths for %s: %d" + child.get_name(), child.get_name(), child.get_deaths())
+                        temp = "%s has died. Total deaths for %s: %d" + child.get_name(), child.get_name(), child.get_deaths()
+                        log(temp)
                         if child.get_deaths() > DEATH_LIMIT:
                             cont = input("%s has died %d times. Continue anyways (y/n)?", child.get_name(), child.get_deaths())
                             if cont[:1].toUpper() == "N":
@@ -173,7 +180,7 @@ takes in input and LOG_FILE and appends inpu to the current logging file
 
 '''
 def log(inpu):
-    if(utlilites.check_input('str',inpu)):
+    if utlilites.check_input('str',inpu):
         temp=open(PATH+LOG_FILE,"r+")#should take care of the LOG_FILE not being created
         temp.write(inpu+'\n')
         temp.close()
@@ -193,7 +200,7 @@ Creates and returns the log file
 '''
 def setLogFile(path):
     ret = -1
-    if(utlilites.check_input('str',path)):
+    if utilities.check_input('str',path):
         nam = 'log'+ time.strftime('%d_%h_%m')
         ret= nam
     temp=open(path+nam,'w+')
@@ -207,7 +214,7 @@ def parse_settings(path, name):
     current_setting=''
     PLACEHOLDER=''
     makeHappy=0
-    if(utlilites.check_input('str',path)):
+    if utlilites.check_input('str',path) :
         if(utlilites.check_input('str',name)):
             fil = open(path+name,'r')
             for i in fil.read():
