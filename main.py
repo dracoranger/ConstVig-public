@@ -21,51 +21,59 @@ CHILD_NUM = 4
 
 #structures
 class TARGET: #target data, such as IP and type
-    def __init__():
-        self.ip= 0 #make attack vars, need to make integrate well with networking pieces
+    def __init__(self, PLACEHOLDER):
+        self.ip = 0 #make attack vars, need to make integrate well with networking pieces
 #targets, array of target?
 
+'''
+Child class contains the data necessary to lookup and check the child
+Name is the name of the child process being run, must be the same as the name of the file minus python
+alive is whether or not its being run TODO: Make that update properly
+keep_running is whether or not it will continue to be spawned if it dies
+deaths is the number of times that process has died
+process creates the Popen child process UPDATE 10-22: Changed from subprocesses to Popen, which is the thing its built on
+
+'''
 class CHILD:
-    def __init__(nam):
+    def __init__(self, nam):
         self.name = nam
         self.alive = False
-        self.keepRunning = True
+        self.keep_running = True
         self.deaths = 0
-        self.process = utilities.create_child(name,'')
+        self.process = utilities.create_child(self.name, '')
 
-    def get_name():
+    def get_name(self):
         return self.name
-    def num_deaths():
-        return deaths
-    def inc_deaths():
-        deaths = deaths + 1
 
-    def reset_deaths():
-        deaths = 0
+    def num_deaths(self):
+        return self.deaths
 
-    def get_deaths():
-        return deaths
+    def inc_deaths(self):
+        self.deaths = self.deaths + 1
 
-    def get_name():
-        return name
+    def reset_deaths(self):
+        self.deaths = 0
 
-    def is_alive():
-        return alive
+    def get_deaths(self):
+        return self.deaths
 
-    def is_keep_running():
-        return keepRunning
+    def is_alive(self):
+        return self.alive
 
-    def update_is_alive(bytesFromProcessExitCode):
-        if(bytesFromProcessExitCode): #TODO make this functional
+    def is_keep_running(self):
+        return self.keep_running
+
+    def update_is_alive(self, bytesFromProcessExitCode):
+        if bytesFromProcessExitCode: #TODO make this functional
             self.alive = False
         else:
             self.alive = True
 
-    def toggle_keep_running():
-        if(self.keepRunning):
-            self.keepRunning = False
+    def toggle_keep_running(self):
+        if self.keep_running:
+            self.keep_running = False
         else:
-            self.keepRunning = True
+            self.keep_running = True
 
 '''
 main function
@@ -100,6 +108,8 @@ sync timer?  Probably not necessary on same system
 def main():
 
     SETTING = ''#name of settings file
+    SETTINGS = '' #other settings stuff, placeholder currently
+    LOG_FILE = '' #log file name
     DEATH_LIMIT = 5
     ROUND_LENGTH = [300]#array of round lengths
     round_number = 0
@@ -117,7 +127,7 @@ def main():
 
     ROUND_LENGTH, ROUND_NUMBER, TARGETS, ADDITONAL = parse_settings(PATH, SETTINGS)#additional is a temp name here
 
-    setSettings=settings(ADDITONAL)#changes the settings outside the major timing results and attacking method
+    #setSettings = parse_settings(ADDITONAL)#changes the settings outside the major timing results and attacking method
 
     if LOG_FILE == "":
         LOG_FILE = setLogFile(PATH)
@@ -134,13 +144,13 @@ def main():
 
 
     for i in range(0, ROUND_NUMBER):
-        timeStart = time.time()
-        while(time.time() - timeStart < ROUND_LENGTH[i] + SAFETY_BUFFER):
+        time_start = time.time()
+        while time.time() - time_start < ROUND_LENGTH[i] + SAFETY_BUFFER:
 
             #wait on user input, returns from NI or NO
             #push information to logging
 
-            if time.time()-timeStart >= TIME_BETWEEN_CHECK:
+            if time.time()-time_start >= TIME_BETWEEN_CHECK:
                 for child in childMaster:
                     outpu = ''
                     inpu = ''#need to figure out how to replace with necessary data
@@ -148,7 +158,7 @@ def main():
                     #if childMaster[num].:
                     if child.is_alive():
                         inpu = get_input()
-                        outpu = child.process.Popen.communicate(inpu)
+                        outpu = child.process.communicate(inpu)#should communicate with the process
                         #TODO make outpu useful
                     else:
                         child.inc_deaths()
@@ -180,15 +190,14 @@ takes in input and LOG_FILE and appends inpu to the current logging file
 
 '''
 def log(inpu):
-    if utlilites.check_input('str',inpu):
-        temp=open(PATH+LOG_FILE,"r+")#should take care of the LOG_FILE not being created
+    ret = -1
+    if utilities.check_input('str',inpu):
+        temp = open(PATH+LOG_FILE, "r+")#should take care of the LOG_FILE not being created
         temp.write(inpu+'\n')
         temp.close()
         #FAIL RETURN TO START!
-        return 1
-    else:
-        return -1
-
+        ret = 1
+    return ret
 '''
 UI
 Debugging function while the actual user input child is being generated
@@ -200,34 +209,38 @@ Creates and returns the log file
 '''
 def setLogFile(path):
     ret = -1
-    if utilities.check_input('str',path):
+    if utilities.check_input('str', path):
         nam = 'log'+ time.strftime('%d_%h_%m')
-        ret= nam
-    temp=open(path+nam,'w+')
+        ret = nam
+    temp = open(path+nam, 'w+')
     temp.close()
     return ret
 
 '''
 parses the settings file, returns it as array
+TODO: properly parse settings file, need to talk with group to go over it
 '''
 def parse_settings(path, name):
-    current_setting=''
-    PLACEHOLDER=''
-    makeHappy=0
-    if utlilites.check_input('str',path) :
-        if(utlilites.check_input('str',name)):
-            fil = open(path+name,'r')
+    current_setting = ''
+    PLACEHOLDER = ''
+    make_happy = 0
+    ret = ['', '', '', '']
+    if utilities.check_input('str', path):
+        if utilities.check_input('str', name):
+            fil = open(path+name, 'r')
             for i in fil.read():
                 if current_setting == '':
                     current_setting = i[:-1]
                 elif current_setting == PLACEHOLDER:
                     #do stuff
-                    makeHappy = makeHappy + 1
+                    make_happy = make_happy + 1
                 elif current_setting == PLACEHOLDER:
                     #do stuff
-                    makeHappy = makeHappy + 1
+                    make_happy = make_happy + 1
                 else:
                     log('Unknown Setting')
+
+    return ret[0], ret[1], ret[2], ret[3]
 
 '''
 gets data from the command buffer
