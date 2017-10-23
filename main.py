@@ -21,6 +21,9 @@ CHILD_NUM = 4
 
 #structures
 class TARGET: #target data, such as IP and type
+    '''
+    TODO fill in class docstring and include 2+ public methods
+    '''
     def __init__(self, PLACEHOLDER):
         self.ip = 0 #make attack vars, need to make integrate well with networking pieces
 #targets, array of target?
@@ -32,9 +35,11 @@ alive is whether or not its being run TODO: Make that update properly
 keep_running is whether or not it will continue to be spawned if it dies
 deaths is the number of times that process has died
 process creates the Popen child process UPDATE 10-22: Changed from subprocesses to Popen, which is the thing its built on
-
 '''
 class CHILD:
+    '''
+    Establishes the attributes of each child process
+    '''
     def __init__(self, nam):
         self.name = nam
         self.alive = False
@@ -77,7 +82,6 @@ class CHILD:
 
 '''
 main function
-
 Basic loop
 0. read in settings data
 1. Spin up children
@@ -96,14 +100,11 @@ Basic loop
 6. write out error log
 7. generate alerts
 8. save the state of the children in case of failure ? is this necessary
-
 Conditionals
 if reach end of the rounds, prompt for do more
 if children crash, prompt user to restart, log, prompt if multiple failures on same child
-
 possibles
 sync timer?  Probably not necessary on same system
-
 '''
 def main():
 
@@ -198,7 +199,6 @@ def main():
 '''
 logging function:
 takes in input and LOG_FILE and appends inpu to the current logging file
-
 '''
 def log(inpu):
     ret = -1
