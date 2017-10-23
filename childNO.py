@@ -4,17 +4,26 @@ import argparse, socket, sys
 NetworkOut
 '''
 
-def NetworkOut(host, port, bytecount=16, data):
+def NetworkOut(host, port, message,bytecount=16):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    message = data.encode()  # need to convert to byte
-    bytecount = (len(message) + 15) // 16 * 16  # round up to a multiple of 16
     sock.connect((host, port))
-    sent = 0
-    while sent < bytecount:
-        sock.sendall(message)
-        sent += len(message)
-        print('\r  %d bytes sent' % (sent,), end=' ')
-        sys.stdout.flush()
-    print()
-    sock.shutdown(socket.SHUT_WR)
+    print('Client has been assigned socket name', sock.getsockname())
+    size=len(message)
+    if size < 3:
+        message+=' '
+        size+=1
+    messageHeader = "Length: " + str(size +10) +"\r\n\r\n"
+    originalMessage = messageHeader+message
+    sock.sendall(originalMessage.encode())
+    reply = sock.recv(16)
+    replyLength = int(reply.split()[1].decode('utf-8'))
+    returnMessage = reply
+    rest = sock.recv(replyLength)
+    returnMessage += rest
+    if returnMessage.decode('utf-8') == originalMessage:
+        returnMessage = returnMessage.decode('utf-8')
+        print('The server said', returnMessage)
+    else:
+        print('Error:')
+        print('Poor Connection with server')
     sock.close()

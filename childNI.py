@@ -2,19 +2,26 @@
 NetIn
 '''
 import socket, sys
-def NetworkIn(host, port, bytecount):
+def NetworkIn(host, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((host, port))
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
+    sock.bind((host,port))
+    sock.listen(1)
+    #sock.connect((host, port))
     #sock.shutdown(socket.SHUT_WR)
     received = 0
     while True:
-        data = sock.recv(42) #decode('utf-8')
-        if not received:
-            print('  The first data received says', repr(data))
-        if not data:
-            break
-        received += len(data)
-        print('\r  %d bytes received' % (received,), end=' ')
-
-    print()
-    sock.close()
+        print('Listening at', sock.getsockname())
+        sc, sockname = sock.accept()
+        print('We have accepted a connection from', sockname)
+        print('Socket connects', sc.getsockname(), 'and', sc.getpeername())
+        message = sc.recv(16)
+        messageLength = int(message.split()[1].decode('utf-8'))
+        returnMessage = message
+        rest = sc.recv(messageLength)
+        returnMessage += rest
+        printMessage = returnMessage.decode('utf-8')
+        print('The incoming sixteen-octet message says', printMessage)
+        sc.sendall(returnMessage)
+        sc.close()
+        print('  Reply sent, socket closed\n')
