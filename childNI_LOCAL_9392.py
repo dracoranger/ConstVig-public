@@ -3,7 +3,7 @@ NetIn
 '''
 
 import socket
-#import sys
+import sys
 import utilities
 
 def main(cmd):
@@ -16,21 +16,17 @@ def main(cmd):
     return "error"
 
 
-<<<<<<< HEAD
-def net_in(host, port, bytecount):
+def net_in(host, port):
     '''
     TODO fill in docstring
     '''
-=======
-def networkIn(host, port):
->>>>>>> e720b6cdbc9500e4085a7135c00ce8864c49fe07
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind((host, port))
     sock.listen(1)
     #sock.connect((host, port))
     #sock.shutdown(socket.SHUT_WR)
-    #received = 0
+    received = 0
     while True:
         print('Listening at', sock.getsockname())
         soc, sockname = sock.accept()

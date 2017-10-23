@@ -20,10 +20,14 @@ def main(cmd):
     return "error"
 
 
+<<<<<<< HEAD
 def network_out(host, port, message, bytecount=16):
     '''
     TODO make function docstring
     '''
+=======
+def NetworkOut(host, port, message):
+>>>>>>> e720b6cdbc9500e4085a7135c00ce8864c49fe07
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     print('Client has been assigned socket name', sock.getsockname())
