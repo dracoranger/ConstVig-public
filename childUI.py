@@ -1,7 +1,7 @@
 import utilities
 
 def main(cmd):
-    if check_input((str), cmd)
+    if utilities.check_input((str), cmd):
         return cmd
-    else
+    else:
         return "error"

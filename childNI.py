@@ -4,13 +4,13 @@ NetIn
 import socket, sys, utilities
 
 def main(cmd):
-    if check_input((str), cmd)
+    if utilities.check_input((str), cmd):
         return cmd
-    else
+    else:
         return "error"
 
 
-def NetworkIn(host, port, bytecount):
+def networkIn(host, port, bytecount):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     #sock.shutdown(socket.SHUT_WR)
