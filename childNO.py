@@ -5,13 +5,14 @@ NetworkOut
 '''
 
 def main(cmd):
+    print('NO')
     if utilities.check_input((str), cmd):
         return cmd
     else:
         return "error"
 
 
-def NetworkOut(host, port, bytecount=16, data):
+def NetworkOut(host, port, data, bytecount=16):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     message = data.encode()  # need to convert to byte
     bytecount = (len(message) + 15) // 16 * 16  # round up to a multiple of 16

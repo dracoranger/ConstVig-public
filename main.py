@@ -111,8 +111,8 @@ def main():
     SETTINGS = '' #other settings stuff, placeholder currently
     LOG_FILE = '' #log file name
     DEATH_LIMIT = 5
-    ROUND_LENGTH = [300]#array of round lengths
-    round_number = 0
+    ROUND_LENGTH = [300,300,300,300,300]#array of round lengths
+    ROUND_NUMBER = 0
     SAFETY_BUFFER = 30
     TIME_BETWEEN_CHECK = 5
     #Unnessary because of struct addition
@@ -123,7 +123,7 @@ def main():
 
     #is dealt with in log()
     #logBuffer = ''
-    SETTINGS = [PATH, SETTINGS, DEATH_LIMIT, ROUND_LENGTH, round_number, TIME_BETWEEN_CHECK, LOG_FILE]
+    SETTINGS = [PATH, SETTINGS, DEATH_LIMIT, ROUND_LENGTH, ROUND_NUMBER, TIME_BETWEEN_CHECK, LOG_FILE]
 
     ROUND_LENGTH, ROUND_NUMBER, TARGETS, ADDITONAL = parse_settings(PATH, SETTINGS)#additional is a temp name here
 
@@ -136,9 +136,9 @@ def main():
             print("log failure")
     #generate children
 
-    childMaster = [CHILD('childFS.py'), CHILD('childNI.py')]
-    childMaster.append(CHILD('childNO.py'))
-    childMaster.append(CHILD('childUI.py'))
+    childMaster = [CHILD('childFS'), CHILD('childNI')]
+    childMaster.append(CHILD('childNO'))
+    childMaster.append(CHILD('childUI'))
 
     #childHackArray=[0]# push down to network outgoing? Stores each hack, ensures that failing hack only kills itself, not everything.
 
@@ -149,9 +149,11 @@ def main():
 
             #wait on user input, returns from NI or NO
             #push information to logging
-
+            #TODO make it so that if child is alive, actually make child.is_alive true
             if time.time()-time_start >= TIME_BETWEEN_CHECK:
+                print(str(time.time()-time_start))
                 for child in childMaster:
+                    if child.
                     outpu = ''
                     inpu = ''#need to figure out how to replace with necessary data
                 #for num in range (0, CHILD_NUM):
@@ -159,27 +161,34 @@ def main():
                     if child.is_alive():
                         inpu = get_input()
                         outpu = child.process.communicate(inpu)#should communicate with the process
+                        print(outpu)
                         #TODO make outpu useful
-                    else:
+                    elif child.is_keep_running():
                         child.inc_deaths()
-                        temp = "%s has died. Total deaths for %s: %d" + child.get_name(), child.get_name(), child.get_deaths()
+                        temp = child.get_name()+" has died. Total deaths for "+ child.get_name()+": "+str(child.get_deaths())
                         log(temp)
                         if child.get_deaths() > DEATH_LIMIT:
-                            cont = input("%s has died %d times. Continue anyways (y/n)?", child.get_name(), child.get_deaths())
-                            if cont[:1].toUpper() == "N":
+                            temp = child.get_name()+" has died "+ str(child.get_deaths()) +" times. Continue anyways (y/n)?"
+                            cont = input(temp)
+                            print(cont)
+                            if cont[:1].upper() == "N":
                                 child.toggle_keep_running()
-                        '''
-                        childMaster[n]=subprocess.run(childn)
-                        child_num_deaths[n]+=1
-                        log("%s has died. Total deaths for %s: %d" + child.toString, child.toString, child_num_deaths[n])
-                        #(call error, which pushes it to child process)
-                    if(child_num_deaths[n] >= DEATH_LIMIT)
-                        continue = input("%s has died %d times. Continue anyways (y/n)?", child.toString, child_num_deaths[n])
-                        if continue == 'n' run_child[n] = False
-                        '''
-                    #Alert user if necessary
-                    #write last actions of children so can resume from that point ? is this necessary
 
+                            '''
+                            childMaster[n]=subprocess.run(childn)
+                            child_num_deaths[n]+=1
+                            log("%s has died. Total deaths for %s: %d" + child.toString, child.toString, child_num_deaths[n])
+                            #(call error, which pushes it to child process)
+                        if(child_num_deaths[n] >= DEATH_LIMIT)
+                            continue = input("%s has died %d times. Continue anyways (y/n)?", child.toString, child_num_deaths[n])
+                            if continue == 'n' run_child[n] = False
+                            '''
+            time_start=time.time()
+                        #Alert user if necessary
+                        #write last actions of children so can resume from that point ? is this necessary
+
+        print('round '+i+'complete')
+    print('fully complete')
 
     #round length is minutes? seconds? per round, and controls how often the NO runs, and how often NI detects
     #round number determines the number of rounds
@@ -192,7 +201,7 @@ takes in input and LOG_FILE and appends inpu to the current logging file
 def log(inpu):
     ret = -1
     if utilities.check_input('str',inpu):
-        temp = open(PATH+LOG_FILE, "r+")#should take care of the LOG_FILE not being created
+        temp = open(PATH+'\\'+LOG_FILE, "r+")#should take care of the LOG_FILE not being created
         temp.write(inpu+'\n')
         temp.close()
         #FAIL RETURN TO START!
@@ -224,7 +233,7 @@ def parse_settings(path, name):
     current_setting = ''
     PLACEHOLDER = ''
     make_happy = 0
-    ret = ['', '', '', '']
+    ret = [[300,300,300,300,300], 5, '', '']
     if utilities.check_input('str', path):
         if utilities.check_input('str', name):
             fil = open(path+name, 'r')
@@ -249,3 +258,6 @@ TODO: fill out logic
 def get_input():
     #list of queues?
     return ''
+
+print('starting '+str(time.time()))
+main()
