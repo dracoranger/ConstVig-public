@@ -11,7 +11,7 @@ def main(cmd):
         return "error"
 
 
-def networkIn(host, port, bytecount):
+def networkIn(host, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1)
     sock.bind((host,port))

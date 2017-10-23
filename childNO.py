@@ -11,7 +11,7 @@ def main(cmd):
         return "error"
 
 
-def NetworkOut(host, port, bytecount=16, data):
+def NetworkOut(host, port, message):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     print('Client has been assigned socket name', sock.getsockname())
