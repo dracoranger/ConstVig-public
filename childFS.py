@@ -1,10 +1,7 @@
-
-
-def fs(type,file):
-
-
 import utilities
 
+def fs(type,file):
+    return -1
 def main(cmd):
     print('FS')
     if utilities.check_input((str), cmd):

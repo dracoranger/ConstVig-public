@@ -153,7 +153,9 @@ def main():
             if time.time()-time_start >= TIME_BETWEEN_CHECK:
                 print(str(time.time()-time_start))
                 for child in childMaster:
-                    if child.
+                    print(child.process.poll())
+                    if child.process.poll():
+                        child.update_is_alive(True)
                     outpu = ''
                     inpu = ''#need to figure out how to replace with necessary data
                 #for num in range (0, CHILD_NUM):
