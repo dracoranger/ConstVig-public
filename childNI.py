@@ -5,6 +5,7 @@ import socket, sys
 import socket, sys, utilities
 
 def main(cmd):
+    print('NI')
     if utilities.check_input((str), cmd):
         return cmd
     else:

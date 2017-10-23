@@ -5,6 +5,7 @@ NetworkOut
 '''
 
 def main(cmd):
+    print('NO')
     if utilities.check_input((str), cmd):
         return cmd
     else:

@@ -28,7 +28,8 @@ for example 'str' or list[]
 '''
 def check_input(expected, recieved):
     ret = False
-    if isinstance(expected) == isinstance(recieved):
+    #print(type(recieved))
+    if isinstance(recieved, type(expected)): #== isinstance(recieved):
         ret = True
 
     return ret
