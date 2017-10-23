@@ -1,10 +1,17 @@
-import argparse, socket, sys
+import argparse, socket, sys, utilities
 
 '''
 NetworkOut
 '''
 
-def NetworkOut(host, port, message,bytecount=16):
+def main(cmd):
+    if utilities.check_input((str), cmd):
+        return cmd
+    else:
+        return "error"
+
+
+def NetworkOut(host, port, bytecount=16, data):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     print('Client has been assigned socket name', sock.getsockname())
