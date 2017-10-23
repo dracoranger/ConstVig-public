@@ -125,7 +125,7 @@ def main():
     #logBuffer = ''
     SETTINGS = [PATH, SETTINGS, DEATH_LIMIT, ROUND_LENGTH, round_number, TIME_BETWEEN_CHECK, LOG_FILE]
 
-    ROUND_LENGTH, ROUND_NUMBER, TARGETS, ADDITONAL = parse_settings(PATH, SETTINGS)#additional is a temp name here
+    #ROUND_LENGTH, ROUND_NUMBER, TARGETS, ADDITONAL = parse_settings(PATH, SETTINGS)#additional is a temp name here
 
     #setSettings = parse_settings(ADDITONAL)#changes the settings outside the major timing results and attacking method
 
