@@ -89,7 +89,7 @@ class CHILD:
 
     def get_deaths(self):
         '''
-        self explanatory
+        returns number of times child has died
         '''
         return self.deaths
 
@@ -101,7 +101,7 @@ class CHILD:
 
     def is_keep_running(self):
         '''
-        self explanatory
+        returns whether the child is to restart if it dies
         '''
         return self.keep_running
 
@@ -114,7 +114,7 @@ class CHILD:
 
     def toggle_keep_running(self):
         '''
-        self explanatory
+        switches the state of whether the child restarts upon death
         '''
         if self.keep_running:
             self.keep_running = False
@@ -160,14 +160,7 @@ def main():
     TIME_BETWEEN_CHECK = 5
     global LOG_FILE
     global SETTING
-    #Unnessary because of struct addition
-    #child_num_deaths[CHILD_NUM]
-    #for i in range(0, CHILD_NUM):
-    #    child_num_deaths.append(0)
-    #    run_child.append(True)
 
-    #is dealt with in log()
-    #logBuffer = ''
     SETTINGS = [PATH, SETTINGS, DEATH_LIMIT, ROUND_LENGTH, ROUND_NUMBER, TIME_BETWEEN_CHECK, LOG_FILE]
 
     ROUND_LENGTH, ROUND_NUMBER, TARGETS, ADDITONAL = parse_settings(PATH, SETTINGS)#additional is a temp name here
@@ -179,7 +172,6 @@ def main():
         success = log('Began operations at '+str(time.time()))
         if success != 1:
             print("log failure")
-    #generate children
 
     childMaster = [CHILD('ChildFS'), CHILD('ChildNI')]
     childMaster.append(CHILD('ChildNO'))
@@ -200,7 +192,6 @@ def main():
             if time.time()-time_rec >= TIME_BETWEEN_CHECK:
                 print(str(time.time()-time_start))
                 for child in childMaster:
-                    #print(type(child.process.poll()))
                     #if child.process.poll() == None:
                     if isinstance(child.process.poll(), type(None)):
                         child.update_is_alive(True)
@@ -220,14 +211,14 @@ def main():
                         temp = child.get_name()+" has died. Total deaths for "+ child.get_name()+": "+str(child.get_deaths())
                         log(temp)
                         if child.get_deaths() > DEATH_LIMIT:
-                            temp = child.get_name()+" has died "+ str(child.get_deaths()) +" times. Continue anyways (y/n)?"
+                            temp = child.get_name()+" has died "+str(child.get_deaths())+" times. Continue anyways (y/n)?"
                             cont = input(temp)
                             print(cont)
                             if cont[:1].upper() == "N":
                                 child.toggle_keep_running()
                 time_rec = time.time()
                         #Alert user if necessary
-                        #write last actions of children so can resume from that point ? is this necessary
+                        #write last actions of children so can resume from that point?
 
         print('round '+str(i)+' complete')
     print('fully complete')
