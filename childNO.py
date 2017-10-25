@@ -20,28 +20,28 @@ def main():
         print(able)
 
 
-def network_out(host, port, message, bytecount=16):
+def network_out(host, port, exploit):
     '''
     TODO make function docstring
     '''
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     print('Client has been assigned socket name', sock.getsockname())
-    size = len(message)
+    size = len(exploit)
     if size < 3:
-        message += ' '
+        exploit += ' '
         size += 1
-    message_header = "Length: " + str(size +10) +"\r\n\r\n"
-    original_message = message_header+message
-    sock.sendall(original_message.encode())
+    exploit_header = "Length: " + str(size +10) +"\r\n\r\n"
+    original_exploit = exploit_header+exploit
+    sock.sendall(original_exploit.encode())
     reply = sock.recv(16)
     reply_length = int(reply.split()[1].decode('utf-8'))
-    return_message = reply
+    return_exploit = reply
     rest = sock.recv(reply_length)
-    return_message += rest
-    if return_message.decode('utf-8') == original_message:
-        return_message = return_message.decode('utf-8')
-        print('The server said', return_message)
+    return_exploit += rest
+    if return_exploit.decode('utf-8') == original_exploit:
+        return_exploit = return_exploit.decode('utf-8')
+        print('The server said', return_exploit)
     else:
         print('Error:')
         print('Poor Connection with server')
