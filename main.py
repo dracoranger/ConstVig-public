@@ -137,9 +137,9 @@ def main():
             print("log failure")
     #generate children
 
-    childMaster = [CHILD('childFS'), CHILD('childNI')]
-    childMaster.append(CHILD('childNO'))
-    childMaster.append(CHILD('childUI'))
+    childMaster = [CHILD('ChildFS'), CHILD('ChildNI')]
+    childMaster.append(CHILD('ChildNO'))
+    childMaster.append(CHILD('ChildUI'))
 
     #childHackArray=[0]# push down to network outgoing? Stores each hack, ensures that failing hack only kills itself, not everything.
 
