@@ -211,14 +211,14 @@ def main():
                         temp = child.get_name()+" has died. Total deaths for "+ child.get_name()+": "+str(child.get_deaths())
                         log(temp)
                         if child.get_deaths() > DEATH_LIMIT:
-                            temp = child.get_name()+" has died "+str(child.get_deaths())+" times. Continue anyways (y/n)?"
+                            temp = child.get_name()+" has died "+ str(child.get_deaths()) +" times. Continue anyways (y/n)?"
                             cont = input(temp)
                             print(cont)
                             if cont[:1].upper() == "N":
                                 child.toggle_keep_running()
                 time_rec = time.time()
                         #Alert user if necessary
-                        #write last actions of children so can resume from that point?
+                        #write last actions of children so can resume from that point ?
 
         print('round '+str(i)+' complete')
     print('fully complete')
@@ -229,12 +229,11 @@ def main():
 
 def log(inpu):
     '''
-    Creator:
-    Input:
-    Output:
-    This function
-    logging function:
-    takes in input and LOG_FILE and appends inpu to the current logging file
+    Creator: Tate Bowers
+    Input: string that should be pushed to the logging file
+    Output: updated logging file, nothing returned to user
+    This function pushes strings to the logging file for future observation
+    appends it to the end of the file
 
     '''
     ret = -1
@@ -248,22 +247,20 @@ def log(inpu):
 
 def gui_minus():
     '''
-    Creator:
-    Input:
-    Output:
-    This function
-    UI
-    Debugging function while the actual user input child is being generated
+    Creator: Tate Bowers
+    Input: none
+    Output: none
+    This function acts as the debugging function while the actual user input child is being generated
     '''
     return ''
 
 def set_log_file(path):
     '''
-    Creator:
-    Input:
-    Output:
-    This function
-    Creates and returns the log file
+    Creator: Tate Bowers
+    Input: intended file location
+    Output: returns the file name
+    This function creates and returns the log file
+    the log file is named log+the day+ the hour+ the minute to prevent overlaps
     '''
     ret = -1
     if utilities.check_input('str', path):
@@ -276,11 +273,10 @@ def set_log_file(path):
 
 def parse_settings(path, name):
     '''
-    Creator:
-    Input:
-    Output:
-    This function
-    parses the settings file, returns it as array
+    Creator: Tate Bowers
+    Input: path of settings file, name of settings file
+    Output: returns settings as an array
+    This function parses the settings file, returns it as array
     TODO: properly parse settings file, need to talk with group to go over it
     '''
     current_setting = ''
@@ -307,11 +303,11 @@ def parse_settings(path, name):
 
 def get_input():
     '''
-    Creator:
-    Input:
-    Output:
-    This function
-    gets data from the command buffer
+    Creator: Tate Bowers
+    Input: unknown
+    Output: unknown
+    This function will be filled out later
+    gets data from the command buffer ?
     TODO: fill out logic
     '''
     #list of queues?
