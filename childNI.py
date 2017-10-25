@@ -6,14 +6,16 @@ import socket
 import sys
 import utilities
 
-def main(cmd):
+def main():
     '''
     Checks for type and returns the input, otherwise returns an error message
     '''
     print('NI')
-    if utilities.check_input((str), cmd):
-        return cmd
-    return "error"
+    able = input()
+    if utilities.check_input((str), able):
+        print(able)
+
+
 
 
 def net_in(host, port):
@@ -42,3 +44,5 @@ def net_in(host, port):
         soc.sendall(return_message)
         soc.close()
         print('  Reply sent, socket closed\n')
+
+main()

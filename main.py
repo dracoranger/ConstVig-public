@@ -68,11 +68,11 @@ class CHILD:
     def is_keep_running(self):
         return self.keep_running
 
-    def update_is_alive(self, bytesFromProcessExitCode):
-        if bytesFromProcessExitCode: #TODO make this functional
-            self.alive = False
-        else:
+    def update_is_alive(self, boo):
+        if boo: #TODO make this functional
             self.alive = True
+        else:
+            self.alive = False
 
     def toggle_keep_running(self):
         if self.keep_running:
@@ -114,7 +114,7 @@ def main():
     DEATH_LIMIT = 5
     ROUND_LENGTH = [300,300,300,300,300]#array of round lengths
     ROUND_NUMBER = 0
-    SAFETY_BUFFER = 30
+    SAFETY_BUFFER = 10
     TIME_BETWEEN_CHECK = 5
     #Unnessary because of struct addition
     #child_num_deaths[CHILD_NUM]
@@ -126,7 +126,7 @@ def main():
     #logBuffer = ''
     SETTINGS = [PATH, SETTINGS, DEATH_LIMIT, ROUND_LENGTH, ROUND_NUMBER, TIME_BETWEEN_CHECK, LOG_FILE]
 
-    #ROUND_LENGTH, ROUND_NUMBER, TARGETS, ADDITONAL = parse_settings(PATH, SETTINGS)#additional is a temp name here
+    ROUND_LENGTH, ROUND_NUMBER, TARGETS, ADDITONAL = parse_settings(PATH, SETTINGS)#additional is a temp name here
 
     #setSettings = parse_settings(ADDITONAL)#changes the settings outside the major timing results and attacking method
 
@@ -146,22 +146,27 @@ def main():
 
     for i in range(0, ROUND_NUMBER):
         time_start = time.time()
+        time_rec = time.time()
         while time.time() - time_start < ROUND_LENGTH[i] + SAFETY_BUFFER:
 
             #wait on user input, returns from NI or NO
             #push information to logging
             #TODO make it so that if child is alive, actually make child.is_alive true
-            if time.time()-time_start >= TIME_BETWEEN_CHECK:
+            #print(str(time.time()-time_start))
+            if time.time()-time_rec >= TIME_BETWEEN_CHECK:
                 print(str(time.time()-time_start))
                 for child in childMaster:
-                    print(child.process.poll())
-                    if child.process.poll():
+                    #print(type(child.process.poll()))
+                    #if child.process.poll() == None:
+                    if isinstance(child.process.poll(), type(None)):
                         child.update_is_alive(True)
                     outpu = ''
-                    inpu = ''#need to figure out how to replace with necessary data
+                    inpu = 'send/recieve'#need to figure out how to replace with necessary data
                 #for num in range (0, CHILD_NUM):
                     #if childMaster[num].:
                     if child.is_alive():
+                        temp = child.get_name() + ' is alive!'
+                        print(temp)
                         inpu = get_input()
                         outpu = child.process.communicate(inpu)#should communicate with the process
                         print(outpu)
@@ -186,11 +191,11 @@ def main():
                             continue = input("%s has died %d times. Continue anyways (y/n)?", child.toString, child_num_deaths[n])
                             if continue == 'n' run_child[n] = False
                             '''
-            time_start=time.time()
+                time_rec=time.time()
                         #Alert user if necessary
                         #write last actions of children so can resume from that point ? is this necessary
 
-        print('round '+i+'complete')
+        print('round '+str(i)+' complete')
     print('fully complete')
 
     #round length is minutes? seconds? per round, and controls how often the NO runs, and how often NI detects
@@ -235,7 +240,7 @@ def parse_settings(path, name):
     current_setting = ''
     PLACEHOLDER = ''
     make_happy = 0
-    ret = [[300,300,300,300,300], 5, '', '']
+    ret = [[40,40,40,40,40], 5, '', '']
     if utilities.check_input('str', path):
         if utilities.check_input('str', name):
             fil = open(path+name, 'r')
