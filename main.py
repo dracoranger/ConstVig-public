@@ -121,6 +121,13 @@ class CHILD:
         else:
             self.keep_running = True
 
+    def recreate_subprocess(self):
+        '''
+        kills and then creates the child process
+        '''
+        self.process.kill()
+        self.process = utilities.create_child(self.name, '')
+
 def main():
     '''
     main function
@@ -207,6 +214,7 @@ def main():
                         print(outpu)
                         #TODO make outpu useful
                     elif child.is_keep_running():
+                        child.recreate_subprocess()
                         child.inc_deaths()
                         temp = child.get_name()+" has died. Total deaths for "+ child.get_name()+": "+str(child.get_deaths())
                         log(temp)
