@@ -16,8 +16,9 @@ def main():
     '''
     keep_going = True
     while keep_going:
-        print('NO')
-        able = input()
+        #commented out the print() and input()
+        #print('NO')
+        able = sys.stdin.readline(5)
         if utilities.check_input((str), able):
             print(able)
 

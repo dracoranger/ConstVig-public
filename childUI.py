@@ -3,6 +3,7 @@ TODO fill in docstring for module
 '''
 
 import utilities
+import sys
 
 def main():
     '''
@@ -10,8 +11,9 @@ def main():
     '''
     keep_going = True
     while keep_going:
-        print('UI')
-        able = input()
+        #commented out print() and changed input()
+        #print('UI')
+        able = sys.stdin.readline(5)
         if utilities.check_input((str), able):
             print(able)
 

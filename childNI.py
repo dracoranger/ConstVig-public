@@ -12,8 +12,9 @@ def main():
     '''
     keep_going = True
     while keep_going:
-        print('NI')
-        able = input()
+        #commented out print() and changed input()
+        #print('NI')
+        able = sys.stdin.readline(5)
         if utilities.check_input((str), able):
             print(able)
 

@@ -2,6 +2,7 @@
 TODO make module docstring
 '''
 
+import sys
 import utilities
 
 def fsys(filename, intent):
@@ -23,9 +24,12 @@ def main():
     '''
     keep_going = True
     while keep_going:
-        print('FS')
-        able = input('file name: ')
-        rorw = input('Read (r) or write (w)? ')
+        #commented out print() and changed input()
+        #print('FS')
+        print('file name: ')
+        able = sys.stdin.readline(5)
+        print('Read (r) or write (w)? ')
+        rorw = sys.stdin.readline()
         if utilities.check_input((str), able):
             print(able)
         fsys(able, rorw)
