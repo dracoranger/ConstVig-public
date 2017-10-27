@@ -14,10 +14,12 @@ def main():
     '''
     For now, main prints out that it's in childNO and then checks for the type
     '''
-    print('NO')
-    able = input()
-    if utilities.check_input((str), able):
-        print(able)
+    keep_going = True
+    while keep_going:
+        print('NO')
+        able = input()
+        if utilities.check_input((str), able):
+            print(able)
 
 
 def network_out(host, port, exploit):

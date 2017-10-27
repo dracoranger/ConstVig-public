@@ -21,11 +21,13 @@ def main():
     For now, this function just checks the type and returns an error message
      in the event of a wrong type
     '''
-    print('FS')
-    able = input('file name: ')
-    rorw = input('Read (r) or write (w)? ')
-    if utilities.check_input((str), able):
-        print(able)
-    fsys(able, rorw)
+    keep_going = True
+    while keep_going:
+        print('FS')
+        able = input('file name: ')
+        rorw = input('Read (r) or write (w)? ')
+        if utilities.check_input((str), able):
+            print(able)
+        fsys(able, rorw)
 
 main()

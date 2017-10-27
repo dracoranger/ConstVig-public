@@ -10,10 +10,12 @@ def main():
     '''
     Checks for type and returns the input, otherwise returns an error message
     '''
-    print('NI')
-    able = input()
-    if utilities.check_input((str), able):
-        print(able)
+    keep_going = True
+    while keep_going:
+        print('NI')
+        able = input()
+        if utilities.check_input((str), able):
+            print(able)
 
 
 
