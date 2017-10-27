@@ -199,17 +199,21 @@ def main():
             if time.time()-time_rec >= time_between_check:
                 print(str(time.time()-time_start))
                 for child in childmaster:
-                    print(child.name()+' '+child.process.poll())
+                    print(child.get_name()+' '+str(child.process.poll()))
                     #if child.process.poll() == None:
                     if isinstance(child.process.poll(), type(None)):
                         child.update_is_alive(True)
+                    else:
+                        child.update_is_alive(False)
                     outpu = ''
                     inpu = 'send/recieve\r\n'#need to figure out how to replace with necessary data
+
+
                 #for num in range (0, CHILD_NUM):
                     #if childmaster[num].:
                     if child.is_alive():
-                        temp = child.get_name() + ' is alive!'
-                        print(temp)
+                        #temp = child.get_name() + ' is alive!'
+                        #print(temp)
                         inpu = get_input()
                         outpu = child.process.communicate(inpu)#should communicate with the process
                         print(outpu)
