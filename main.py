@@ -203,7 +203,7 @@ def main():
                     if isinstance(child.process.poll(), type(None)):
                         child.update_is_alive(True)
                     outpu = ''
-                    inpu = 'send/recieve'#need to figure out how to replace with necessary data
+                    inpu = 'send/recieve\n'#need to figure out how to replace with necessary data
                 #for num in range (0, CHILD_NUM):
                     #if childmaster[num].:
                     if child.is_alive():
