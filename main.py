@@ -178,9 +178,11 @@ def main():
         if success != 1:
             print("log failure")
 
-    childmaster = [CHILD('ChildFS'), CHILD('ChildNI')]
-    childmaster.append(CHILD('ChildNO'))
-    childmaster.append(CHILD('ChildUI'))
+    #childmaster = [CHILD('ChildFS')]
+    #childmaster.append(CHILD('ChildNI'))
+    #childmaster.append(CHILD('ChildNO'))
+    #childmaster.append(CHILD('ChildUI'))
+    childmaster = [CHILD('ChildNI')]
 
     #childHackArray=[0]
     # push down to network outgoing? Stores each hack,
@@ -199,20 +201,18 @@ def main():
             if time.time()-time_rec >= time_between_check:
                 print(str(time.time()-time_start))
                 for child in childmaster:
-                    print(child.name()+' '+child.process.poll())
+                    print(child.get_name()+' '+str(child.process.poll()))
                     #if child.process.poll() == None:
                     if isinstance(child.process.poll(), type(None)):
                         child.update_is_alive(True)
-                    outpu = ''
-                    inpu = 'send/recieve\r\n'
                     #need to figure out how to replace with necessary data
                 #for num in range (0, CHILD_NUM):
                     #if childmaster[num].:
                     if child.is_alive():
-                        temp = child.get_name() + ' is alive!'
-                        print(temp)
+                        #temp = child.get_name() + ' is alive!'
+                        #print(temp)
                         inpu = get_input()
-                        outpu = child.process.communicate(inpu)#should communicate with the process
+                        outpu = child.process.communicate(bytes(inpu,'ascii'))#should communicate with the process
                         print(outpu)
                         #Todo make outpu useful
                     elif child.is_keep_running():
@@ -326,7 +326,7 @@ def get_input():
     TODO: fill out logic
     '''
     #list of queues?
-    return ''
+    return 'Is this what is causing the failue?'
 
 
 #Runs the main function

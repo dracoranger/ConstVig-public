@@ -14,10 +14,12 @@ def main():
     while keep_going:
         #commented out print() and changed input()
         #print('NI')
-        able = sys.stdin.readline(5)
-        if utilities.check_input((str), able):
+        #try:
+        able = input()#sys.stdin.readline(5)
+        if utilities.check_input((bytes), able):
             print(able)
-
+        #except EOFError:
+        #    print('no data supplied')
 
 
 

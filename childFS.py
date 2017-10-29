@@ -27,7 +27,7 @@ def main():
         #commented out print() and changed input()
         #print('FS')
         print('file name: ')
-        able = sys.stdin.readline(5)
+        able = input()#sys.stdin.readline(5)
         print('Read (r) or write (w)? ')
         rorw = sys.stdin.readline()
         if utilities.check_input((str), able):
