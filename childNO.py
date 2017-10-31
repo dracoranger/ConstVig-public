@@ -1,19 +1,19 @@
-'''
+"""
 TODO make module docstring
-'''
+"""
 import argparse
 import socket
 import sys
 import utilities
 
-'''
+"""
 NetworkOut
-'''
+"""
 
 def main():
-    '''
+    """
     For now, main prints out that it's in childNO and then checks for the type
-    '''
+    """
     keep_going = True
     while keep_going:
         #commented out the print() and input()
@@ -24,9 +24,9 @@ def main():
 
 
 def network_out(host, port, exploit):
-    '''
+    """
     TODO make function docstring
-    '''
+    """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))
     print('Client has been assigned socket name', sock.getsockname())
