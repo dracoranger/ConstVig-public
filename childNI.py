@@ -11,15 +11,18 @@ def main():
     Checks for type and returns the input, otherwise returns an error message
     '''
     keep_going = True
+    listener, sock = utilities.comm_in(9751)
     while keep_going:
         #commented out print() and changed input()
         #print('NI')
         #try:
-        able = input()#sys.stdin.readline(5)
+        able = 'Temp val'#sys.stdin.readline(5)
         if utilities.check_input((bytes), able):
-            print(able)
+            utilities.comm_out(able, 15551)
         #except EOFError:
         #    print('no data supplied')
+    sock.close()
+    listener.join()
 
 
 
