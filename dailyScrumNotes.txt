@@ -1,0 +1,23 @@
+31OCT
+Tate
+-	Had debugging issues with subprocess module (new processes can’t talk with each other)
+-	Will implement sockets to the code
+Jaryn
+-	Implement sockets to code
+Gabe
+-	Bibliography
+-	Sprint Review
+Abigail
+-	Research Child Processes
+
+25OCT
+Tate
+-	Finished most of main function
+-	Will work on debugging to revive all children
+Jaryn
+-	NI NO codes
+-	Sprint Reveiew
+Gabe
+-	Bibliography
+Abigail
+-	Research Child Processes
