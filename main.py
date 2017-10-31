@@ -9,8 +9,8 @@ This function
 
 import time
 import os
-import subprocess
 import utilities
+#import subprocess
 #Utilities function
 #easysockets?
 
@@ -48,14 +48,42 @@ class CHILD:
     deaths is the number of times that process has died
     process creates the Popen child process
     UPDATE 10-22: Changed from subprocesses to Popen, which is the thing subprocesses is built on
-
+    TODO: Kill socket when dying
     '''
-    def __init__(self, nam):
+    def __init__(self, nam, por):
         self.name = nam
         self.alive = False
         self.keep_running = True
         self.deaths = 0
         self.process = utilities.create_child(self.name, '')
+        self.port = por
+        self.listener, self.socket = utilities.comm_in(self.port-5800)
+        #might need to catch socket errors
+
+
+    def get_listener(self):
+        '''
+        self explanatory
+        '''
+        return self.listener
+
+    def get_socket(self):
+        '''
+        self explanatory
+        '''
+        return self.socket
+
+    def get_port(self):
+        '''
+        self explanatory
+        '''
+        return self.port
+
+    def set_port(self, new_port):
+        '''
+        self explanatory
+        '''
+        self.port = new_port
 
     def get_name(self):
         '''
@@ -178,12 +206,17 @@ def main():
         if success != 1:
             print("log failure")
 
-    #childmaster = [CHILD('ChildFS')]
-    #childmaster.append(CHILD('ChildNI'))
-    #childmaster.append(CHILD('ChildNO'))
-    #childmaster.append(CHILD('ChildUI'))
-    childmaster = [CHILD('ChildNI')]
+    #childmaster = [CHILD('ChildFS',15550)]
+    #childmaster.append(CHILD('ChildNI',15551))
+    #childmaster.append(CHILD('ChildNO',15552))
+    #childmaster.append(CHILD('ChildUI',15553))
+    childmaster = [CHILD('ChildNI', 15551)]
 
+    #generate sockets
+
+    threads_holder = []
+    for i in childmaster:
+        threads_holder.append(i.get_listener())
     #childHackArray=[0]
     # push down to network outgoing? Stores each hack,
     # ensures that failing hack only kills itself, not everything.
@@ -211,10 +244,15 @@ def main():
                     if child.is_alive():
                         #temp = child.get_name() + ' is alive!'
                         #print(temp)
-                        inpu = get_input()
-                        outpu = child.process.communicate(bytes(inpu,'ascii'))#should communicate with the process
-                        print(outpu)
+                        #inpu = get_input()
+                        utilities.comm_out(get_input(), child.get_port())
+                        #output = child.get_socket().recv(1024).decode()
+                        #outpu = child.process.communicate(bytes(inpu,'ascii'))
+                        #should communicate with the process
+                        #print(output) #should print automatically
+        #https://stackoverflow.com/questions/7585435/best-way-to-convert-string-to-bytes-in-python-3
                         #Todo make outpu useful
+
                     elif child.is_keep_running():
                         child.recreate_subprocess()
                         child.inc_deaths()
@@ -234,6 +272,12 @@ def main():
 
         print('round '+str(i)+' complete')
     print('fully complete')
+    #    child.get_listener().join()
+    for thread in threads_holder:
+        thread.join()
+
+    for child in childmaster:
+        child.get_socket().close()
 
     #round length is minutes? seconds? per round,
     # and controls how often the NO runs, and how often NI detects
