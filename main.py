@@ -59,7 +59,7 @@ class CHILD:
         self.deaths = 0
         self.process = utilities.create_child(self.name, '')
         self.port = por
-        self.listener, self.socket = utilities.comm_in(self.port-5800)
+        self.listener, self.socket = utilities.comm_in(self.port-100)
         self.connect_to_child = ''
         #might need to catch socket errors
 
@@ -72,7 +72,7 @@ class CHILD:
 
     def set_child_connection(self, childPort):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect(('127.0.0.1', port))
+        sock.connect(('127.0.0.1', childPort))
         self.connect_to_child = sock
 
     def get_listener(self):
