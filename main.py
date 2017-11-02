@@ -1,4 +1,5 @@
-"""
+""" runs and manages everything, including child processes
+
 Classes:
 TARGET -- will hold target IP addresses. To be finished later.
 CHILD -- each child is a processes, e.g. NetIn (NI) that serves a specific purpose.
@@ -27,36 +28,36 @@ PATH = os.path.dirname(os.path.realpath(__file__))#file path of settings file
 CHILD_NUM = 4
 
 #structures
-class TARGET: #target data, such as IP and type
-    """
-    Creator: Tate Bowers
-    Input: TODO
-    Output: TODO
-    This function takes in targeting formation and stores it for use later
+class TARGET:
+    """ tracks target data, such as IP and type
+
+    Summary of behavior: This function takes in targeting formation and stores it for use later
     just an intention at the moment
+    Public methods:
+    Instance variables: None
+    Creator: Tate Bowers
     """
+
     def __init__(self, placeholder):
+        """class constructor documentation goes here"""
         self.ip_addr = 0 #make attack vars, need to make integrate well with networking pieces
 #targets, array of target?
 
 
 class CHILD:
-    """
+    """ each unit of functionality in the program is given to a child process.
+
+    Summary of behavior: tracks each child and information pertinent to the child
+    Public methods: get_listener, get_socket, get_port, set_port, get_name, num_deaths, inc_deaths, reset_deaths, get_deaths, is_alive, is_keep_running, update_is_alive, toggle_keep_running, recreate_subprocess
+    Instance variables: None
     Creator: Tate Bowers
-    Input: self, name of the process that is to be run (needs to be the name of the file)
-    Output: look at get and set functions
-    This function creates a child structure
-    Child class contains the data necessary to lookup and check the child
-    Name is the name of the child process being run
-        must be the same as the name of the file minus python
-    alive is whether or not its being run TODO: Make that update properly
-    keep_running is whether or not it will continue to be spawned if it dies
-    deaths is the number of times that process has died
-    process creates the Popen child process
+
     UPDATE 10-22: Changed from subprocesses to Popen, which is the thing subprocesses is built on
     TODO: Kill socket when dying
     """
+
     def __init__(self, nam, por):
+        """class constructor documentation goes here"""
         self.name = nam
         self.alive = False
         self.keep_running = True
@@ -115,7 +116,6 @@ class CHILD:
         """self explanatory"""
         self.alive = boo
 
-
     def toggle_keep_running(self):
         """switches the state of whether the child restarts upon death"""
         if self.keep_running:
@@ -129,8 +129,15 @@ class CHILD:
         self.process = utilities.create_child(self.name, '')
 
 def main():
-    """
-    main function
+    """ checks on, spawns, and recreates child processes
+
+    Summary of behavior:
+    Arguments: None
+    Return values:
+    Side effects:
+    Exceptions raised:
+    Restrictions on when it can be called: None
+
     Basic loop
     0. read in settings data
     1. Spin up children
@@ -260,12 +267,16 @@ def main():
     # who not to attack, expected operating systems, attacks to ignore, more data will be there.
 
 def log(inpu):
-    """
-    Creator: Tate Bowers
-    Input: string that should be pushed to the logging file
-    Output: updated logging file, nothing returned to user
-    This function pushes strings to the logging file for future observation
+    """ logs input into the log file
+
+    Summary of behavior: This function pushes strings to the logging file for future observation
     appends it to the end of the file
+    Arguments: string that should be pushed to the logging file
+    Return values: updated logging file, nothing returned to user
+    Side effects:
+    Exceptions raised:
+    Restrictions on when it can be called: None
+    Creator: Tate Bowers
     """
     ret = -1
     if utilities.check_input('str', inpu):
@@ -277,22 +288,30 @@ def log(inpu):
     return ret
 
 def gui_minus():
-    """
-    Creator: Tate Bowers
-    Input: none
-    Output: none
-    This function acts as the debugging function while the actual user
+    """ TODO -- fill in one line Summary
+
+    Summary of behavior: This function acts as the debugging function while the actual user
      input child is being generated
+    Arguments: None
+    Return values: None
+    Side effects:
+    Exceptions raised:
+    Restrictions on when it can be called: None
+    Creator: Tate Bowers
     """
     return ''
 
 def set_log_file(path):
-    """
-    Creator: Tate Bowers
-    Input: intended file location
-    Output: returns the file name
-    This function creates and returns the log file
+    """ TODO -- fill in one line Summary
+
+    Summary of behavior: This function creates and returns the log file
     the log file is named log+the day+ the hour+ the minute to prevent overlaps
+    Arguments: intended file location
+    Return values: the file name
+    Side effects:
+    Exceptions raised:
+    Restrictions on when it can be called: None
+    Creator: Tate Bowers
     """
     ret = -1
     if utilities.check_input('str', path):
@@ -304,11 +323,16 @@ def set_log_file(path):
 
 
 def parse_settings(path, name):
-    """
+    """TODO -- fill in one line Summary
+
+    Summary of behavior: This function parses the settings file, returns it as array
+    Arguments: path of settings file, name of settings file
+    Return values:settings as an array
+    Side effects:
+    Exceptions raised:
+    Restrictions on when it can be called: None
     Creator: Tate Bowers
-    Input: path of settings file, name of settings file
-    Output: returns settings as an array
-    This function parses the settings file, returns it as array
+
     TODO: properly parse settings file, need to talk with group to go over it
     """
     current_setting = ''
@@ -334,12 +358,15 @@ def parse_settings(path, name):
 
 
 def get_input():
-    """
+    """ gets data from the command buffer?
+
+    Summary of behavior: This function will be filled out later
+    Arguments: TBA
+    Return values: TBA
+    Side effects:
+    Exceptions raised:
     Creator: Tate Bowers
-    Input: unknown
-    Output: unknown
-    This function will be filled out later
-    gets data from the command buffer ?
+
     TODO: fill out logic
     """
     #list of queues?
