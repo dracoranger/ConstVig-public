@@ -1,9 +1,15 @@
 """
-main.py
-Creator:
-Input:
-Output:
-This function
+Classes:
+TARGET -- will hold target IP addresses. To be finished later.
+CHILD -- each child is a processes, e.g. NetIn (NI) that serves a specific purpose.
+Exceptions:
+Functions:
+main -- loops through the children, checking for deaths and restarting when appropriate
+log -- adds to the log file to track errors, etc.
+gui_minus -- acts as a debugger
+set_log_file -- creates and returns the log file
+parse_settings -- parses the settings file, returning as a array
+get_input -- gets input from the user interface
 """
 
 import time
