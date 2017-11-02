@@ -1,20 +1,16 @@
-"""
-Classes:
-TARGET -- will hold target IP addresses. To be finished later.
-CHILD -- each child is a processes, e.g. NetIn (NI) that serves a specific purpose.
-Exceptions:
-Functions:
-main -- loops through the children, checking for deaths and restarting when appropriate
-log -- adds to the log file to track errors, etc.
-gui_minus -- acts as a debugger
-set_log_file -- creates and returns the log file
-parse_settings -- parses the settings file, returning as a array
-get_input -- gets input from the user interface
-"""
+'''
+main.py
+
+Creator:
+Input:
+Output:
+This function
+'''
 
 import time
 import os
 import utilities
+import socket
 #import subprocess
 #Utilities function
 #easysockets?
@@ -28,20 +24,20 @@ CHILD_NUM = 4
 
 #structures
 class TARGET: #target data, such as IP and type
-    """
+    '''
     Creator: Tate Bowers
     Input: TODO
     Output: TODO
     This function takes in targeting formation and stores it for use later
     just an intention at the moment
-    """
+    '''
     def __init__(self, placeholder):
         self.ip_addr = 0 #make attack vars, need to make integrate well with networking pieces
 #targets, array of target?
 
 
 class CHILD:
-    """
+    '''
     Creator: Tate Bowers
     Input: self, name of the process that is to be run (needs to be the name of the file)
     Output: look at get and set functions
@@ -55,7 +51,7 @@ class CHILD:
     process creates the Popen child process
     UPDATE 10-22: Changed from subprocesses to Popen, which is the thing subprocesses is built on
     TODO: Kill socket when dying
-    """
+    '''
     def __init__(self, nam, por):
         self.name = nam
         self.alive = False
@@ -64,73 +60,114 @@ class CHILD:
         self.process = utilities.create_child(self.name, '')
         self.port = por
         self.listener, self.socket = utilities.comm_in(self.port-5800)
+        self.connect_to_child = ''
         #might need to catch socket errors
 
 
+    def get_child_connection(self):
+        '''
+        returns the socket that is attached to the child process
+        '''
+        return self.connect_to_child
+
+    def set_child_connection(self, childPort):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect(('127.0.0.1', port))
+        self.connect_to_child = sock
+
     def get_listener(self):
-        """self explanatory"""
+        '''
+        self explanatory
+        '''
         return self.listener
 
     def get_socket(self):
-        """self explanatory"""
+        '''
+        self explanatory
+        '''
         return self.socket
 
     def get_port(self):
-        """self explanatory"""
+        '''
+        self explanatory
+        '''
         return self.port
 
     def set_port(self, new_port):
-        """self explanatory"""
+        '''
+        self explanatory
+        '''
         self.port = new_port
 
     def get_name(self):
-        """self explanatory"""
+        '''
+        self explanatory
+        '''
         return self.name
 
     def num_deaths(self):
-        """self explanatory"""
+        '''
+        self explanatory
+        '''
         return self.deaths
 
     def inc_deaths(self):
-        """self explanatory"""
+        '''
+        self explanatory
+        '''
         self.deaths = self.deaths + 1
 
     def reset_deaths(self):
-        """self explanatory"""
+        '''
+        self explanatory
+        '''
         self.deaths = 0
 
     def get_deaths(self):
-        """returns number of times child has died"""
+        '''
+        returns number of times child has died
+        '''
         return self.deaths
 
     def is_alive(self):
-        """self explanatory"""
+        '''
+        self explanatory
+        '''
         return self.alive
 
     def is_keep_running(self):
-        """returns whether the child is to restart if it die"""
+        '''
+        returns whether the child is to restart if it dies
+        '''
         return self.keep_running
 
     def update_is_alive(self, boo):
-        """self explanatory"""
+        '''
+        self explanatory
+        '''
         self.alive = boo
 
 
     def toggle_keep_running(self):
-        """switches the state of whether the child restarts upon death"""
+        '''
+        switches the state of whether the child restarts upon death
+        '''
         if self.keep_running:
             self.keep_running = False
         else:
             self.keep_running = True
 
     def recreate_subprocess(self):
-        """kills and then creates the child process"""
+        '''
+        kills and then creates the child process
+        '''
         self.process.kill()
         self.process = utilities.create_child(self.name, '')
 
 def main():
-    """
+    '''
     main function
+
     Basic loop
     0. read in settings data
     1. Spin up children
@@ -149,12 +186,15 @@ def main():
     6. write out error log
     7. generate alerts
     8. save the state of the children in case of failure ? is this necessary
+
     Conditionals
     if reach end of the rounds, prompt for do more
     if children crash, prompt user to restart, log, prompt if multiple failures on same child
+
     possibles
     sync timer?  Probably not necessary on same system
-    """
+
+    '''
     settings = '' #other settings stuff, placeholder currently
     death_limit = 5
     round_length = [300, 300, 300, 300, 300]#array of round lengths
@@ -191,6 +231,7 @@ def main():
     threads_holder = []
     for i in childmaster:
         threads_holder.append(i.get_listener())
+        i.set_child_connection(i.get_port)
     #childHackArray=[0]
     # push down to network outgoing? Stores each hack,
     # ensures that failing hack only kills itself, not everything.
@@ -219,7 +260,7 @@ def main():
                         #temp = child.get_name() + ' is alive!'
                         #print(temp)
                         #inpu = get_input()
-                        utilities.comm_out(get_input(), child.get_port())
+                        utilities.comm_out(get_input(), child.get_child_connection())
                         #output = child.get_socket().recv(1024).decode()
                         #outpu = child.process.communicate(bytes(inpu,'ascii'))
                         #should communicate with the process
@@ -230,12 +271,12 @@ def main():
                     elif child.is_keep_running():
                         child.recreate_subprocess()
                         child.inc_deaths()
-                        temp = child.get_name()+""" has died.
-                        Total deaths for """+ child.get_name()+": "+str(child.get_deaths())
+                        temp = child.get_name()+''' has died.
+                        Total deaths for '''+ child.get_name()+": "+str(child.get_deaths())
                         log(temp)
                         if child.get_deaths() > death_limit:
-                            temp = child.get_name()+""" has
-                             died """+ str(child.get_deaths()) +" times. Continue anyways (y/n)?"
+                            temp = child.get_name()+''' has
+                             died '''+ str(child.get_deaths()) +" times. Continue anyways (y/n)?"
                             cont = input(temp)
                             print(cont)
                             if cont[:1].upper() == "N":
@@ -260,13 +301,14 @@ def main():
     # who not to attack, expected operating systems, attacks to ignore, more data will be there.
 
 def log(inpu):
-    """
+    '''
     Creator: Tate Bowers
     Input: string that should be pushed to the logging file
     Output: updated logging file, nothing returned to user
     This function pushes strings to the logging file for future observation
     appends it to the end of the file
-    """
+
+    '''
     ret = -1
     if utilities.check_input('str', inpu):
         temp = open(PATH+'\\'+LOG_FILE, "r+")#should take care of the LOG_FILE not being created
@@ -277,23 +319,23 @@ def log(inpu):
     return ret
 
 def gui_minus():
-    """
+    '''
     Creator: Tate Bowers
     Input: none
     Output: none
     This function acts as the debugging function while the actual user
      input child is being generated
-    """
+    '''
     return ''
 
 def set_log_file(path):
-    """
+    '''
     Creator: Tate Bowers
     Input: intended file location
     Output: returns the file name
     This function creates and returns the log file
     the log file is named log+the day+ the hour+ the minute to prevent overlaps
-    """
+    '''
     ret = -1
     if utilities.check_input('str', path):
         nam = 'log'+ time.strftime('%d_%h_%m')
@@ -304,13 +346,13 @@ def set_log_file(path):
 
 
 def parse_settings(path, name):
-    """
+    '''
     Creator: Tate Bowers
     Input: path of settings file, name of settings file
     Output: returns settings as an array
     This function parses the settings file, returns it as array
     TODO: properly parse settings file, need to talk with group to go over it
-    """
+    '''
     current_setting = ''
     placeholder = ''
     make_happy = 0
@@ -334,14 +376,14 @@ def parse_settings(path, name):
 
 
 def get_input():
-    """
+    '''
     Creator: Tate Bowers
     Input: unknown
     Output: unknown
     This function will be filled out later
     gets data from the command buffer ?
     TODO: fill out logic
-    """
+    '''
     #list of queues?
     return 'Is this what is causing the failue?'
 

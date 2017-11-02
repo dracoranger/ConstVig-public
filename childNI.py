@@ -1,15 +1,15 @@
-"""
+'''
 NetIn
-"""
+'''
 
 import socket
 import sys
 import utilities
 
 def main():
-    """
+    '''
     Checks for type and returns the input, otherwise returns an error message
-    """
+    '''
     keep_going = True
     listener, sock = utilities.comm_in(9751)
     while keep_going:
@@ -27,9 +27,9 @@ def main():
 
 
 def net_in(host, port):
-    """
+    '''
     TODO fill in docstring
-    """
+    '''
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind((host, port))
