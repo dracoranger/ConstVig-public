@@ -59,7 +59,7 @@ def create_child(inp, other_arguments):
     ret = -1
     if check_input('str', inp):
         if check_input('str', other_arguments): #can be a str or array, probably should be str
-            run = 'python '+inp+'.py '+other_arguments
+            run = ['python',inp+'.py',other_arguments]
             try:
                 ret = subprocess.Popen(run, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
                     #send stdout to buffer, to write to log
@@ -95,7 +95,7 @@ def comm_in(port):
     This function returns a listener as a thread
     """
     clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    clientSocket.connect(('localhost', port))
+    clientSocket.connect(('127.0.0.1', port))
     server_thread = threading.Thread(target=readFromServer, args=([clientSocket]))
     return server_thread, clientSocket
 
