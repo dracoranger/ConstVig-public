@@ -1,18 +1,30 @@
+""" handles traffic leaving to the rest of the network
+
+Classes: None
+Exceptions:
+Functions:
+main -- TBA
+network_out --
 """
-TODO make module docstring
-"""
+
 import argparse
 import socket
 import sys
 import utilities
 
-"""
+'''
 NetworkOut
-"""
+'''
 
 def main():
-    """
-    For now, main prints out that it's in childNO and then checks for the type
+    """[prints out childNO and then] checks for the type
+
+    Summary of behavior:
+    Arguments: None
+    Return values:
+    Side effects:
+    Exceptions raised:
+    Restrictions on when it can be called:
     """
     keep_going = True
     while keep_going:
@@ -24,8 +36,14 @@ def main():
 
 
 def network_out(host, port, exploit):
-    """
-    TODO make function docstring
+    """ TODO -- include the one line summary
+
+    Summary of behavior:
+    Arguments:
+    Return values:
+    Side effects:
+    Exceptions raised:
+    Restrictions on when it can be called:
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((host, port))

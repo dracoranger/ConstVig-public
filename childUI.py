@@ -1,5 +1,9 @@
-"""
-TODO fill in docstring for module
+""" handles the user interface
+
+Classes: None
+Exceptions:
+Functions:
+main --
 """
 
 import utilities

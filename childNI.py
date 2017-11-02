@@ -1,5 +1,10 @@
-"""
-NetIn
+""" handles incoming network traffic
+
+Classes: None
+Exceptions:
+Functions:
+main --
+net_in --
 """
 
 import socket
