@@ -34,6 +34,51 @@ PATH = os.path.dirname(os.path.realpath(__file__))#file path of settings file
 CHILD_NUM = 4
 
 #structures
+
+class chatThread(threading.Thread):
+    """
+    Class: chatThread
+    Purpose: Each client connection spawns a new chatThread object
+      and interaction with the client is via this thread.
+    """
+
+    def __init__(self, parent, csock):
+        """ chatThread constructor """
+        # Call parent class constructor
+        threading.Thread.__init__(self)
+        self.csock = csock
+
+        # Need to be able to reference parent to send messages to all threads
+        self.parent = parent
+
+    def run(self):
+        """ Main loop for chatThread objects """
+
+        try:
+            while 1:
+                # Receive chat message from client
+                message = self.csock.recv(1024)
+                message = message.decode()
+
+                # reading from a closed socket will yield empty messages (0 bytes)
+                if len(message) == 0:
+                    raise Exception("Client closed unexpectedly")
+
+                # Call method in parent that iterates through all
+                # connected client threads and sends message to all
+
+
+                self.parent.sendToAll(message.encode())
+
+        except:  # handle exception type
+            # client has left, close socket and end thread
+            self.csock.close()
+
+    def sendMsg(self, msg):
+        """ Send a message to the client in this thread. """
+        # message must be in bytes format
+        self.csock.send(msg)
+
 class TARGET:
     """ tracks target data, such as IP and type
 
@@ -78,8 +123,8 @@ class CHILD:
         self.connect_to_child = sock
 
         #might need to catch socket errors
-    def engage_listener(self):
-        self.listener=threading.Thread(target=utilities.readFromServer(), args=([self.connect_to_child]))
+    def set_listener(self,inp):
+        self.listener = inp
 
     def get_child_connection(self):
         """returns the socket that is attached to the child process"""
@@ -92,6 +137,10 @@ class CHILD:
     def get_socket(self):
         """self explanatory"""
         return self.socket
+
+    def set_socket(self, inp):
+        """self explanatory"""
+        self.socket = inp
 
     def get_port(self):
         """self explanatory"""
@@ -219,13 +268,16 @@ def main():
 
     threads_holder = []
     for i in childmaster:
-        i.get_socket().accept()
-        i.engage_listener()
+        connection_socket, addr = i.get_socket().accept()
+
+        i.set_listener(chatThread(i.get_port(), connection_socket))
+
+        # Add new chatThread to list of all threads
+        i.set_socket(connection_socket)
+
+        #start new chatThread
         i.get_listener().start()
-        #threads_holder.append(i.get_listener())
-        #\/ is equiv to ^
-        #chatter = chatThread(self, i.get_socket)
-        #i.set_child_connection()
+
         """
         should generate the proper connection and acception
         """
@@ -250,6 +302,12 @@ def main():
 
 
     for i in range(0, round_number):
+
+        for thread in threads_holder:
+            if not thread.isAlive():
+                thread.join()
+                threads_holder.remove(thread)
+
         time_start = time.time()
         time_rec = time.time()
         while time.time() - time_start < round_length[i] + safety_buffer:
@@ -269,8 +327,6 @@ def main():
                 #for num in range (0, CHILD_NUM):
                     #if childmaster[num].:
                     if child.is_alive():
-
-
                         child.get_socket().send(get_input().encode())
                         #temp = child.get_name() + " is alive!"
                         #print(temp)
