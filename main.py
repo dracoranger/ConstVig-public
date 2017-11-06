@@ -26,9 +26,10 @@ get_input -- gets input from the user interface
 
 
 
+
 #any global constants- there should be none
 #might need log file location
-LOG_FILE = 'log'
+LOG_FILE = "log"
 PATH = os.path.dirname(os.path.realpath(__file__))#file path of settings file
 CHILD_NUM = 4
 
@@ -64,20 +65,21 @@ class CHILD:
     def __init__(self, nam, por):
         """class constructor documentation goes here"""
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.bind(('127.0.0.1', por))
-        sock.listen(100000)
+        sock.bind(("127.0.0.1", por))
+        sock.listen(5)
         self.name = nam
         self.alive = False
         self.keep_running = True
         self.deaths = 0
-        self.process = utilities.create_child(self.name, '')
+        self.process = utilities.create_child(self.name, "")
         self.port = por
-        self.listener = threading.Thread(target=utilities.readFromServer, args=([sock]))
+        self.listener = ""
         self.socket = sock#utilities.comm_in(self.port-100)
         self.connect_to_child = sock
 
         #might need to catch socket errors
-
+    def engage_listener(self):
+        self.listener=threading.Thread(target=utilities.readFromServer(), args=([self.connect_to_child]))
 
     def get_child_connection(self):
         """returns the socket that is attached to the child process"""
@@ -141,7 +143,7 @@ class CHILD:
     def recreate_subprocess(self):
         """kills and then creates the child process"""
         self.process.kill()
-        self.process = utilities.create_child(self.name, '')
+        self.process = utilities.create_child(self.name, "")
 
 def main():
     """ checks on, spawns, and recreates child processes
@@ -151,7 +153,7 @@ def main():
     Return values:
     Side effects:
     Exceptions raised:
-    Restrictions on when it can be called:
+    Restrictions on when it can be called: None
 
     main function
 
@@ -182,7 +184,7 @@ def main():
     sync timer?  Probably not necessary on same system
 
     """
-    settings = '' #other settings stuff, placeholder currently
+    settings = "" #other settings stuff, placeholder currently
     death_limit = 5
     round_length = [300, 300, 300, 300, 300]#array of round lengths
     round_number = 0
@@ -203,39 +205,44 @@ def main():
 
     if LOG_FILE == "":
         LOG_FILE = set_log_file(PATH)
-        success = log('Began operations at '+str(time.time()))
+        success = log("Began operations at "+str(time.time()))
         if success != 1:
             print("log failure")
 
-    #childmaster = [CHILD('ChildFS',15550)]
-    #childmaster.append(CHILD('ChildNI',15551))
-    #childmaster.append(CHILD('ChildNO',15552))
-    #childmaster.append(CHILD('ChildUI',15553))
-    childmaster = [CHILD('ChildNI', 15551)]
+    #childmaster = [CHILD("ChildFS",15550)]
+    #childmaster.append(CHILD("ChildNI",15551))
+    #childmaster.append(CHILD("ChildNO",15552))
+    #childmaster.append(CHILD("ChildUI",15553))
+    childmaster = [CHILD("ChildNI", 15551)]
     time.sleep(1)
     #generate sockets
 
     threads_holder = []
     for i in childmaster:
-        threads_holder.append(i.get_listener())
-        i.set_child_connection()
+        i.get_socket().accept()
+        i.engage_listener()
+        i.get_listener().start()
+        #threads_holder.append(i.get_listener())
+        #\/ is equiv to ^
+        #chatter = chatThread(self, i.get_socket)
+        #i.set_child_connection()
         """
         should generate the proper connection and acception
         """
-        connectionSocket, addr = serverSocket.accept()
-        chatter = chatThread(self, connectionSocket)
+        #connectionSocket, addr = serverSocket.accept()
+        #chatter = chatThread(self, connectionSocket)
 
         # Add new chatThread to list of all threads
-        self.mythreads.append(chatter)
+        #self.mythreads.append(chatter)
 
         #start new chatThread
-        chatter.start()
-#                print('New client joined')
+        #i.get_listener().start()
+#                print("New client joined")
 
-        for thread in self.mythreads:
-            if not thread.isAlive():
-                thread.join()
-                self.mythreads.remove(thread)
+        #for thread in self.mythreads:
+        #    if not thread.isAlive():
+        #        thread.join()
+        #        self.mythreads.remove(thread)
         #i.set_child_connection(i.get_port())
     #childHackArray=[0]
     # push down to network outgoing? Stores each hack,
@@ -254,7 +261,7 @@ def main():
             if time.time()-time_rec >= time_between_check:
                 print(str(time.time()-time_start))
                 for child in childmaster:
-                    print(child.get_name()+' '+str(child.process.poll()))
+                    print(child.get_name()+" "+str(child.process.poll()))
                     #if child.process.poll() == None:
                     if isinstance(child.process.poll(), type(None)):
                         child.update_is_alive(True)
@@ -265,12 +272,12 @@ def main():
 
 
                         child.get_socket().send(get_input().encode())
-                        #temp = child.get_name() + ' is alive!'
+                        #temp = child.get_name() + " is alive!"
                         #print(temp)
                         #inpu = get_input()
                         #utilities.comm_out(get_input(), child.get_child_connection())
                         #output = child.get_socket().recv(1024).decode()
-                        #outpu = child.process.communicate(bytes(inpu,'ascii'))
+                        #outpu = child.process.communicate(bytes(inpu,"ascii"))
                         #should communicate with the process
                         #print(output) #should print automatically
         #https://stackoverflow.com/questions/7585435/best-way-to-convert-string-to-bytes-in-python-3
@@ -293,8 +300,8 @@ def main():
                         #Alert user if necessary
                         #write last actions of children so can resume from that point ?
 
-        print('round '+str(i)+' complete')
-    print('fully complete')
+        print("round "+str(i)+" complete")
+    print("fully complete")
     #    child.get_listener().join()
     for thread in threads_holder:
         thread.join()
@@ -309,21 +316,19 @@ def main():
     # who not to attack, expected operating systems, attacks to ignore, more data will be there.
 
 def log(inpu):
-	""" interacts with the log file
+    """
+    Creator: Tate Bowers
+    Input: string that should be pushed to the logging file
+    Output: updated logging file, nothing returned to user
+    This function pushes strings to the logging file for future observation
+    appends it to the end of the file
 
-	Summary of behavior: pushes strings to the logging file for future
-		observation, appending to the end of the file.
-	Arguments: string to be logged
-    Return values: None
-    Side effects: Updates the log file
-    Exceptions raised:
-    Restrictions on when it can be called:
     """
 
     ret = -1
-    if utilities.check_input('str', inpu):
-        temp = open(PATH+'\\'+LOG_FILE, "r+")#should take care of the LOG_FILE not being created
-        temp.write(inpu+'\n')
+    if utilities.check_input("str", inpu):
+        temp = open(PATH+"\\"+LOG_FILE, "r+")#should take care of the LOG_FILE not being created
+        temp.write(inpu+"\n")
         temp.close()
         #FAIL RETURN TO START!
         ret = 1
@@ -341,31 +346,29 @@ def gui_minus():
     Restrictions on when it can be called: None
     Creator: Tate Bowers
     """
-    return ''
+    return ""
 
 
 def set_log_file(path):
-	"""Creates the log file
-
-	Summary of behavior: Creates and returns the log file.
-		Log file named log+day+hour+minute IOT prevent overlaps.
-	Arguments: File location
-    Return values: File name
-    Side effects: Log file created
-    Exceptions raised:
-    Restrictions on when it can be called:
-	"""
+    """
+    Creator: Tate Bowers
+    Input: intended file location
+    Output: returns the file name
+    This function creates and returns the log file
+    the log file is named log+the day+ the hour+ the minute to prevent overlaps
+    """
     ret = -1
-    if utilities.check_input('str', path):
-        nam = 'log'+ time.strftime('%d_%h_%m')
+    if utilities.check_input("str", path):
+        nam = "log"+ time.strftime("%d_%h_%m")
         ret = nam
-    temp = open(path+nam, 'w+')
+    temp = open(path+nam, "w+")
     temp.close()
     return ret
 
 
 def parse_settings(path, name):
-    """TODO -- fill in one line Summary
+    """
+    TODO -- fill in one line Summary
 
     Summary of behavior: This function parses the settings file, returns it as array
     Arguments: path of settings file, name of settings file
@@ -375,15 +378,15 @@ def parse_settings(path, name):
     Restrictions on when it can be called: None
     """
 
-    current_setting = ''
-    placeholder = ''
+    current_setting = ""
+    placeholder = ""
     make_happy = 0
-    ret = [[40, 40, 40, 40, 40], 5, '', '']
-    if utilities.check_input('str', path):
-        if utilities.check_input('str', name):
-            fil = open(path+name, 'r')
+    ret = [[40, 40, 40, 40, 40], 5, "", ""]
+    if utilities.check_input("str", path):
+        if utilities.check_input("str", name):
+            fil = open(path+name, "r")
             for i in fil.read():
-                if current_setting == '':
+                if current_setting == "":
                     current_setting = i[:-1]
                 elif current_setting == placeholder:
                     #do stuff
@@ -392,27 +395,21 @@ def parse_settings(path, name):
                     #do stuff
                     make_happy = make_happy + 1
                 else:
-                    log('Unknown Setting')
+                    log("Unknown Setting")
 
     return ret[0], ret[1], ret[2], ret[3]
 
 
 def get_input():
-    """TODO -- fill in one-line summary
+    """
+    Creator: Tate Bowers
 
-	Summary of behavior:
-	Arguments: None
-    Return values:
-    Side effects:
-    Exceptions raised:
-    Restrictions on when it can be called:
-    
     TODO: fill out logic
     """
     #list of queues?
-    return 'Is this what is causing the failue?'
+    return "Is this what is causing the failue?"
 
 
 #Runs the main function
-print('starting '+str(time.time()))
+print("starting "+str(time.time()))
 main()
