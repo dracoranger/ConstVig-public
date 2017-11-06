@@ -59,7 +59,7 @@ class chatThread(threading.Thread):
                 # Receive chat message from client
                 message = self.csock.recv(1024)
                 message = message.decode()
-
+                print(message)
                 # reading from a closed socket will yield empty messages (0 bytes)
                 if len(message) == 0:
                     raise Exception("Client closed unexpectedly")
@@ -68,7 +68,7 @@ class chatThread(threading.Thread):
                 # connected client threads and sends message to all
 
 
-                self.parent.sendToAll(message.encode())
+                #self.parent.sendToAll(message.encode())
 
         except:  # handle exception type
             # client has left, close socket and end thread
@@ -120,15 +120,11 @@ class CHILD:
         self.port = por
         self.listener = ""
         self.socket = sock#utilities.comm_in(self.port-100)
-        self.connect_to_child = sock
 
         #might need to catch socket errors
-    def set_listener(self,inp):
+    def set_listener(self, inp):
+        """self explanatory"""
         self.listener = inp
-
-    def get_child_connection(self):
-        """returns the socket that is attached to the child process"""
-        return self.connect_to_child
 
     def get_listener(self):
         """self explanatory"""
@@ -266,52 +262,30 @@ def main():
     time.sleep(1)
     #generate sockets
 
-    threads_holder = []
     for i in childmaster:
         connection_socket, addr = i.get_socket().accept()
-
         i.set_listener(chatThread(i.get_port(), connection_socket))
-
         # Add new chatThread to list of all threads
         i.set_socket(connection_socket)
-
         #start new chatThread
         i.get_listener().start()
-
+        print(i.get_listener())
         """
         should generate the proper connection and acception
         """
-        #connectionSocket, addr = serverSocket.accept()
-        #chatter = chatThread(self, connectionSocket)
-
-        # Add new chatThread to list of all threads
-        #self.mythreads.append(chatter)
-
-        #start new chatThread
-        #i.get_listener().start()
-#                print("New client joined")
-
-        #for thread in self.mythreads:
-        #    if not thread.isAlive():
-        #        thread.join()
-        #        self.mythreads.remove(thread)
-        #i.set_child_connection(i.get_port())
     #childHackArray=[0]
     # push down to network outgoing? Stores each hack,
     # ensures that failing hack only kills itself, not everything.
 
 
     for i in range(0, round_number):
-
-        for thread in threads_holder:
-            if not thread.isAlive():
-                thread.join()
-                threads_holder.remove(thread)
-
         time_start = time.time()
         time_rec = time.time()
         while time.time() - time_start < round_length[i] + safety_buffer:
-
+            #TODO Implement properly
+            #if not i.get_listener().isAlive():
+            #    i.get_listener().join()
+            #    i.set_listener('')
             #wait on user input, returns from NI or NO
             #push information to logging
             #Todo make it so that if child is alive, actually make child.is_alive true
@@ -324,20 +298,8 @@ def main():
                     if isinstance(child.process.poll(), type(None)):
                         child.update_is_alive(True)
                     #need to figure out how to replace with necessary data
-                #for num in range (0, CHILD_NUM):
-                    #if childmaster[num].:
                     if child.is_alive():
                         child.get_socket().send(get_input().encode())
-                        #temp = child.get_name() + " is alive!"
-                        #print(temp)
-                        #inpu = get_input()
-                        #utilities.comm_out(get_input(), child.get_child_connection())
-                        #output = child.get_socket().recv(1024).decode()
-                        #outpu = child.process.communicate(bytes(inpu,"ascii"))
-                        #should communicate with the process
-                        #print(output) #should print automatically
-        #https://stackoverflow.com/questions/7585435/best-way-to-convert-string-to-bytes-in-python-3
-                        #Todo make outpu useful
 
                     elif child.is_keep_running():
                         child.recreate_subprocess()
@@ -357,13 +319,18 @@ def main():
                         #write last actions of children so can resume from that point ?
 
         print("round "+str(i)+" complete")
-    print("fully complete")
-    #    child.get_listener().join()
-    for thread in threads_holder:
-        thread.join()
 
+    print("fully complete")
     for child in childmaster:
+        child.get_listener().join()
+        child.set_listener('')
         child.get_socket().close()
+        child.process.kill()
+        print(child.get_name()+" "+str(child.process.poll()))
+    #    child.get_listener().join()
+
+
+
 
     #round length is minutes? seconds? per round,
     # and controls how often the NO runs, and how often NI detects
@@ -437,7 +404,7 @@ def parse_settings(path, name):
     current_setting = ""
     placeholder = ""
     make_happy = 0
-    ret = [[40, 40, 40, 40, 40], 5, "", ""]
+    ret = [[20, 20, 20, 20, 20], 5, "", ""]
     if utilities.check_input("str", path):
         if utilities.check_input("str", name):
             fil = open(path+name, "r")
