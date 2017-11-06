@@ -12,9 +12,9 @@ import socket
 import sys
 import utilities
 
-'''
+"""
 NetworkOut
-'''
+"""
 
 def main():
     """[prints out childNO and then] checks for the type

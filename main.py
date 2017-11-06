@@ -23,14 +23,6 @@ set_log_file -- creates and returns the log file
 parse_settings -- parses the settings file, returning as a array
 get_input -- gets input from the user interface
 """
-'''
-main.py
-
-Creator:
-Input:
-Output:
-This function
-'''
 
 
 
@@ -88,115 +80,78 @@ class CHILD:
 
 
     def get_child_connection(self):
-        '''
-        returns the socket that is attached to the child process
-        '''
+        """returns the socket that is attached to the child process"""
         return self.connect_to_child
 
-    def set_child_connection(self, childPort):
-        #sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #sock.bind(('127.0.0.1', childPort))
-        #sock.listen(100000)
-        #sock.connect(('127.0.0.1', childPort))
-        self.connect_to_child = self.connect_to_child
-
     def get_listener(self):
-        '''
-        self explanatory
-        '''
+        """self explanatory"""
         return self.listener
 
     def get_socket(self):
-        '''
-        self explanatory
-        '''
+        """self explanatory"""
         return self.socket
 
     def get_port(self):
-        '''
-        self explanatory
-        '''
+        """self explanatory"""
         return self.port
 
     def set_port(self, new_port):
-        '''
-        self explanatory
-        '''
+        """self explanatory"""
         self.port = new_port
 
     def get_name(self):
-        '''
-        self explanatory
-        '''
+        """self explanatory"""
         return self.name
 
     def num_deaths(self):
-        '''
-        self explanatory
-        '''
+        """self explanatory"""
         return self.deaths
 
     def inc_deaths(self):
-        '''
-        self explanatory
-        '''
+        """self explanatory"""
         self.deaths = self.deaths + 1
 
     def reset_deaths(self):
-        '''
-        self explanatory
-        '''
+        """self explanatory"""
         self.deaths = 0
 
     def get_deaths(self):
-        '''
-        returns number of times child has died
-        '''
+        """returns number of times child has died"""
         return self.deaths
 
     def is_alive(self):
-        '''
-        self explanatory
-        '''
+        """self explanatory"""
         return self.alive
 
     def is_keep_running(self):
-        '''
-        returns whether the child is to restart if it dies
-        '''
+        """returns whether the child is to restart if it dies"""
         return self.keep_running
 
     def update_is_alive(self, boo):
-        '''
-        self explanatory
-        '''
+        """self explanatory"""
         self.alive = boo
 
     def toggle_keep_running(self):
-        '''
-        switches the state of whether the child restarts upon death
-        '''
+        """switches the state of whether the child restarts upon death"""
         if self.keep_running:
             self.keep_running = False
         else:
             self.keep_running = True
 
     def recreate_subprocess(self):
-        '''
-        kills and then creates the child process
-        '''
+        """kills and then creates the child process"""
         self.process.kill()
         self.process = utilities.create_child(self.name, '')
 
 def main():
     """ checks on, spawns, and recreates child processes
 
-    Summary of behavior:
+    Summary of behavior: starts, restarts, and manages the child processes
     Arguments: None
     Return values:
     Side effects:
     Exceptions raised:
-    Restrictions on when it can be called: None
+    Restrictions on when it can be called:
 
     main function
 
@@ -264,9 +219,9 @@ def main():
     for i in childmaster:
         threads_holder.append(i.get_listener())
         i.set_child_connection()
-        '''
+        """
         should generate the proper connection and acception
-        '''
+        """
         connectionSocket, addr = serverSocket.accept()
         chatter = chatThread(self, connectionSocket)
 
@@ -324,12 +279,12 @@ def main():
                     elif child.is_keep_running():
                         child.recreate_subprocess()
                         child.inc_deaths()
-                        temp = child.get_name()+''' has died.
-                        Total deaths for '''+ child.get_name()+": "+str(child.get_deaths())
+                        temp = child.get_name()+""" has died.
+                        Total deaths for """+ child.get_name()+": "+str(child.get_deaths())
                         log(temp)
                         if child.get_deaths() > death_limit:
-                            temp = child.get_name()+''' has
-                             died '''+ str(child.get_deaths()) +" times. Continue anyways (y/n)?"
+                            temp = child.get_name()+""" has
+                             died """+ str(child.get_deaths()) +" times. Continue anyways (y/n)?"
                             cont = input(temp)
                             print(cont)
                             if cont[:1].upper() == "N":
@@ -354,14 +309,16 @@ def main():
     # who not to attack, expected operating systems, attacks to ignore, more data will be there.
 
 def log(inpu):
-    '''
-    Creator: Tate Bowers
-    Input: string that should be pushed to the logging file
-    Output: updated logging file, nothing returned to user
-    This function pushes strings to the logging file for future observation
-    appends it to the end of the file
+	""" interacts with the log file
 
-    '''
+	Summary of behavior: pushes strings to the logging file for future
+		observation, appending to the end of the file.
+	Arguments: string to be logged
+    Return values: None
+    Side effects: Updates the log file
+    Exceptions raised:
+    Restrictions on when it can be called:
+    """
 
     ret = -1
     if utilities.check_input('str', inpu):
@@ -388,13 +345,16 @@ def gui_minus():
 
 
 def set_log_file(path):
-    '''
-    Creator: Tate Bowers
-    Input: intended file location
-    Output: returns the file name
-    This function creates and returns the log file
-    the log file is named log+the day+ the hour+ the minute to prevent overlaps
-    '''
+	"""Creates the log file
+
+	Summary of behavior: Creates and returns the log file.
+		Log file named log+day+hour+minute IOT prevent overlaps.
+	Arguments: File location
+    Return values: File name
+    Side effects: Log file created
+    Exceptions raised:
+    Restrictions on when it can be called:
+	"""
     ret = -1
     if utilities.check_input('str', path):
         nam = 'log'+ time.strftime('%d_%h_%m')
@@ -405,8 +365,7 @@ def set_log_file(path):
 
 
 def parse_settings(path, name):
-    """
-    TODO -- fill in one line Summary
+    """TODO -- fill in one line Summary
 
     Summary of behavior: This function parses the settings file, returns it as array
     Arguments: path of settings file, name of settings file
@@ -439,11 +398,17 @@ def parse_settings(path, name):
 
 
 def get_input():
-    '''
-    Creator: Tate Bowers
+    """TODO -- fill in one-line summary
 
+	Summary of behavior:
+	Arguments: None
+    Return values:
+    Side effects:
+    Exceptions raised:
+    Restrictions on when it can be called:
+    
     TODO: fill out logic
-    '''
+    """
     #list of queues?
     return 'Is this what is causing the failue?'
 
