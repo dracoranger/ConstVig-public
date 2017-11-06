@@ -78,7 +78,7 @@ def create_child(inp, other_arguments):
 
     return ret
 
-def comm_out(data, sock):
+def comm_out(data,sock):
     '''
     Creator: Tate Bowers
     Input: port number, string of data

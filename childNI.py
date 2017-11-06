@@ -16,18 +16,22 @@ def main():
     Checks for type and returns the input, otherwise returns an error message
     """
     keep_going = True
-    listener, sock = utilities.comm_in(9751)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect(('localhost', 15551))
+    recieved = sock.recv(1024).decode()
+    #listener, sock = utilities.comm_in(9751)
     while keep_going:
         #commented out print() and changed input()
         #print('NI')
         #try:
-        able = 'Temp val'#sys.stdin.readline(5)
+        able = bytes('Temp val', 'utf-8')#sys.stdin.readline(5)
         if utilities.check_input((bytes), able):
-            utilities.comm_out(able, 15551)
+            sock.send(able.encode())
+            #utilities.comm_out(able, sock)
         #except EOFError:
         #    print('no data supplied')
     sock.close()
-    listener.join()
+    #listener.join()
 
 
 

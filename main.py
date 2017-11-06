@@ -1,4 +1,14 @@
-<<<<<<< HEAD
+import time
+import os
+import socket
+import threading
+import utilities
+
+#import subprocess
+#Utilities function
+#easysockets?
+#twisted.internet?
+
 """ runs and manages everything, including child processes
 
 Classes:
@@ -13,7 +23,6 @@ set_log_file -- creates and returns the log file
 parse_settings -- parses the settings file, returning as a array
 get_input -- gets input from the user interface
 """
-=======
 '''
 main.py
 
@@ -22,16 +31,8 @@ Input:
 Output:
 This function
 '''
->>>>>>> d2eadf82cb7e4f0d6a0110956929e29295655ce1
 
-import time
-import os
-import utilities
-import socket
-#import subprocess
-#Utilities function
-#easysockets?
-#twisted.internet?
+
 
 #any global constants- there should be none
 #might need log file location
@@ -40,7 +41,6 @@ PATH = os.path.dirname(os.path.realpath(__file__))#file path of settings file
 CHILD_NUM = 4
 
 #structures
-<<<<<<< HEAD
 class TARGET:
     """ tracks target data, such as IP and type
 
@@ -50,53 +50,40 @@ class TARGET:
     Instance variables: None
     Creator: Tate Bowers
     """
-
-=======
-class TARGET: #target data, such as IP and type
-    '''
-    Creator: Tate Bowers
-    Input: TODO
-    Output: TODO
-    This function takes in targeting formation and stores it for use later
-    just an intention at the moment
-    '''
->>>>>>> d2eadf82cb7e4f0d6a0110956929e29295655ce1
     def __init__(self, placeholder):
         """class constructor documentation goes here"""
         self.ip_addr = 0 #make attack vars, need to make integrate well with networking pieces
-#targets, array of target?
+    #targets, array of target?
+
 
 
 class CHILD:
-<<<<<<< HEAD
+
     """ each unit of functionality in the program is given to a child process.
 
     Summary of behavior: tracks each child and information pertinent to the child
     Public methods: get_listener, get_socket, get_port, set_port, get_name, num_deaths, inc_deaths, reset_deaths, get_deaths, is_alive, is_keep_running, update_is_alive, toggle_keep_running, recreate_subprocess
     Instance variables: None
-=======
-    '''
->>>>>>> d2eadf82cb7e4f0d6a0110956929e29295655ce1
     Creator: Tate Bowers
 
     UPDATE 10-22: Changed from subprocesses to Popen, which is the thing subprocesses is built on
     TODO: Kill socket when dying
-<<<<<<< HEAD
     """
-
-=======
-    '''
->>>>>>> d2eadf82cb7e4f0d6a0110956929e29295655ce1
     def __init__(self, nam, por):
         """class constructor documentation goes here"""
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(('127.0.0.1', por))
+        sock.listen(100000)
         self.name = nam
         self.alive = False
         self.keep_running = True
         self.deaths = 0
         self.process = utilities.create_child(self.name, '')
         self.port = por
-        self.listener, self.socket = utilities.comm_in(self.port-100)
-        self.connect_to_child = ''
+        self.listener = threading.Thread(target=utilities.readFromServer, args=([sock]))
+        self.socket = sock#utilities.comm_in(self.port-100)
+        self.connect_to_child = sock
+
         #might need to catch socket errors
 
 
@@ -107,9 +94,11 @@ class CHILD:
         return self.connect_to_child
 
     def set_child_connection(self, childPort):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.connect(('127.0.0.1', childPort))
-        self.connect_to_child = sock
+        #sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #sock.bind(('127.0.0.1', childPort))
+        #sock.listen(100000)
+        #sock.connect(('127.0.0.1', childPort))
+        self.connect_to_child = self.connect_to_child
 
     def get_listener(self):
         '''
@@ -200,7 +189,6 @@ class CHILD:
         self.process = utilities.create_child(self.name, '')
 
 def main():
-<<<<<<< HEAD
     """ checks on, spawns, and recreates child processes
 
     Summary of behavior:
@@ -209,10 +197,8 @@ def main():
     Side effects:
     Exceptions raised:
     Restrictions on when it can be called: None
-=======
-    '''
+
     main function
->>>>>>> d2eadf82cb7e4f0d6a0110956929e29295655ce1
 
     Basic loop
     0. read in settings data
@@ -240,7 +226,7 @@ def main():
     possibles
     sync timer?  Probably not necessary on same system
 
-    '''
+    """
     settings = '' #other settings stuff, placeholder currently
     death_limit = 5
     round_length = [300, 300, 300, 300, 300]#array of round lengths
@@ -271,13 +257,31 @@ def main():
     #childmaster.append(CHILD('ChildNO',15552))
     #childmaster.append(CHILD('ChildUI',15553))
     childmaster = [CHILD('ChildNI', 15551)]
-
+    time.sleep(1)
     #generate sockets
 
     threads_holder = []
     for i in childmaster:
         threads_holder.append(i.get_listener())
-        i.set_child_connection(i.get_port)
+        i.set_child_connection()
+        '''
+        should generate the proper connection and acception
+        '''
+        connectionSocket, addr = serverSocket.accept()
+        chatter = chatThread(self, connectionSocket)
+
+        # Add new chatThread to list of all threads
+        self.mythreads.append(chatter)
+
+        #start new chatThread
+        chatter.start()
+#                print('New client joined')
+
+        for thread in self.mythreads:
+            if not thread.isAlive():
+                thread.join()
+                self.mythreads.remove(thread)
+        #i.set_child_connection(i.get_port())
     #childHackArray=[0]
     # push down to network outgoing? Stores each hack,
     # ensures that failing hack only kills itself, not everything.
@@ -303,10 +307,13 @@ def main():
                 #for num in range (0, CHILD_NUM):
                     #if childmaster[num].:
                     if child.is_alive():
+
+
+                        child.get_socket().send(get_input().encode())
                         #temp = child.get_name() + ' is alive!'
                         #print(temp)
                         #inpu = get_input()
-                        utilities.comm_out(get_input(), child.get_child_connection())
+                        #utilities.comm_out(get_input(), child.get_child_connection())
                         #output = child.get_socket().recv(1024).decode()
                         #outpu = child.process.communicate(bytes(inpu,'ascii'))
                         #should communicate with the process
@@ -347,19 +354,6 @@ def main():
     # who not to attack, expected operating systems, attacks to ignore, more data will be there.
 
 def log(inpu):
-<<<<<<< HEAD
-    """ logs input into the log file
-
-    Summary of behavior: This function pushes strings to the logging file for future observation
-    appends it to the end of the file
-    Arguments: string that should be pushed to the logging file
-    Return values: updated logging file, nothing returned to user
-    Side effects:
-    Exceptions raised:
-    Restrictions on when it can be called: None
-    Creator: Tate Bowers
-    """
-=======
     '''
     Creator: Tate Bowers
     Input: string that should be pushed to the logging file
@@ -368,7 +362,7 @@ def log(inpu):
     appends it to the end of the file
 
     '''
->>>>>>> d2eadf82cb7e4f0d6a0110956929e29295655ce1
+
     ret = -1
     if utilities.check_input('str', inpu):
         temp = open(PATH+'\\'+LOG_FILE, "r+")#should take care of the LOG_FILE not being created
@@ -379,7 +373,6 @@ def log(inpu):
     return ret
 
 def gui_minus():
-<<<<<<< HEAD
     """ TODO -- fill in one line Summary
 
     Summary of behavior: This function acts as the debugging function while the actual user
@@ -393,27 +386,6 @@ def gui_minus():
     """
     return ''
 
-def set_log_file(path):
-    """ TODO -- fill in one line Summary
-
-    Summary of behavior: This function creates and returns the log file
-    the log file is named log+the day+ the hour+ the minute to prevent overlaps
-    Arguments: intended file location
-    Return values: the file name
-    Side effects:
-    Exceptions raised:
-    Restrictions on when it can be called: None
-    Creator: Tate Bowers
-    """
-=======
-    '''
-    Creator: Tate Bowers
-    Input: none
-    Output: none
-    This function acts as the debugging function while the actual user
-     input child is being generated
-    '''
-    return ''
 
 def set_log_file(path):
     '''
@@ -423,7 +395,6 @@ def set_log_file(path):
     This function creates and returns the log file
     the log file is named log+the day+ the hour+ the minute to prevent overlaps
     '''
->>>>>>> d2eadf82cb7e4f0d6a0110956929e29295655ce1
     ret = -1
     if utilities.check_input('str', path):
         nam = 'log'+ time.strftime('%d_%h_%m')
@@ -434,8 +405,8 @@ def set_log_file(path):
 
 
 def parse_settings(path, name):
-<<<<<<< HEAD
-    """TODO -- fill in one line Summary
+    """
+    TODO -- fill in one line Summary
 
     Summary of behavior: This function parses the settings file, returns it as array
     Arguments: path of settings file, name of settings file
@@ -443,13 +414,8 @@ def parse_settings(path, name):
     Side effects:
     Exceptions raised:
     Restrictions on when it can be called: None
-=======
-    '''
->>>>>>> d2eadf82cb7e4f0d6a0110956929e29295655ce1
-    Creator: Tate Bowers
+    """
 
-    TODO: properly parse settings file, need to talk with group to go over it
-    '''
     current_setting = ''
     placeholder = ''
     make_happy = 0
@@ -473,17 +439,7 @@ def parse_settings(path, name):
 
 
 def get_input():
-<<<<<<< HEAD
-    """ gets data from the command buffer?
-
-    Summary of behavior: This function will be filled out later
-    Arguments: TBA
-    Return values: TBA
-    Side effects:
-    Exceptions raised:
-=======
     '''
->>>>>>> d2eadf82cb7e4f0d6a0110956929e29295655ce1
     Creator: Tate Bowers
 
     TODO: fill out logic
