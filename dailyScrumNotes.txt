@@ -1,3 +1,28 @@
+06NOV
+Tate
+-	Fixed firewall issue
+-	Need to add few commands into code to completely fix it
+Jaryn
+-	Sprint Review
+Gabe
+-	PDR
+Abigail
+-	Sprint Review
+
+02NOV
+Tate
+-	Had debugging issues with sockets
+-	Will fix issues with sockets and firewall issue
+Jaryn
+-	Researched sockets
+-	On Trip Section Today
+Gabe
+-	Researched sockets
+-	Bibliography
+-	Sprint Review
+Abigail
+-	Sprint Review
+
 31OCT
 Tate
 -	Had debugging issues with subprocess module (new processes can’t talk with each other)
