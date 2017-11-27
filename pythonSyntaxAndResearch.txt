@@ -70,3 +70,24 @@ Python information
       <does action before any of the except clauses>
 
     pass says just keep going
+
+
+**Test-Driven Development Technique**
+
+Python’s doctest module offers inline testing. The tests are included in the docstrings for modules and functions. For instance, in a module, the docstring might look like this:
+“””
+Description and other relevant information
+>>> add(1, 2)
+3
+“””
+While the docstring for add might look like this:
+Def add(a, b):
+  “””Description etc.
+  >>> [add(x, 1) for x in range(5)]
+  [1, 2, 3, 4, 5]
+  >>> add(4e1000, 6e1000)
+  inf
+  “””
+Anticipated errors can also be given as return values. For more information, see https://docs.python.org/2/library/doctest.html#module-doctest
+
+***
