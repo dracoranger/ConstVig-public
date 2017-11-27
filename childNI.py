@@ -63,3 +63,31 @@ def net_in(host, port):
         print('  Reply sent, socket closed\n')
 
 main()
+
+def analyzer(inp):
+    '''
+        >>>analyzer()
+        return [80[n, n+20, n+40, n+80, n+100],7558[n+5,n+10,n+15],...],[jklasdnvhiuopq[n, n+20, n+40, n+80, n+100],qiuopnjvpasewrnjkaxpjbnadfsjiopea[n+5,n+10,n+15],...]
+    '''
+    ports, timestamp, data = parser(inp)
+
+    ret = analyzer_ports(ports,timestamp)
+    ret = ret + analyzer_data(data,timestamp)
+
+def analyzer_data(dat, timestamp):
+    '''
+        >>>analyzer_data()
+        [jklasdnvhiuopq[n, n+20, n+40, n+80, n+100],qiuopnjvpasewrnjkaxpjbnadfsjiopea[n+5,n+10,n+15],...]
+    '''
+
+def analyzer_ports(ports, timestamp):
+    '''
+        >>>analyzer_ports()
+        [80[n, n+20, n+40, n+80, n+100],7558[n+5,n+10,n+15],...]
+    '''
+
+def parser(inp):
+    '''
+        >>>parser()
+        [80,7558,7558,80,7558,80,7558...],[n, n+5,n+10,n+15,n+20,n+40,n+80],[jklasdnvhiuopq,qiuopnjvpasewrnjkaxpjbnadfsjiopea,qiuopnjvpasewrnjkaxpjbnadfsjiopea,qiuopnjvpasewrnjkaxpjbnadfsjiopea,jklasdnvhiuopq,jklasdnvhiuopq]
+    '''
