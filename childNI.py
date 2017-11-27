@@ -10,6 +10,7 @@ net_in --
 import socket
 import sys
 import utilities
+from scapy.all import *
 
 def main():
     """
@@ -63,6 +64,8 @@ def net_in(host, port):
         print('  Reply sent, socket closed\n')
 
 main()
+
+#scapy
 
 def analyzer(inp):
     '''
