@@ -10,7 +10,8 @@ net_in --
 import socket
 import sys
 import utilities
-from scapy.all import *
+#from scapy.all import *
+import sqlite3
 
 def main():
     """
@@ -20,6 +21,9 @@ def main():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(('localhost', 15551))
     recieved = sock.recv(1024).decode()
+    conn = sqlite3.connect('packets.db')
+    packetNum = 0
+    sql = conn.cursor()
     #listener, sock = utilities.comm_in(9751)
     while keep_going:
         #commented out print() and changed input()
@@ -94,3 +98,27 @@ def parser(inp):
         >>>parser()
         [80,7558,7558,80,7558,80,7558...],[n, n+5,n+10,n+15,n+20,n+40,n+80],[jklasdnvhiuopq,qiuopnjvpasewrnjkaxpjbnadfsjiopea,qiuopnjvpasewrnjkaxpjbnadfsjiopea,qiuopnjvpasewrnjkaxpjbnadfsjiopea,jklasdnvhiuopq,jklasdnvhiuopq]
     '''
+
+def generateDB(conn):
+    conn.execute('''CREATE TABLE packets
+             (packetNum integer primary key autoincrement,
+              timestamp real,
+              portIn integer,
+              portOut integer,
+              flag real,
+              timeToLive integer,
+              protocol integer,
+              source text,
+              dest text,
+              dataHash text)''')
+    conn.execute('''CREATE TABLE flags
+             (flagNumber integer primary key autoincrement,
+             flag text)''')
+    conn.execute('''CREATE TABLE connection
+             (flagDiscNumber integer primary key autoincrement,
+             flag text references flags(flag),
+             packetNum integer references packets(packetNum))''')
+
+def addToDB(packet):
+
+def getFlagList()
