@@ -14,7 +14,7 @@ def fsys(filename, intent):
     """ TODO -- make one line Summary
 
     Summary of behavior:
-    Arguments: name of file to be accessed, char 'r' or 'w' for read or write
+    Arguments: name of file to be accessed, 'r' or 'w' for read & write respectively
     Return values:
     Side effects:
     Exceptions raised:

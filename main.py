@@ -25,8 +25,6 @@ get_input -- gets input from the user interface
 """
 
 
-
-
 #any global constants- there should be none
 #might need log file location
 LOG_FILE = "log"
@@ -94,7 +92,6 @@ class TARGET:
     #targets, array of target?
 
 
-
 class CHILD:
 
     """ each unit of functionality in the program is given to a child process.
@@ -121,7 +118,7 @@ class CHILD:
         self.listener = ""
         self.socket = sock#utilities.comm_in(self.port-100)
 
-        #might need to catch socket errors
+        #need to catch socket errors
     def set_listener(self, inp):
         """self explanatory"""
         self.listener = inp
@@ -167,7 +164,7 @@ class CHILD:
         return self.deaths
 
     def is_alive(self):
-        """self explanatory"""
+        """self explanatory, returns Boolean"""
         return self.alive
 
     def is_keep_running(self):
@@ -196,7 +193,7 @@ def main():
     Summary of behavior: starts, restarts, and manages the child processes
     Arguments: None
     Return values:
-    Side effects:
+    Side effects: child processes launched and monitored for success
     Exceptions raised:
     Restrictions on when it can be called: None
 
@@ -368,6 +365,9 @@ def gui_minus():
     Exceptions raised:
     Restrictions on when it can be called: None
     Creator: Tate Bowers
+
+    >>>gui_minus()
+    ""
     """
     return ""
 

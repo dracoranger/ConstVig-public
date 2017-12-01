@@ -120,5 +120,7 @@ def generateDB(conn):
              packetNum integer references packets(packetNum))''')
 
 def addToDB(packet):
+    pass
 
-def getFlagList()
+def getFlagList():
+    pass
