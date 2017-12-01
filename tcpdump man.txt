@@ -1,0 +1,31 @@
+tcpdump [option] [expression]:
+
+Options:
+-D					Lists all interfaces
+-w file_name		Write packets to file_name
+-r file_name		Read packets from file_name
+-C file_size		How may MB your file will be before new file is written
+-i 					interface
+-n 					dont convert addresses (host addresses, port numbers, etc.) to names i.e turn 80 -> http
+-N					dont print domain name i.e prints 'villegas' instead of 'villegas.eecs.net'
+
+Expressions:		Can be built together with 'and' or 'or' to include multiple expressions in one
+type 'type'			types **host is default:
+						host 'name'			- 'host foo'
+						port 'number'		- 'port 80'
+						portrange 'number'	- 'portrange 6000-6008'
+
+dir 'direction'		direction [type]:
+						src 'type'			- 'src foo'
+						dst 'type'			- 'dst port 80'
+						src or dst 'type'	- 'src or dst port ftp-data'
+						src and dst 'type'	- 'src and dst portrange 6000-6008'
+						
+proto 'protocol'	protocol [dir] [type]:
+						ether				- 'ether src foo'
+						wlan
+						ip[6]
+						arp
+						rarp
+						tcp
+						udp
