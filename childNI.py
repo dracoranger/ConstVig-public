@@ -101,24 +101,56 @@ def parser(inp):
 
 def generateDB(conn):
     conn.execute('''CREATE TABLE packets
-             (packetNum integer primary key autoincrement,
+             (packetNum integer primary key,
               timestamp real,
               portIn integer,
               portOut integer,
-              flag real,
+              flag text,
               timeToLive integer,
               protocol integer,
               source text,
               dest text,
               dataHash text)''')
     conn.execute('''CREATE TABLE flags
-             (flagNumber integer primary key autoincrement,
+             (flagNumber integer primary key,
              flag text)''')
     conn.execute('''CREATE TABLE connection
              (flagDiscNumber integer primary key autoincrement,
              flag text references flags(flag),
              packetNum integer references packets(packetNum))''')
 
-def addToDB(packet):
+#might want to do packets at once, since that is generally safer
+def addPacket(packet,conn):
+    #parse
+    time = 0
+    portIn = 1
+    portOut = 1
+    flags = '01001'
+    timeToLive = 1
+    protocol = 17
+    source = '1.1.1.1'
+    dest = '1.1.1.1'
+    dataHash = 'text' #do we want to make it so that we keep tract of hashes? Probably not, since it'll probably either change with each flag or will be trivial responses
+    flags = [['71-28-71'],['717-218-721']]
 
-def getFlagList()
+    recent = conn.execute("SELECT id FROM packets ORDER BY id DESC LIMIT 1")
+
+    dataGroup = [(time,portIn,portOut,flag,timeToLive,protocol,source,dest),
+                (time+1,portIn+1,portOut+1,flag,timeToLive+1,protocol+1,source,dest)
+                ]
+    flagSub=[]
+    for j in flags:
+        for k in j:
+            flagSub.append((k, recent))
+        recent = recent + 1
+
+    addFlags(flags)
+
+    conn.execute("INSERT INTO packets VALUES (?, ?, ?, ?, ?, ?, ?, ?)", dataGroup)
+    conn.execute("INSERT INTO connection VALUES (?, ?)", dataGroup)
+
+#I think htis is how it works?
+def addFlags(flags,conn):
+    for i in flags:
+        if len(conn.execute("SELECT * FROM flags WHERE ? == flag"), i) == 0:
+            conn.execute("INSERT INTO packets VALUES (?)", i)

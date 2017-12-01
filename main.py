@@ -258,7 +258,7 @@ def main():
     #childmaster.append(CHILD("ChildNI",15551))
     #childmaster.append(CHILD("ChildNO",15552))
     #childmaster.append(CHILD("ChildUI",15553))
-    childmaster = [CHILD("ChildNI", 15551)]
+    childmaster = [CHILD("ChildNO", 15551)]
     time.sleep(1)
     #generate sockets
 
