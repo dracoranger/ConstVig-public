@@ -120,6 +120,7 @@ def generateDB(conn):
              packetNum integer references packets(packetNum))''')
 
 #might want to do packets at once, since that is generally safer
+#rewriting it to do every packet at once
 def addPacket(packet,conn):
     #parse
     time = 0
@@ -131,26 +132,41 @@ def addPacket(packet,conn):
     source = '1.1.1.1'
     dest = '1.1.1.1'
     dataHash = 'text' #do we want to make it so that we keep tract of hashes? Probably not, since it'll probably either change with each flag or will be trivial responses
-    flags = [['71-28-71'],['717-218-721']]
+    flags = [['71-28-71'],['717-218-721']]#one per packet?
 
-    recent = conn.execute("SELECT id FROM packets ORDER BY id DESC LIMIT 1")
+
+    #must be last most recent packet, every one following is appended
+    recent = conn.execute("SELECT id FROM packets ORDER BY id DESC LIMIT 1")+1
 
     dataGroup = [(time,portIn,portOut,flag,timeToLive,protocol,source,dest),
                 (time+1,portIn+1,portOut+1,flag,timeToLive+1,protocol+1,source,dest)
                 ]
+
+    flagPacketRelationship=addFlags(flags)
     flagSub=[]
-    for j in flags:
-        for k in j:
-            flagSub.append((k, recent))
+    for packet in flagPacketRelationship:
+        for flag in packet:
+            flagSub.append((recent, flag))
         recent = recent + 1
 
-    addFlags(flags)
+
 
     conn.execute("INSERT INTO packets VALUES (?, ?, ?, ?, ?, ?, ?, ?)", dataGroup)
-    conn.execute("INSERT INTO connection VALUES (?, ?)", dataGroup)
+    conn.execute("INSERT INTO connection VALUES (?, ?)", flagSub)
 
 #I think htis is how it works?
+#in order of input, returns the flags and how they're related
 def addFlags(flags,conn):
-    for i in flags:
-        if len(conn.execute("SELECT * FROM flags WHERE ? == flag"), i) == 0:
-            conn.execute("INSERT INTO packets VALUES (?)", i)
+    flagNumbers=[]
+    for packet in flags:
+        packetFlags=[]
+        for flag in packet:
+            if len(conn.execute("SELECT * FROM flags WHERE ? = flag", i) == 0:
+                conn.execute("INSERT INTO flags VALUES (?)", i)
+                packetFlags.append(conn.execute("SELECT flagNumber FROM flags ORDER BY flagNumber DESC LIMIT 1"))
+            else:
+                check = conn.execute("SELECT flagNumber FROM flags WHERE ? = flag", i)
+                if not check in packetFlags:
+                    packetFlags.append(conn.execute("SELECT flagNumber FROM flags WHERE ? = flag", i))
+        flagNumber.append(packetFlags)
+    return flagNumber
