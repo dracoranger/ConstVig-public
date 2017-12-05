@@ -136,7 +136,8 @@ def addPacket(packet,conn):
     flags = [['71-28-71'],['717-218-721']]#one per packet?
 
     data = "test string"
-    dataHash.update(b data)
+    #dataHash.update(bdata)
+    dataHash="test string" #temp value
 
     #must be last most recent packet, every one following is appended
     conn.execute("SELECT packetNum FROM packets ORDER BY packetNum DESC LIMIT 1")
@@ -161,9 +162,9 @@ def addPacket(packet,conn):
 
     for dataGroup in range(0,len(dataGroups)):
         conn.execute("INSERT INTO packets(timestamp, portIn, portOut, flag, timeToLive, protocol, source, dest, dataHash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", dataGroups[dataGroup])
-        for flag in flagSub[dataGroup]:
-            print(flag)
-            conn.execute("INSERT INTO connection(flag,packetNum) VALUES (?, ?)", flag)
+        #for flag in flagSub[dataGroup]:
+        #    print(flag)
+        conn.execute("INSERT INTO connection(flag,packetNum) VALUES (?, ?)", flagSub[dataGroup])
 
 #I think htis is how it works?
 #in order of input, returns the flags and how they're related
@@ -178,13 +179,14 @@ def addFlags(flags,conn):
                 conn.execute("INSERT INTO flags(flag) VALUES (?)", (flag,))
                 conn.execute("SELECT flagNumber FROM flags ORDER BY flagNumber DESC LIMIT 1")
                 temp=conn.fetchall()
-                packetFlags.append(temp)
+                packetFlags.append(temp[0])
             else:
                 conn.execute("SELECT flagNumber FROM flags WHERE ? = flag", (flag,))
                 check = conn.fetchall()
                 if not check in packetFlags:
                     conn.execute("SELECT flagNumber FROM flags WHERE ? = flag", (flag,))
                     temp=conn.fetchall()
-                    packetFlags.append(temp)
-        flagNumbers.append(packetFlags)
+                    packetFlags.append(temp[0])
+        for packetFlag in packetFlags:
+            flagNumbers.append(packetFlag)
     return flagNumbers
