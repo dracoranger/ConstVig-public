@@ -12,6 +12,7 @@ import sys
 import utilities
 #from scapy.all import *
 import sqlite3
+import hashlib
 
 def main():
     """
@@ -131,9 +132,11 @@ def addPacket(packet,conn):
     protocol = 17
     source = '1.1.1.1'
     dest = '1.1.1.1'
-    dataHash = 'text' #do we want to make it so that we keep tract of hashes? Probably not, since it'll probably either change with each flag or will be trivial responses
+    dataHash = hashlib.sha256() #do we want to make it so that we keep tract of hashes? Probably not, since it'll probably either change with each flag or will be trivial responses
     flags = [['71-28-71'],['717-218-721']]#one per packet?
 
+    data = "test string"
+    dataHash.update(b data)
 
     #must be last most recent packet, every one following is appended
     conn.execute("SELECT packetNum FROM packets ORDER BY packetNum DESC LIMIT 1")
