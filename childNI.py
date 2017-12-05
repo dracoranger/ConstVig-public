@@ -122,7 +122,7 @@ def generateDB(conn):
 
 #might want to do packets at once, since that is generally safer
 #rewriting it to do every packet at once
-def addPacket(packet,conn):
+def addPacket(packet, conn):
     #parse
     time = 0
     portIn = 1
@@ -165,6 +165,11 @@ def addPacket(packet,conn):
         #for flag in flagSub[dataGroup]:
         #    print(flag)
         conn.execute("INSERT INTO connection(flag,packetNum) VALUES (?, ?)", flagSub[dataGroup])
+
+def searchOld(packet, conn):
+    data = "test string"
+    sDataHash = hashlibl.sha256(b data)
+    conn.execute("SELECT * FROM packets WHERE dataHash == sDataHash")
 
 #I think htis is how it works?
 #in order of input, returns the flags and how they're related
