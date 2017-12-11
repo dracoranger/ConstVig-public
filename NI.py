@@ -38,7 +38,8 @@ class tcp(object):
             return_message += rest
             print_message = return_message.decode('utf-8')
             print('The incoming sixteen-octet message says', print_message)
-            soc.sendall(return_message)
+            ms = '\nGot The Message!!!'
+            soc.sendall(ms.encode())
             soc.close()
             print('  Reply sent, socket closed\n')
 
@@ -57,20 +58,12 @@ class tcp(object):
         original_exploit = exploit_header+pcap
         sock.sendall(original_exploit.encode())
         reply = sock.recv(16)
-        reply_length = int(reply.split()[1].decode('utf-8'))
         return_exploit = reply
-        rest = sock.recv(reply_length)
-        return_exploit += rest
-        if return_exploit.decode('utf-8') == original_exploit:
-            return_exploit = return_exploit.decode('utf-8')
-            print('The server said', return_exploit)
-        else:
-            print('Error:')
-            print('Poor Connection with server')
+        print('The server said:\n', return_exploit.decode('utf-8'))
         sock.close()
 
 def random_msg():
-    size = random.randint(1,30000)
+    size = random.randint(17000,21000)
     messageHeader = "Length: " + str(size +10) +"\r\n\r\n"
     messageBody = ''.join([random.choice(string.ascii_letters + string.digits) for x in range(size)])
     message = messageHeader + messageBody
