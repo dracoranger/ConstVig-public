@@ -35,9 +35,9 @@ class tcp(object):
             message_length = int(message.split()[1].decode('utf-8'))
             #return_message = message
             rest = soc.recv(message_length)
-            return_message = rest.split(2)
+            return_message = rest.split()[2]
             #print_message = return_message.decode('utf-8')
-            with open('test.pcap','wb') as w:
+            with open('test.pcap','ab') as w:
                 w.write(return_message)
             print('Recieved new capture!')#print('The incoming sixteen-octet message says', print_message)
             ms = '\nGot The Message!!!'
@@ -49,16 +49,50 @@ class tcp(object):
     def client(self,host, port, pcap):
         """ TODO -- include the one line summary
         """
+
+        with open(r"C:\Users\x86075\Documents\Firstie Year\IT401\Sprint2\\"+pcap,'rb') as read:
+            lines = read.readlines()
+        last = 0
+        '''
+        while last+20000 < len(lines):
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((host, port))
+            print('Client has been assigned socket name', sock.getsockname())
+            part = b''
+            for line in lines[last:last+20000]:
+                part+=line
+            size = len(part)
+            messageHeader = "Length: " + str(size +10) +"\r\n\r\n"
+            pcap = messageHeader.encode() + part
+            size = len(pcap)
+            if size < 3:
+                pcap += ' '
+                size += 1
+            exploit_header = "Length: " + str(size +10) +"\r\n\r\n"
+            original_exploit = exploit_header.encode()+pcap
+            sock.sendall(original_exploit)#.encode())
+            reply = sock.recv(16)
+            return_exploit = reply
+            print('The server said:\n', return_exploit.decode('utf-8'))
+            sock.close()
+            last+=20000
+            '''
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((host, port))
         print('Client has been assigned socket name', sock.getsockname())
+        part = b''
+        for line in lines[last:last+10000]:
+            part+=line
+        size = len(part)
+        messageHeader = "Length: " + str(size +10) +"\r\n\r\n"
+        pcap = messageHeader.encode() + part
         size = len(pcap)
         if size < 3:
             pcap += ' '
             size += 1
         exploit_header = "Length: " + str(size +10) +"\r\n\r\n"
-        original_exploit = exploit_header+pcap
-        sock.sendall(original_exploit.encode())
+        original_exploit = exploit_header.encode()+pcap
+        sock.sendall(original_exploit)#.encode())
         reply = sock.recv(16)
         return_exploit = reply
         print('The server said:\n', return_exploit.decode('utf-8'))
@@ -68,8 +102,9 @@ def random_msg():
     with open(r'C:\Users\x86075\Documents\Firstie Year\IT401\Sprint2\17-36.pcap','rb') as read:
         lines = read.readlines()
         part = b''
-        for line in lines[:10]:
+        for line in lines[:10000]:
             part+=line
+    print(len(lines))
     size = len(part)#random.randint(17000,21000)
     print(size)
     messageHeader = "Length: " + str(size +10) +"\r\n\r\n"
@@ -86,7 +121,7 @@ if __name__=='__main__':
                         help='TCP Port (default 1060)')
     args = parser.parse_args()
     args=vars(args)
-    msg=random_msg()
+    msg='17-36.pcap'
     role = args['role']
     host = args['host']
     port = args['p']
