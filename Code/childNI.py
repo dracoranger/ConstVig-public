@@ -12,7 +12,6 @@ import sys
 import utilities
 #from scapy.all import *
 import sqlite3
-import hashlib
 
 def main():
     """
@@ -101,54 +100,49 @@ def parser(inp):
     '''
 
 def generateDB(conn):
-    conn.execute('''CREATE TABLE packets
-             (packetNum integer primary key,
+    conn.execute('''CREATE TABLE flows
+             (flowNum integer primary key,
               timestamp real,
               portIn integer,
               portOut integer,
-              flag text,
-              timeToLive integer,
               protocol integer,
-              source text,
-              dest text,
-              dataHash text)''')
+              flowReference text)''')
     conn.execute('''CREATE TABLE flags
-             (flagNumber integer primary key,
+             (flagNum integer primary key,
              flag text)''')
     conn.execute('''CREATE TABLE connection
              (flagDiscNumber integer primary key,
-             packetNum integer references packets(packetNum),
-             flag text references flags(flag))''')
+             flowNum integer references flows(flowNum),
+             flagNum integer references flags(flagNum))''')
+
+'''
+need to know
+payload, in/out,
+
+build flows, sepirated by time
+'''
 
 #might want to do packets at once, since that is generally safer
 #rewriting it to do every packet at once
-def addPacket(packet, conn):
+def addPacket(flow, conn):
     #parse
     time = 0
     portIn = 1
     portOut = 1
-    flag = '01001'
-    timeToLive = 1
     protocol = 17
-    source = '1.1.1.1'
-    dest = '1.1.1.1'
-    dataHash = hashlib.sha256() #do we want to make it so that we keep tract of hashes? Probably not, since it'll probably either change with each flag or will be trivial responses
+    data="Flow1234.pcap" #temp value
     flags = [['71-28-71'],['717-218-721']]#one per packet?
 
-    data = "test string"
-    #dataHash.update(bdata)
-    dataHash="test string" #temp value
-
     #must be last most recent packet, every one following is appended
-    conn.execute("SELECT packetNum FROM packets ORDER BY packetNum DESC LIMIT 1")
+    conn.execute("SELECT flowNum FROM flows ORDER BY flowNum DESC LIMIT 1")
     recent=conn.fetchall()
     if len(recent) == 0:
         recent=0
     else:
         recent = recent[0]
 
-    dataGroups = [(time,portIn,portOut,flag,timeToLive,protocol,source,dest,dataHash),
-                (time+1,portIn+1,portOut+1,flag,timeToLive+1,protocol+1,source,dest,dataHash)
+    dataGroups = [(time,portIn,portOut,protocol,data),
+                (time+1,portIn+1,portOut+1,protocol+1,data)
                 ]
 
     flagPacketRelationship=addFlags(flags,conn)
@@ -161,15 +155,10 @@ def addPacket(packet, conn):
 
 
     for dataGroup in range(0,len(dataGroups)):
-        conn.execute("INSERT INTO packets(timestamp, portIn, portOut, flag, timeToLive, protocol, source, dest, dataHash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", dataGroups[dataGroup])
+        conn.execute("INSERT INTO flows(timestamp, portIn, portOut, protocol, flowReference) VALUES (?, ?, ?, ?, ?)", dataGroups[dataGroup])
         #for flag in flagSub[dataGroup]:
         #    print(flag)
-        conn.execute("INSERT INTO connection(flag,packetNum) VALUES (?, ?)", flagSub[dataGroup])
-
-def searchOld(packet, conn):
-    data = "test string"
-    sDataHash = hashlibl.sha256(b data)
-    conn.execute("SELECT * FROM packets WHERE dataHash == sDataHash")
+        conn.execute("INSERT INTO connection(flagNum,flowNum) VALUES (?, ?)", flagSub[dataGroup])
 
 #I think htis is how it works?
 #in order of input, returns the flags and how they're related
@@ -182,7 +171,7 @@ def addFlags(flags,conn):
             comp=conn.fetchall()
             if len(comp) == 0:
                 conn.execute("INSERT INTO flags(flag) VALUES (?)", (flag,))
-                conn.execute("SELECT flagNumber FROM flags ORDER BY flagNumber DESC LIMIT 1")
+                conn.execute("SELECT flagNum FROM flags ORDER BY flagNum DESC LIMIT 1")
                 temp=conn.fetchall()
                 packetFlags.append(temp[0])
             else:
@@ -195,3 +184,45 @@ def addFlags(flags,conn):
         for packetFlag in packetFlags:
             flagNumbers.append(packetFlag)
     return flagNumbers
+
+def searchSqlFlowsPortIn(inp,conn):
+    conn.execute('SELECT * FROM flows where portIn = ?',inp)
+    ret = conn.fetchall()
+    print(ret)
+
+def searchSqlFlowsPortOut(inp,conn):
+    conn.execute('SELECT * FROM flows where portOut = ?',inp)
+    ret = conn.fetchall()
+    print(ret)
+
+def searchSqlFlowsFlags(inp, conn):
+    conn.execute('SELECT flowReference, flag FROM flows INNER JOIN connection on flows.flowNum = connection.flowNum INNER JOIN flags on flags.flagNum = connection.flagNum ORDER BY timestamp DESC LIMIT ?',inp)
+    ret = conn.fetchall()
+    print(ret)
+
+def searchSql(conn, inp):
+    conn.execute(inp)
+    ret = conn.fetchall()
+    print(ret)
+
+def testDB():
+    conn=main()
+    generateDB(conn)
+    flow=open('flows.csv','r+')
+    addPacket(flow,conn)
+    if searchSqlFlowsPortIn('80',conn) == '':
+        print('Ports In: Pass')
+    else:
+        print('Ports In: Fail')
+    if searchSqlFlowsPortOut('80',conn) == '':
+        print('Ports Out: Pass')
+    else:
+        print('Ports Out: Fail')
+    if searchSqlFlowsFlags('80',conn) == '':
+        print('Flags found: Pass')
+    else:
+        print('Flags found: Fail')
+    if searchSql('SELECT * FROM flows') == '':
+        print('General Search: Pass')
+    else:
+        print('General Search: Fail')
