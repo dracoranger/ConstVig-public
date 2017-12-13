@@ -215,7 +215,7 @@ def testDB():
     test1 = searchSqlFlowsPortIn('8081',conn)
     test2 = searchSqlFlowsPortOut('35934',conn)
     test3 = searchSqlFlowsFlags('2',conn)
-    test4 = searchSql('SELECT flowReference FROM flows',conn)
+    test4 = searchSql('SELECT flag FROM flags',conn)
     #print(test1)
     if len(test1) == 3:
         print('Ports In: Pass')
@@ -232,7 +232,7 @@ def testDB():
     else:
         print('Flags found: Fail')
     #print(test4)
-    if len(test4) == 4:
+    if len(test4) == 5:
         print('General Search: Pass')
     else:
         print('General Search: Fail')
