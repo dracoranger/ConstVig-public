@@ -76,18 +76,18 @@ def analyzer(inp):
         >>>analyzer()
         return [80[n, n+20, n+40, n+80, n+100],7558[n+5,n+10,n+15],...],[jklasdnvhiuopq[n, n+20, n+40, n+80, n+100],qiuopnjvpasewrnjkaxpjbnadfsjiopea[n+5,n+10,n+15],...]
     '''
-    ports, timestamp, data = parser(inp)
+    ports, timestam, data = parser(inp)
 
-    ret = analyzer_ports(ports,timestamp)
-    ret = ret + analyzer_data(data,timestamp)
+    ret = analyzer_ports(ports,timestam)
+    ret = ret + analyzer_data(data,timestam)
 
-def analyzer_data(dat, timestamp):
+def analyzer_data(dat, timestam):
     '''
         >>>analyzer_data()
         [jklasdnvhiuopq[n, n+20, n+40, n+80, n+100],qiuopnjvpasewrnjkaxpjbnadfsjiopea[n+5,n+10,n+15],...]
     '''
 
-def analyzer_ports(ports, timestamp):
+def analyzer_ports(ports, timestam):
     '''
         >>>analyzer_ports()
         [80[n, n+20, n+40, n+80, n+100],7558[n+5,n+10,n+15],...]
@@ -102,7 +102,7 @@ def parser(inp):
 def generateDB(conn):
     conn.execute('''CREATE TABLE flows
              (flowNum integer primary key,
-              timestamp real,
+              timestam real,
               portIn integer,
               portOut integer,
               protocol integer,
@@ -122,16 +122,10 @@ payload, in/out,
 build flows, sepirated by time
 '''
 
-#might want to do packets at once, since that is generally safer
-#rewriting it to do every packet at once
-def addPacket(flow, conn):
+#flows is the pointer to to csv that is already opened
+#might want to change in the future
+def addPacket(flows, conn):
     #parse
-    time = 0
-    portIn = 1
-    portOut = 1
-    protocol = 17
-    data="Flow1234.pcap" #temp value
-    flags = [['71-28-71'],['717-218-721']]#one per packet?
 
     #must be last most recent packet, every one following is appended
     conn.execute("SELECT flowNum FROM flows ORDER BY flowNum DESC LIMIT 1")
@@ -140,22 +134,30 @@ def addPacket(flow, conn):
         recent=0
     else:
         recent = recent[0]
-
-    dataGroups = [(time,portIn,portOut,protocol,data),
-                (time+1,portIn+1,portOut+1,protocol+1,data)
-                ]
-
+    flo = open(flows,'r+')
+    lines = flo.readlines()
+    dataGroups=[]
+    flags = []
+    for i in lines:
+        fields = i.split(',')
+        temp=(fields[0],fields[1],fields[2],fields[3],fields[4])
+        dataGroups.append(temp)
+        tem = []
+        for j in range(5,len(fields)):
+            if not fields[j] == '' and not fields[j] == '\n':
+                tem.append(fields[j])
+        flags.append(tem)
     flagPacketRelationship=addFlags(flags,conn)
+
+    #print(flagPacketRelationship)
     flagSub=[]
     for packet in flagPacketRelationship:
         for flag in packet:
             flagSub.append((recent, flag))
         recent = recent + 1
-    print(flagSub)
-
-
+    #print(flagSub)
     for dataGroup in range(0,len(dataGroups)):
-        conn.execute("INSERT INTO flows(timestamp, portIn, portOut, protocol, flowReference) VALUES (?, ?, ?, ?, ?)", dataGroups[dataGroup])
+        conn.execute("INSERT INTO flows(timestam, portIn, portOut, protocol, flowReference) VALUES (?, ?, ?, ?, ?)", dataGroups[dataGroup])
         #for flag in flagSub[dataGroup]:
         #    print(flag)
         conn.execute("INSERT INTO connection(flagNum,flowNum) VALUES (?, ?)", flagSub[dataGroup])
@@ -175,54 +177,62 @@ def addFlags(flags,conn):
                 temp=conn.fetchall()
                 packetFlags.append(temp[0])
             else:
-                conn.execute("SELECT flagNumber FROM flags WHERE ? = flag", (flag,))
+                conn.execute("SELECT flagNum FROM flags WHERE ? = flag", (flag,))
                 check = conn.fetchall()
                 if not check in packetFlags:
-                    conn.execute("SELECT flagNumber FROM flags WHERE ? = flag", (flag,))
+                    conn.execute("SELECT flagNum FROM flags WHERE ? = flag", (flag,))
                     temp=conn.fetchall()
                     packetFlags.append(temp[0])
-        for packetFlag in packetFlags:
-            flagNumbers.append(packetFlag)
+        for Flag in packetFlags:
+            flagNumbers.append(Flag)
     return flagNumbers
 
 def searchSqlFlowsPortIn(inp,conn):
-    conn.execute('SELECT * FROM flows where portIn = ?',inp)
+    conn.execute('SELECT timestam FROM flows where portIn = ?',(inp,))
     ret = conn.fetchall()
-    print(ret)
+    return ret
 
 def searchSqlFlowsPortOut(inp,conn):
-    conn.execute('SELECT * FROM flows where portOut = ?',inp)
+    conn.execute('SELECT timestam FROM flows where portOut = ?',(inp,))
     ret = conn.fetchall()
-    print(ret)
+    return ret
 
 def searchSqlFlowsFlags(inp, conn):
-    conn.execute('SELECT flowReference, flag FROM flows INNER JOIN connection on flows.flowNum = connection.flowNum INNER JOIN flags on flags.flagNum = connection.flagNum ORDER BY timestamp DESC LIMIT ?',inp)
+    conn.execute('SELECT flowReference, flag FROM flows INNER JOIN connection on flows.flowNum = connection.flowNum INNER JOIN flags on flags.flagNum = connection.flagNum ORDER BY timestam DESC LIMIT ?',(inp,))
     ret = conn.fetchall()
-    print(ret)
+    return ret
 
-def searchSql(conn, inp):
+def searchSql(inp,conn):
     conn.execute(inp)
     ret = conn.fetchall()
-    print(ret)
+    return ret
 
 def testDB():
     conn=main()
-    generateDB(conn)
-    flow=open('flows.csv','r+')
+    #generateDB(conn)
+    flow='testDB.csv'
     addPacket(flow,conn)
-    if searchSqlFlowsPortIn('80',conn) == '':
+    test1 = searchSqlFlowsPortIn('8081',conn)
+    test2 = searchSqlFlowsPortOut('35934',conn)
+    test3 = searchSqlFlowsFlags('2',conn)
+    test4 = searchSql('SELECT flowReference FROM flows',conn)
+    #print(test1)
+    if len(test1) == 3:
         print('Ports In: Pass')
     else:
         print('Ports In: Fail')
-    if searchSqlFlowsPortOut('80',conn) == '':
+    #print(test2)
+    if len(test2) == 1:
         print('Ports Out: Pass')
     else:
         print('Ports Out: Fail')
-    if searchSqlFlowsFlags('80',conn) == '':
+    #print(test3)
+    if len(test3) == 2:
         print('Flags found: Pass')
     else:
         print('Flags found: Fail')
-    if searchSql('SELECT * FROM flows') == '':
+    #print(test4)
+    if len(test4) == 4:
         print('General Search: Pass')
     else:
         print('General Search: Fail')
