@@ -11,10 +11,54 @@ import argparse
 import socket
 import sys
 import utilities
+import os
 
 """
 NetworkOut
 """
+
+#Constants or user set variables
+
+#Path variables
+#os.path.dirname(os.path.realpath(__file__)) or os.getcwd()
+#https://stackoverflow.com/questions/5137497/find-current-directory-and-files-directory
+PATH_ATTACK = os.getcwd()+'\\attacks'
+PATH_CHAFF = os.getcwd()+'\\chaff'
+
+# filename : running arugments stored as a list
+attackDictionary = {
+
+
+}
+attackOrder=[]
+chaffDictionary = {
+
+
+}
+chaffOrder=[]
+#generates attackDictionary
+#generates order
+def iter_thru_attack_config(filename):
+    fil = open(filename)
+
+def run_attacks():
+    directory = os.fsencode(PATH_ATTACK)
+    attackStorage=[] #inefficent as heck.  Not sure how else to guarentee aphebetical and no duplicates
+    for fil in os.listdir(directory):
+        filename = os.fsdecode(fil)
+        attack = utilities.create_child(attackDictionary[filename])
+        attackStorage.append(attack)
+        attackOrder.append(filename)
+    currNum=0
+    for attack in attackStorage:
+        if attack.process.poll() == 0: #think this should work.  Not sure since not a child class.  Might just be process.poll
+            print('success')
+            #push to logfile success
+        elif isinstance(attack.process.poll(), type(None)):
+            print(attackOrder[currNum]+' on going')
+        else:
+            print(attackOrder[currNum]+attack.process.stderr)
+        currNum=currNum+1
 
 def main():
     """[prints out childNO and then] checks for the type

@@ -60,8 +60,8 @@ def check_input(expected, recieved):
 
 
 
-def create_child(inp, other_arguments):
-    """ creates a child that is given in inp.
+def create_child(fileName, other_arguments):
+    """ creates a child that is given in fileName.
 
     Summary of behavior: Runs the input file, passing the input and output to a location that is useable
 	Arguments: process name (a file) and any flags
@@ -75,9 +75,9 @@ def create_child(inp, other_arguments):
     inp
     """
     ret = -1
-    if check_input('str', inp):
+    if check_input('str', fileName):
         if check_input('str', other_arguments): #can be a str or array, probably should be str
-            run = ['python', inp+'.py', other_arguments]
+            run = ['python', fileName+'.py', other_arguments]
             try:
                 ret = subprocess.Popen(run, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
                     #send stdout to buffer, to write to log
@@ -93,6 +93,33 @@ def create_child(inp, other_arguments):
             #except:
                 #something else went wrong, try to make better
                 #logBuffer=logBuffer+"UI Error: " + sys.exc_info()[0]#think this is the syntax
+
+    return ret
+
+def create_child(run):
+    """ creates a child that is given in fileName.
+        Same as above except can run more than python files
+        depends on user properly uploading a run[] with the reuqired arguements
+    """
+    ret = -1
+    temp = []
+    if check_input(temp, run):
+        try:
+            ret = subprocess.Popen(run)
+
+                #should run to completion, probably should pipe output to a log file
+        except ChildProcessError:
+            print('scream and run')
+            #run debug process and try again later
+            #logBuffer = logBuffer + "UI Error: Failed to init"
+            #try this
+                #try
+                #except ChildProcessError
+                #except as otr: again
+            #seems like it would be a good idea to push this to a function.
+        #except:
+            #something else went wrong, try to make better
+            #logBuffer=logBuffer+"UI Error: " + sys.exc_info()[0]#think this is the syntax
 
     return ret
 
