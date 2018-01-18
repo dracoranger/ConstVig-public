@@ -16,6 +16,8 @@ network_in -- actual process for incoming network communications
 import subprocess
 import socket
 import threading
+import os
+import configparser
 # struct target
 
 def parser(path, inpu):
@@ -232,3 +234,29 @@ def network_in(host, port):
         soc.sendall(return_message)
         soc.close()
         print('  Reply sent, socket closed\n')
+
+def generateDefaultConfig():
+    config = configparser.ConfigParser()
+    config['Main']={'Rounds' : '100',
+                    'Round length':'300'
+                    }
+    config['NetworkIn']={
+
+                        }
+    config['NetworkOut']={
+                        'ports': '23,24,35',
+                        'portRange':'1024 - 49151'
+                        }
+    config['Attacks']={'PATH_ATTACK':os.getcwd()+'\\attacks',
+                        'example': 'python helloWorld.py'
+                        }
+    config['Chaff']={'PATH_CHAFF':os.getcwd()+'\\chaff'
+
+                    }
+    with open('constvig.conf','w') as configfile:
+        config.write(configfile)
+
+def parseConfig(section):
+    parser = configparser.ConfigParser()
+    temp = parser.read('constvig.conf')
+    return temp.get(section)
