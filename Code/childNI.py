@@ -12,31 +12,30 @@ import sys
 import utilities
 #from scapy.all import *
 import sqlite3
+import os
 
 def main():
     """
     Checks for type and returns the input, otherwise returns an error message
     """
     keep_going = True
-    #sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #sock.connect(('localhost', 15551))
-    #recieved = sock.recv(1024).decode()
     conn = sqlite3.connect('packets.db')
     packetNum = 0
     sql = conn.cursor()
-    #listener, sock = utilities.comm_in(9751)
-    #while keep_going:
-        #commented out print() and changed input()
-        #print('NI')
-        #try:
-    #    able = bytes('Temp val', 'utf-8')#sys.stdin.readline(5)
-        #if utilities.check_input((bytes), able):
-        #    sock.send(able.encode())
-            #utilities.comm_out(able, sock)
-        #except EOFError:
-        #    print('no data supplied')
-    #sock.close()
-    #listener.join()
+    generateDB(sql)
+    my_var = 0
+    work_dir = os.getcwd()
+    tgt_dir = os.path.dirname(work_dir)
+    pcap_dir = ''
+    for dir_name in os.walk(tgt_dir):
+        if 'put_pcaps_here' == os.path.basename(dir_name[0]):
+            pcap_dir = dir_name[0]
+
+    while(my_var < 20):
+        pass
+        #check for updates in the pcap folder
+        #run tshark on new files
+        #enters metadata into database
     return sql
 
 
@@ -76,18 +75,18 @@ def analyzer(inp):
         >>>analyzer()
         return [80[n, n+20, n+40, n+80, n+100],7558[n+5,n+10,n+15],...],[jklasdnvhiuopq[n, n+20, n+40, n+80, n+100],qiuopnjvpasewrnjkaxpjbnadfsjiopea[n+5,n+10,n+15],...]
     '''
-    ports, timestam, data = parser(inp)
+    ports, timest, data = parser(inp)
 
-    ret = analyzer_ports(ports,timestam)
-    ret = ret + analyzer_data(data,timestam)
+    ret = analyzer_ports(ports,timest)
+    ret = ret + analyzer_data(data,timest)
 
-def analyzer_data(dat, timestam):
+def analyzer_data(dat, timest):
     '''
         >>>analyzer_data()
         [jklasdnvhiuopq[n, n+20, n+40, n+80, n+100],qiuopnjvpasewrnjkaxpjbnadfsjiopea[n+5,n+10,n+15],...]
     '''
 
-def analyzer_ports(ports, timestam):
+def analyzer_ports(ports, timest):
     '''
         >>>analyzer_ports()
         [80[n, n+20, n+40, n+80, n+100],7558[n+5,n+10,n+15],...]
@@ -102,10 +101,9 @@ def parser(inp):
 def generateDB(conn):
     conn.execute('''CREATE TABLE flows
              (flowNum integer primary key,
-              timestam real,
+              timest real,
               portIn integer,
               portOut integer,
-              protocol integer,
               flowReference text)''')
     conn.execute('''CREATE TABLE flags
              (flagNum integer primary key,
@@ -157,7 +155,7 @@ def addPacket(flows, conn):
         recent = recent + 1
     #print(flagSub)
     for dataGroup in range(0,len(dataGroups)):
-        conn.execute("INSERT INTO flows(timestam, portIn, portOut, protocol, flowReference) VALUES (?, ?, ?, ?, ?)", dataGroups[dataGroup])
+        conn.execute("INSERT INTO flows(timest, portIn, portOut, protocol, flowReference) VALUES (?, ?, ?, ?, ?)", dataGroups[dataGroup])
         #for flag in flagSub[dataGroup]:
         #    print(flag)
         conn.execute("INSERT INTO connection(flagNum,flowNum) VALUES (?, ?)", flagSub[dataGroup])
@@ -188,17 +186,17 @@ def addFlags(flags,conn):
     return flagNumbers
 
 def searchSqlFlowsPortIn(inp,conn):
-    conn.execute('SELECT timestam FROM flows where portIn = ?',(inp,))
+    conn.execute('SELECT timest FROM flows where portIn = ?',(inp,))
     ret = conn.fetchall()
     return ret
 
 def searchSqlFlowsPortOut(inp,conn):
-    conn.execute('SELECT timestam FROM flows where portOut = ?',(inp,))
+    conn.execute('SELECT timest FROM flows where portOut = ?',(inp,))
     ret = conn.fetchall()
     return ret
 
 def searchSqlFlowsFlags(inp, conn):
-    conn.execute('SELECT flowReference, flag FROM flows INNER JOIN connection on flows.flowNum = connection.flowNum INNER JOIN flags on flags.flagNum = connection.flagNum ORDER BY timestam DESC LIMIT ?',(inp,))
+    conn.execute('SELECT flowReference, flag FROM flows INNER JOIN connection on flows.flowNum = connection.flowNum INNER JOIN flags on flags.flagNum = connection.flagNum ORDER BY timest DESC LIMIT ?',(inp,))
     ret = conn.fetchall()
     return ret
 
