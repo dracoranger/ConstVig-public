@@ -12,6 +12,8 @@ import socket
 import sys
 import utilities
 import os
+import time
+
 
 """
 NetworkOut
@@ -39,7 +41,7 @@ chaffOrder=[]
 #generates attackDictionary
 #generates order
 def iter_thru_attack_config(filename):
-    fil = open(filename)
+    diction = utilities.parseConfig('Attacks')
 
 def run_attacks():
     directory = os.fsencode(PATH_ATTACK)
@@ -50,6 +52,7 @@ def run_attacks():
         attackStorage.append(attack)
         attackOrder.append(filename)
     currNum=0
+    time.sleep(5)
     for attack in attackStorage:
         if attack.process.poll() == 0: #think this should work.  Not sure since not a child class.  Might just be process.poll
             print('success')
@@ -59,6 +62,9 @@ def run_attacks():
         else:
             print(attackOrder[currNum]+attack.process.stderr)
         currNum=currNum+1
+
+def run_chaff():
+    return "incomplete"
 
 def main():
     """[prints out childNO and then] checks for the type
