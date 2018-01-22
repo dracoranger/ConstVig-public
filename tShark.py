@@ -1,6 +1,6 @@
 import subprocess
-tsharkCall1 = ["tshark", "-nr", "test4.pcap", "-2", "-R", "tcp.stream eq 1", "-w", "small.pcap",]
-tsharkCall2 = [	"tshark",
+tsharkCall2 = [
+				"tshark",
 				"-r",
 				"C:\\Users\\x86075\\Documents\\GitHub\\ConstVig\\test1.pcap",
 				"-T",
