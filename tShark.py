@@ -22,7 +22,7 @@ tsharkCall2 = [	"tshark",
 				"-E",
 				"occurrence=f",
 				">",
-				"C:\Users\\x86075\\Documents\\GitHub\\ConstVig\\test4.csv"]
+				"C:\\Users\\x86075\\Documents\\GitHub\\ConstVig\\test4.csv"]
 
 # process = subprocess.Popen(tsharkCall1, shell=True, stdout=subprocess.PIPE)
 # process.wait()
