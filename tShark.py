@@ -1,12 +1,18 @@
 import subprocess
-tsharkCall2 = [	
+import os
+
+work_dir = os.getcwd()
+tgt_dir = os.path.dirname(work_dir)
+pcap_dir = ''
+for dir_name in os.walk(tgt_dir):
+	if 'put_pcaps_here' == os.path.basename(dir_name[0]):
+		pcap_dir = dir_name[0]
+
+tsharkCall2 = [
 				"tshark",
 				"-r",
-<<<<<<< HEAD
-				"C:\\Users\\x86991\\Documents\\XE402\\test1.pcap",
-=======
-				"C:\\Users\\x85491\\Documents\\2017-2018\\IT401\\Sprint3\\test1.pcap", #File path of pcap
->>>>>>> 76d9f04a8360d5285488734b26e1f7e02c5828f7
+				pcap_dir + "\\test1.pcap",
+				#"C:\\Users\\x85491\\Documents\\2017-2018\\IT401\\Sprint3\\test1.pcap", #File path of pcap
 				"-T",
 				"fields",
 				"-e",
@@ -26,14 +32,8 @@ tsharkCall2 = [
 				"-E",
 				"occurrence=f",
 				">",
-<<<<<<< HEAD
-				"C:\\Users\\x85491\\Documents\\2017-2018\\IT401\\Sprint3\\test4.csv"]
-
-# process = subprocess.Popen(tsharkCall1, shell=True, stdout=subprocess.PIPE)
-# process.wait()
-=======
-				"C:\\Users\\x85491\\Documents\\2017-2018\\IT401\\Sprint3\\testWS.txt" #File path for txt file written
+				pcap_dir + "\\testWS.txt"
+				#"C:\\Users\\x85491\\Documents\\2017-2018\\IT401\\Sprint3\\testWS.txt" #File path for txt file written
 				]
->>>>>>> 76d9f04a8360d5285488734b26e1f7e02c5828f7
 process = subprocess.Popen(tsharkCall2, shell=True, stdout=subprocess.PIPE)
 process.wait()
