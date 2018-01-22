@@ -212,11 +212,11 @@ def main():
         d. filesystem parsing
         e. spin up individual child for each hack discovered by filesystem
     3. iterate through rounds
-    4. every x seonds, check to see that children are still alive
+    4. every x seconds, check to see that children are still alive
     5. attempt to restore any dead children, prompting user
     6. write out error log
     7. generate alerts
-    8. save the state of the children in case of failure ? is this necessary
+    8. save the state of the children in case of failure -- is this necessary?
 
     Conditionals
     if reach end of the rounds, prompt for do more
@@ -229,16 +229,16 @@ def main():
     settings = "" #other settings stuff, placeholder currently
     death_limit = 5
     round_length = [300, 300, 300, 300, 300]#array of round lengths
-    round_number = 0
+    total_rounds = 0
     safety_buffer = 10
     time_between_check = 5
     global LOG_FILE
     global SETTING
 
     settings = [PATH, settings, death_limit, round_length,
-                round_number, time_between_check, LOG_FILE]
+                total_rounds, time_between_check, LOG_FILE]
 
-    round_length, round_number, targets, additional = parse_settings(PATH,
+    round_length, total_rounds, targets, additional = parse_settings(PATH,
                                                                      settings)
     #additional is a temp name here
 
@@ -275,9 +275,10 @@ def main():
     # ensures that failing hack only kills itself, not everything.
 
 
-    for i in range(0, round_number):
+    for i in range(0, total_rounds):
         time_start = time.time()
         time_rec = time.time()
+        #start automated launcher?
         while time.time() - time_start < round_length[i] + safety_buffer:
             #TODO Implement properly
             #if not i.get_listener().isAlive():
@@ -316,6 +317,7 @@ def main():
                         #write last actions of children so can resume from that point ?
 
         print("round "+str(i)+" complete")
+
 
     print("fully complete")
     for child in childmaster:
