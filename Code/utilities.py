@@ -98,7 +98,7 @@ def create_child(fileName, other_arguments):
 
     return ret
 
-def create_child(run):
+def create_child_gen(run):
     """ creates a child that is given in fileName.
         Same as above except can run more than python files
         depends on user properly uploading a run[] with the reuqired arguements
@@ -107,7 +107,7 @@ def create_child(run):
     temp = []
     if check_input(temp, run):
         try:
-            ret = subprocess.Popen(run)
+            ret = subprocess.Popen(run, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
                 #should run to completion, probably should pipe output to a log file
         except ChildProcessError:
@@ -237,26 +237,45 @@ def network_in(host, port):
 
 def generateDefaultConfig():
     config = configparser.ConfigParser()
-    config['Main']={'Rounds' : '100',
-                    'Round length':'300'
+    config['Main'] = {'Rounds' : '100',
+                      'Round length':'300'
+
                     }
-    config['NetworkIn']={
+    config['NetworkIn'] = {
 
                         }
-    config['NetworkOut']={
+    config['NetworkOut'] = {
                         'ports': '23,24,35',
-                        'portRange':'1024 - 49151'
+                        'portRange':'1024 - 49151',
+                        'PATH_CHAFF':os.getcwd()+'\\chaff',
+                        'PATH_ATTACK':os.getcwd()+'\\attacks',
                         }
-    config['Attacks']={'PATH_ATTACK':os.getcwd()+'\\attacks',
+    config['Attacks'] = {
                         'example': 'python helloWorld.py'
                         }
-    config['Chaff']={'PATH_CHAFF':os.getcwd()+'\\chaff'
+    config['Chaff'] = {
 
                     }
     with open('constvig.conf','w') as configfile:
         config.write(configfile)
 
 def parseConfig(section):
-    parser = configparser.ConfigParser()
-    temp = parser.read('constvig.conf')
-    return temp.get(section)
+    config = configparser.ConfigParser()
+    #taken from python.org wiki
+    def configSectionMap(section):
+
+        dict1 = {}
+        options = config.options(section)
+        for option in options:
+            try:
+                dict1[option] = config.get(section, option)
+                if dict1[option] == -1:
+                    print("skip: %s" % option)
+            except:
+                print("exception on %s!" % option)
+                dict1[option] = None
+        return dict1
+
+    config.read('constvig.conf')
+    ret = configSectionMap(section)
+    return ret

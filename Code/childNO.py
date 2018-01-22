@@ -10,9 +10,10 @@ network_out --
 import argparse
 import socket
 import sys
-import utilities
 import os
 import time
+import utilities
+
 
 
 """
@@ -40,28 +41,40 @@ chaffDictionary = {
 chaffOrder=[]
 #generates attackDictionary
 #generates order
-def iter_thru_attack_config(filename):
+def iter_thru_attack_config():
     diction = utilities.parseConfig('Attacks')
+    for i in diction:
+        if not i in attackDictionary:
+            attackDictionary[i] = diction[i]
 
 def run_attacks():
+    iter_thru_attack_config()
     directory = os.fsencode(PATH_ATTACK)
-    attackStorage=[] #inefficent as heck.  Not sure how else to guarentee aphebetical and no duplicates
+    attackStorage = [] #inefficent as heck.  Not sure how else to guarentee aphebetical and no duplicates
     for fil in os.listdir(directory):
         filename = os.fsdecode(fil)
-        attack = utilities.create_child(attackDictionary[filename])
+        #print(attackDictionary)
+        attack = utilities.create_child_gen(attackDictionary[filename])
         attackStorage.append(attack)
         attackOrder.append(filename)
-    currNum=0
-    time.sleep(5)
-    for attack in attackStorage:
-        if attack.process.poll() == 0: #think this should work.  Not sure since not a child class.  Might just be process.poll
-            print('success')
-            #push to logfile success
-        elif isinstance(attack.process.poll(), type(None)):
-            print(attackOrder[currNum]+' on going')
-        else:
-            print(attackOrder[currNum]+attack.process.stderr)
-        currNum=currNum+1
+
+    complete = False
+    while not complete:
+        currNum = 0
+        time.sleep(3)
+        complete = True
+        for attack in attackStorage:
+            if utilities.check_input(attack,1):
+                if attack == 0: #think this should work.  Not sure since not a child class.  Might just be process.poll
+                    print('success')
+                    #push to logfile success
+                else:
+                    print(attackOrder[currNum])#+attack.process.stderr)
+                currNum = currNum+1
+            elif isinstance(attack.poll(), type(None)):
+                print(attackOrder[currNum]+' on going')
+                complete = False
+
 
 def run_chaff():
     return "incomplete"
@@ -76,47 +89,7 @@ def main():
     Exceptions raised:
     Restrictions on when it can be called:
     """
-    keep_going = True
-    while keep_going:
+
+    run_attacks()
         #commented out the print() and input()
         #print('NO')
-        able = sys.stdin.readline(5)
-        if utilities.check_input((str), able):
-            print(able)
-
-
-def network_out(host, port, exploit):
-    """ TODO -- include the one line summary
-
-    Summary of behavior:
-    Arguments:
-    Return values:
-    Side effects:
-    Exceptions raised:
-    Restrictions on when it can be called:
-    """
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((host, port))
-    print('Client has been assigned socket name', sock.getsockname())
-    size = len(exploit)
-    if size < 3:
-        exploit += ' '
-        size += 1
-    exploit_header = "Length: " + str(size +10) +"\r\n\r\n"
-    original_exploit = exploit_header+exploit
-    sock.sendall(original_exploit.encode())
-    reply = sock.recv(16)
-    reply_length = int(reply.split()[1].decode('utf-8'))
-    return_exploit = reply
-    rest = sock.recv(reply_length)
-    return_exploit += rest
-    if return_exploit.decode('utf-8') == original_exploit:
-        return_exploit = return_exploit.decode('utf-8')
-        print('The server said', return_exploit)
-    else:
-        print('Error:')
-        print('Poor Connection with server')
-    sock.close()
-
-
-main()
