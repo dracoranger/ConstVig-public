@@ -1,8 +1,8 @@
 import subprocess
-tsharkCall1 = ["tshark", "-nr", "test4.pcap", "-2", "-R", "tcp.stream eq 1", "-w", "small.pcap",]
-tsharkCall2 = [	"tshark",
+tsharkCall2 = [	
+				"tshark",
 				"-r",
-				"C:\\Users\\x86075\\Documents\\GitHub\\ConstVig\\test1.pcap",
+				"C:\\Users\\x85491\\Documents\\2017-2018\\IT401\\Sprint3\\test1.pcap", #File path of pcap
 				"-T",
 				"fields",
 				"-e",
@@ -22,9 +22,7 @@ tsharkCall2 = [	"tshark",
 				"-E",
 				"occurrence=f",
 				">",
-				"C:\Users\\x86075\\Documents\\GitHub\\ConstVig\\test4.csv"]
-
-# process = subprocess.Popen(tsharkCall1, shell=True, stdout=subprocess.PIPE)
-# process.wait()
+				"C:\\Users\\x85491\\Documents\\2017-2018\\IT401\\Sprint3\\testWS.txt" #File path for txt file written
+				]
 process = subprocess.Popen(tsharkCall2, shell=True, stdout=subprocess.PIPE)
 process.wait()
