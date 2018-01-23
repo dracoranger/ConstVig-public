@@ -104,7 +104,7 @@ def create_child_gen(run):
         depends on user properly uploading a run[] with the reuqired arguements
     """
     ret = -1
-    temp = []
+    temp = ''
     if check_input(temp, run):
         try:
             ret = subprocess.Popen(run, stdin=subprocess.PIPE, stdout=subprocess.PIPE)

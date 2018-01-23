@@ -10,6 +10,7 @@ network_out --
 import argparse
 import socket
 import sys
+import string
 import os
 import time
 import utilities
@@ -53,8 +54,9 @@ def run_attacks():
     attackStorage = [] #inefficent as heck.  Not sure how else to guarentee aphebetical and no duplicates
     for fil in os.listdir(directory):
         filename = os.fsdecode(fil)
-        #print(attackDictionary)
-        attack = utilities.create_child_gen(attackDictionary[filename])
+        run = attackDictionary[filename]
+        run = run.replace(filename, PATH_ATTACK+'\\'+filename)
+        attack = utilities.create_child_gen(run)
         attackStorage.append(attack)
         attackOrder.append(filename)
 
@@ -64,16 +66,16 @@ def run_attacks():
         time.sleep(3)
         complete = True
         for attack in attackStorage:
-            if utilities.check_input(attack,1):
-                if attack == 0: #think this should work.  Not sure since not a child class.  Might just be process.poll
-                    print('success')
+            if utilities.check_input(attack.poll(),1):
+                if attack.poll() == 0: #think this should work.  Not sure since not a child class.  Might just be process.poll
+                    print(str(attackOrder[currNum]) + ' success')
                     #push to logfile success
                 else:
                     print(attackOrder[currNum])#+attack.process.stderr)
-                currNum = currNum+1
             elif isinstance(attack.poll(), type(None)):
                 print(attackOrder[currNum]+' on going')
                 complete = False
+            currNum = currNum+1
 
 
 def run_chaff():
