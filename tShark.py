@@ -13,41 +13,42 @@ for fil in os.listdir(pcap_dir):
 	fname = pcap_dir+"\\"+sname
 	fbase = sname.split(".")[0]
 	newf = fbase + ".csv"
-	tsharkCall1 = [
-					"tshark",
-					"-r",
-					fname,
-					"-T",
-					"fields",
-					"-e",
-					"frame.time_epoch"
-	]
-	namer = subprocess.Popen(tsharkCall1, shell=True, stdout=subprocess.PIPE)
-	tsharkCall2 = [
-					"tshark",
-					"-r",
-					fname,
-					"-T",
-					"fields",
-					"-e",
-					"frame.number",
-					"-e",
-					"frame.time_epoch",
-					"-e",
-					"tcp.srcport",
-					"-e",
-					"tcp.dstport",
-					"-E",
-					"header=y",
-					"-E",
-					"separator=,",
-					"-E",
-					"quote=d",
-					"-E",
-					"occurrence=f",
-					">",
-					pcap_dir +"\\"+newf
-	]
-	process = subprocess.Popen(tsharkCall2, shell=True, stdout=subprocess.PIPE)
-	process.wait()
-	os.unlink(fname)
+	if ".pcap" == sname[-5:]:
+		tsharkCall1 = [
+						"tshark",
+						"-r",
+						fname,
+						"-T",
+						"fields",
+						"-e",
+						"frame.time_epoch"
+		]
+		namer = subprocess.Popen(tsharkCall1, shell=True, stdout=subprocess.PIPE)
+		tsharkCall2 = [
+						"tshark",
+						"-r",
+						fname,
+						"-T",
+						"fields",
+						"-e",
+						"frame.number",
+						"-e",
+						"frame.time_epoch",
+						"-e",
+						"tcp.srcport",
+						"-e",
+						"tcp.dstport",
+						"-E",
+						"header=y",
+						"-E",
+						"separator=,",
+						"-E",
+						"quote=d",
+						"-E",
+						"occurrence=f",
+						">",
+						pcap_dir +"\\"+newf
+		]
+		process = subprocess.Popen(tsharkCall2, shell=True, stdout=subprocess.PIPE)
+		process.wait()
+		os.unlink(fname)
