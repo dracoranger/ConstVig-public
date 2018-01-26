@@ -91,7 +91,7 @@ def main():
     Exceptions raised:
     Restrictions on when it can be called:
     """
-
+    #loop through on a user-established timer interval
     run_attacks()
         #commented out the print() and input()
         #print('NO')
