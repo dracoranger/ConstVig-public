@@ -11,7 +11,7 @@ for dir_name in os.walk(tgt_dir):
 tsharkCall2 = [
 				"tshark",
 				"-r",
-				pcap_dir + "\\test1.pcap",
+				pcap_dir + "\\dbTest1.pcap",
 				#"C:\\Users\\x85491\\Documents\\2017-2018\\IT401\\Sprint3\\test1.pcap", #File path of pcap
 				"-T",
 				"fields",
@@ -23,16 +23,18 @@ tsharkCall2 = [
 				"tcp.srcport",
 				"-e",
 				"tcp.dstport",
+				"-e",
+				"nbns.flags.rcode",
 				"-E",
 				"header=y",
 				"-E",
-				"separator=/t",
+				"separator=,",
 				"-E",
 				"quote=d",
 				"-E",
 				"occurrence=f",
 				">",
-				pcap_dir + "\\testWS.txt"
+				pcap_dir + "\\testWS.csv"
 				#"C:\\Users\\x85491\\Documents\\2017-2018\\IT401\\Sprint3\\testWS.txt" #File path for txt file written
 				]
 process = subprocess.Popen(tsharkCall2, shell=True, stdout=subprocess.PIPE)
