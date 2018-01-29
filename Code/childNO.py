@@ -13,6 +13,7 @@ import sys
 import string
 import os
 import time
+from ipaddress import ip_network
 import utilities
 
 
@@ -29,10 +30,10 @@ NetworkOut
 diction = utilities.parseConfig('Attacks')
 PATH_ATTACK = diction['path_attack']
 PATH_CHAFF = diction['path_chaff']
-IP_RANGE = diction['ipRange']
-PORTS = diction['ports']
+IP_RANGE =  list(ip_network(diction['ipRange']).hosts())
+PORTS = diction['ports'].split(',')
 SUBMIT_FLAG_PORT = diction['flag_ports']
-SUBMIT_FLAG_IP = diction['flag_ports']
+SUBMIT_FLAG_IP = diction['flag_ip']
 
 # filename : running arugments stored as a list
 attackDictionary = {
@@ -70,16 +71,35 @@ def run_processes(which, dicti, path, log):
         run = run.replace(filename, PATH_ATTACK+'\\'+filename)
         #allow replacement of IP and Ports accessed
         #might chose how flag is sent.
-        #if not run.find('-i') == -1:
-
-        #if not run.find('-p') == -1:
-
-        #if not
-
-        launch = utilities.create_child_gen(run)
-        launchStorage.append(launch)
-        launchOrder.append(filename)
-
+        if not run.find('-f') == -1:
+            temp.replace('-f', SUBMIT_FLAG_IP + ' '+ SUBMIT_FLAG_PORT)
+        if not run.find('-i') == -1 and not run.find('-p') == -1:
+            for p in PORTS:
+                for i in IP_RANGE:
+                    temp = run
+                    temp.replace('-i',i)
+                    temp.replace('-p',p)
+                    launch = utilities.create_child_gen(temp)
+                    launchStorage.append(launch)
+                    launchOrder.append(filename)
+        elif not run.find('-i') == -1:
+            for i in IP_RANGE:
+                temp = run
+                temp.replace('-i',i)
+                launch = utilities.create_child_gen(temp)
+                launchStorage.append(launch)
+                launchOrder.append(filename)
+        elif not run.find('-p') == -1:
+            for p in PORTS:
+                temp = run
+                temp.replace('-p',p)
+                launch = utilities.create_child_gen(temp)
+                launchStorage.append(launch)
+                launchOrder.append(filename)
+        else:
+            launch = utilities.create_child_gen(run)
+            launchStorage.append(launch)
+            launchOrder.append(filename)
     complete = False
     while not complete:
         #might want to create an escape which kills an indefinitely running process
