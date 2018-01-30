@@ -13,7 +13,7 @@ import sys
 import string
 import os
 import time
-from ipaddress import ip_network
+import ipaddress
 import utilities
 
 
@@ -27,13 +27,15 @@ NetworkOut
 #Path variables
 #os.path.dirname(os.path.realpath(__file__)) or os.getcwd()
 #https://stackoverflow.com/questions/5137497/find-current-directory-and-files-directory
-diction = utilities.parseConfig('Attacks')
-PATH_ATTACK = diction['path_attack']
-PATH_CHAFF = diction['path_chaff']
-IP_RANGE =  list(ip_network(diction['ipRange']).hosts())
-PORTS = diction['ports'].split(',')
-SUBMIT_FLAG_PORT = diction['flag_ports']
-SUBMIT_FLAG_IP = diction['flag_ip']
+dictionA = utilities.parseConfig('Attacks')
+dictionC = utilities.parseConfig('Chaff')
+dictionNO=utilities.parseConfig('NetworkOut')
+PATH_ATTACK = dictionNO['path_attack']
+PATH_CHAFF = dictionNO['path_chaff']
+IP_RANGE =  list(ipaddress.ip_network(dictionNO['iprange']).hosts())
+PORTS = dictionNO['ports'].split(',')
+SUBMIT_FLAG_PORT = dictionNO['submit_flag_port']
+SUBMIT_FLAG_IP = dictionNO['submit_flag_ip']
 
 # filename : running arugments stored as a list
 attackDictionary = {
@@ -44,8 +46,6 @@ chaffDictionary = {
 
 
 }
-
-def send_flag(flag):
 
 
 #generalized version of below
@@ -77,7 +77,7 @@ def run_processes(which, dicti, path, log):
             for p in PORTS:
                 for i in IP_RANGE:
                     temp = run
-                    temp.replace('-i',i)
+                    temp.replace('-i',str(i))
                     temp.replace('-p',p)
                     launch = utilities.create_child_gen(temp)
                     launchStorage.append(launch)
@@ -85,7 +85,7 @@ def run_processes(which, dicti, path, log):
         elif not run.find('-i') == -1:
             for i in IP_RANGE:
                 temp = run
-                temp.replace('-i',i)
+                temp.replace('-i',str(i))
                 launch = utilities.create_child_gen(temp)
                 launchStorage.append(launch)
                 launchOrder.append(filename)
@@ -110,8 +110,13 @@ def run_processes(which, dicti, path, log):
         for launch in launchStorage:
             if utilities.check_input(launch.poll(),1):
                 if launch.poll() == 0: #think this should work.  Not sure since not a child class.  Might just be process.poll
+                    response = str(launch.communicate())
+                    #automatically submit flag?
+                    #probably a good idea
+                    #COMMENT OUT THIS LINE TO NOT SUBMIT THE FLAG BASED ON WHATEVER IS SENT TO STDOUT
+                    utilities.submit_flag(SUBMIT_FLAG_IP,SUBMIT_FLAG_PORT,response)
                     log = open(log, 'a')
-                    log.write(str(launchOrder[currNum]) + ' success: '+str(launch.communicate())+ '\n')
+                    log.write(str(launchOrder[currNum]) + ' success: '+response+ '\n')
                     log.close()
                     #print(str(launchOrder[currNum]) + ' success: '+str(launch.communicate()))
                     remove.append(launch)
