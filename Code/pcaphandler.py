@@ -1,5 +1,6 @@
 import subprocess
 import os
+import datetime
 
 work_dir = os.getcwd()
 tgt_dir = os.path.dirname(work_dir)
@@ -12,19 +13,14 @@ for fil in os.listdir(pcap_dir):
 	sname = os.fsdecode(fil)
 	fname = pcap_dir+"\\"+sname
 	fbase = sname.split(".")[0]
-	newf = fbase + ".csv"
+	tname = datetime.datetime.now().strftime("%d_%H.%M.%S")
+	#potential issue of two files having the same name IF:
+	#1) the pcaps have the exact same name
+	#2) they are processed in the same second
+	#This is unlikely enough for us to accept the potential bug.
+	newf = fbase + "_" + tname + ".csv"
 	if ".pcap" == sname[-5:]:
-		tsharkCall1 = [
-						"tshark",
-						"-r",
-						fname,
-						"-T",
-						"fields",
-						"-e",
-						"frame.time_epoch"
-		]
-		namer = subprocess.Popen(tsharkCall1, shell=True, stdout=subprocess.PIPE)
-		tsharkCall2 = [
+		tsharkCall = [
 						"tshark",
 						"-r",
 						fname,
@@ -49,6 +45,6 @@ for fil in os.listdir(pcap_dir):
 						">",
 						pcap_dir +"\\"+newf
 		]
-		process = subprocess.Popen(tsharkCall2, shell=True, stdout=subprocess.PIPE)
+		process = subprocess.Popen(tsharkCall, shell=True, stdout=subprocess.PIPE)
 		process.wait()
 		os.unlink(fname)

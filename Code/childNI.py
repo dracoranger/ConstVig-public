@@ -13,7 +13,7 @@ import utilities
 #from scapy.all import *
 import sqlite3
 import os
-import tShark
+import pcaphandler
 
 def main():
     """
@@ -33,7 +33,7 @@ def main():
             pcap_dir = dir_name[0]
 
     while(my_var < 20):
-        tShark
+        pcaphandler
 
         #enters metadata into database
         my_var +=1
