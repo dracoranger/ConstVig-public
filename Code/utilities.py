@@ -245,23 +245,21 @@ def generateDefaultConfig():
 
                         }
     config['NetworkOut'] = {
-                        '#The range of IPs that should be targeted should be in the format XXX.XXX.XXX.XXX/XX with the first IP and the subnet mask':'',
+                        '#The range of IPs that should be targeted should be in the format XXX.XXX.XXX.XXX/XX with the first IP and the subnet mask\n#Separate the ports to be attacked with a ,\n#Both paths are defaults, it grabs the current working directory when it is run, then appends chaff and attack.':'',
                         'ipRange':'192.168.1.0/24',
-                        '# Sepirate the ports to be attacked with a ,':'',
                         'ports': '23,24,35',
                         'SUBMIT_FLAG_IP':'192.168.1.1',
                         'SUBMIT_FLAG_PORT':'9001',
-                        '#Both of these are the defaults, it grabs the current working directory when it is run, then appends chaff and attack.':'',
                         'PATH_CHAFF':os.getcwd()+'\\chaff',
                         'PATH_ATTACK':os.getcwd()+'\\attacks'
                         }
     config['Attacks'] = {
-                        '#Format should be the file name followed by the command line arguement to run it.\n#Store the attacks in the PATH_ATTACK directory\n#add -i to have it iterate through the items in ipRange\n#add -p to iterate through the ports\n#add -f to add the ip address and port of where the flag should be submitted in the format SUBMIT_FLAG_IP + \' \' + SUBMIT_FLAG_PORT':'',
+                        '#Format should be the file name followed by the command line argument to run it.\n#Store the attacks in the PATH_ATTACK directory\n#add -i to have it iterate through the items in ipRange\n#add -p to iterate through the ports\n#add -f to add the ip address and port of where the flag should be submitted in the format SUBMIT_FLAG_IP + \' \' + SUBMIT_FLAG_PORT':'',
                         "hello_world.py" : "python hello_world.py",
                         "looper.py" : "python looper.py"
                         }
     config['Chaff'] = {
-                        '#Format should be the file name followed by the command line arguement to run it.\n#Store the chaff in the PATH_CHAFF directory\n#add -i to have it iterate through the items in ipRange\n#add -p to iterate through the ports\n#add -f to add the ip address and port of where the flag should be submitted in the format SUBMIT_FLAG_IP + \' \' + SUBMIT_FLAG_PORT':'',
+                        '#Format should be the file name followed by the command line argument to run it.\n#Store the chaff in the PATH_CHAFF directory\n#add -i to have it iterate through the items in ipRange\n#add -p to iterate through the ports\n#add -f to add the ip address and port of where the flag should be submitted in the format SUBMIT_FLAG_IP + \' \' + SUBMIT_FLAG_PORT':'',
 
                     }
     with open('constvig.conf','w') as configfile:
@@ -289,4 +287,12 @@ def parseConfig(section):
     return ret
 
 def submit_flag(ip, port, data):
-    return "welp"
+    if check_input(data, b'bytes'):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((host, port))
+        sock.send(data)
+        sock.close()
+        reply = sock.recv(512).decode()
+        return reply
+    else:
+        return -1

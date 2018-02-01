@@ -13,7 +13,7 @@ import utilities
 #from scapy.all import *
 import sqlite3
 import os
-import pcaphandler
+#import tShark
 
 def main():
     """
@@ -32,11 +32,11 @@ def main():
         if 'put_pcaps_here' == os.path.basename(dir_name[0]):
             pcap_dir = dir_name[0]
 
-    while(my_var < 20):
-        pcaphandler
-
+    #while(my_var < 20):
+    #    tShark
+    #
         #enters metadata into database
-        my_var +=1
+    #    my_var +=1
     return sql
 
 
@@ -135,14 +135,15 @@ def addPacket(flows, conn):
         recent = recent[0]
     flo = open(flows,'r+')
     lines = flo.readlines()
+    flo.close()
     dataGroups=[]
     flags = []
     for i in lines:
         fields = i.split(',')
-        temp=(fields[0],fields[1],fields[2],fields[3],fields[4])
+        temp=(fields[0],fields[1],fields[2],fields[3])
         dataGroups.append(temp)
         tem = []
-        for j in range(5,len(fields)):
+        for j in range(4,len(fields)):
             if not fields[j] == '' and not fields[j] == '\n':
                 tem.append(fields[j])
         flags.append(tem)
@@ -156,7 +157,7 @@ def addPacket(flows, conn):
         recent = recent + 1
     #print(flagSub)
     for dataGroup in range(0,len(dataGroups)):
-        conn.execute("INSERT INTO flows(timest, portIn, portOut, protocol, flowReference) VALUES (?, ?, ?, ?, ?)", dataGroups[dataGroup])
+        conn.execute("INSERT INTO flows(timest, portIn, portOut, flowReference) VALUES (?, ?, ?, ?)", dataGroups[dataGroup])
         #for flag in flagSub[dataGroup]:
         #    print(flag)
         conn.execute("INSERT INTO connection(flagNum,flowNum) VALUES (?, ?)", flagSub[dataGroup])
@@ -206,32 +207,60 @@ def searchSql(inp,conn):
     ret = conn.fetchall()
     return ret
 
+def printSqlDatabase():
+    conn= sqlite3.connect('packets.db')
+    sql = conn.cursor()
+    flows = searchSql('SELECT * FROM flows',sql)
+    relationships = searchSql('SELECT * FROM connection',sql)
+    flags = searchSql('SELECT * FROM flags',sql)
+    print(flows)
+    add = ''
+    a = open('flows.csv','w+')
+    for i in a:
+        add = add + i
+    a.write(add)
+    a.close()
+    add = ''
+    a = open('relationships.csv','w+')
+    for i in a:
+        add = add + i
+    a.write(add)
+    a.close()
+    add = ''
+    a = open('flags.csv','w+')
+    for i in a:
+        add = add + i
+    a.write(add)
+    a.close()
+
 def testDB():
-    conn=main()
-    #generateDB(conn)
+    conn= sqlite3.connect('packets.db')
+    sql = conn.cursor()
+    generateDB(sql)
     flow='testDB.csv'
-    addPacket(flow,conn)
-    test1 = searchSqlFlowsPortIn('8081',conn)
-    test2 = searchSqlFlowsPortOut('35934',conn)
-    test3 = searchSqlFlowsFlags('2',conn)
-    test4 = searchSql('SELECT flag FROM flags',conn)
-    #print(test1)
+    addPacket(flow,sql)
+    test1 = searchSqlFlowsPortIn('8081',sql)
+    test2 = searchSqlFlowsPortOut('35934',sql)
+    test3 = searchSqlFlowsFlags('2',sql)
+    test4 = searchSql('SELECT * FROM flows',sql)
+    print(test1)
     if len(test1) == 3:
         print('Ports In: Pass')
     else:
         print('Ports In: Fail')
-    #print(test2)
+    print(test2)
     if len(test2) == 1:
         print('Ports Out: Pass')
     else:
         print('Ports Out: Fail')
-    #print(test3)
+    print(test3)
     if len(test3) == 2:
         print('Flags found: Pass')
     else:
         print('Flags found: Fail')
-    #print(test4)
+    print(test4)
     if len(test4) == 5:
         print('General Search: Pass')
     else:
         print('General Search: Fail')
+    conn.close()
