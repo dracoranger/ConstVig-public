@@ -12,6 +12,17 @@ for dir_name in os.walk(tgt_dir):
 for fil in os.listdir(pcap_dir):
 	sname = os.fsdecode(fil)
 	fname = pcap_dir+"\\"+sname
+	splitLocl = 'SplitCap.exe'
+	inp =  splitLocl +" -r " +fname = " -s session"
+	process = subprocess.Popen(inp, shell=True, stdout=subprocess.PIPE)
+	process.wait()
+	os.unlink(fname)
+
+for fil in os.listdir(pcap_dir):
+	#need to figure out how to iterate through subfolder
+	#nested for loop?
+	sname = os.fsdecode(fil)
+	fname = pcap_dir+"\\"+sname
 	fbase = sname.split(".")[0]
 	tname = datetime.datetime.now().strftime("%d_%H.%M.%S")
 	#potential issue of two files having the same name IF:

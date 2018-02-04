@@ -2,9 +2,9 @@ import subprocess
 import os
 
 work_dir = os.getcwd()
-#tgt_dir = os.path.dirname(work_dir)
+tgt_dir = os.path.dirname(work_dir)
 pcap_dir = ''
-for dir_name in os.walk(work_dir):
+for dir_name in os.walk(tgt_dir):
 	if 'put_pcaps_here' == os.path.basename(dir_name[0]):
 		pcap_dir = dir_name[0]
 
