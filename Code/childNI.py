@@ -123,12 +123,12 @@ build flows, sepirated by time
 
 #flows is the pointer to to csv that is already opened
 #might want to change in the future
-def addPacket(flows, conn):
+def addPacket(flows, conn, cur):
     #parse
 
     #must be last most recent packet, every one following is appended
-    conn.execute("SELECT flowNum FROM flows ORDER BY flowNum DESC LIMIT 1")
-    recent=conn.fetchall()
+    cur.execute("SELECT flowNum FROM flows ORDER BY flowNum DESC LIMIT 1")
+    recent=cur.fetchall()
     if len(recent) == 0:
         recent=0
     else:
@@ -147,7 +147,7 @@ def addPacket(flows, conn):
             if not fields[j] == '' and not fields[j] == '\n':
                 tem.append(fields[j])
         flags.append(tem)
-    flagPacketRelationship=addFlags(flags,conn)
+    flagPacketRelationship=addFlags(flags,conn,cur)
 
     #print(flagPacketRelationship)
     flagSub=[]
@@ -157,88 +157,117 @@ def addPacket(flows, conn):
         recent = recent + 1
     #print(flagSub)
     for dataGroup in range(0,len(dataGroups)):
-        conn.execute("INSERT INTO flows(timest, portIn, portOut, flowReference) VALUES (?, ?, ?, ?)", dataGroups[dataGroup])
+        cur.execute("INSERT INTO flows(timest, portIn, portOut, flowReference) VALUES (?, ?, ?, ?)", dataGroups[dataGroup])
         #for flag in flagSub[dataGroup]:
         #    print(flag)
-        conn.execute("INSERT INTO connection(flagNum,flowNum) VALUES (?, ?)", flagSub[dataGroup])
-
+        cur.execute("INSERT INTO connection(flagNum,flowNum) VALUES (?, ?)", flagSub[dataGroup])
+    conn.commit()
 #I think htis is how it works?
 #in order of input, returns the flags and how they're related
-def addFlags(flags,conn):
+def addFlags(flags,conn, cur):
     flagNumbers=[]
     for packet in flags:
         packetFlags=[]
         for flag in packet:
-            conn.execute("SELECT * FROM flags WHERE ? = flag", (flag,))
-            comp=conn.fetchall()
+            cur.execute("SELECT * FROM flags WHERE ? = flag", (flag,))
+            comp=cur.fetchall()
             if len(comp) == 0:
-                conn.execute("INSERT INTO flags(flag) VALUES (?)", (flag,))
-                conn.execute("SELECT flagNum FROM flags ORDER BY flagNum DESC LIMIT 1")
-                temp=conn.fetchall()
+                cur.execute("INSERT INTO flags(flag) VALUES (?)", (flag,))
+                cur.execute("SELECT flagNum FROM flags ORDER BY flagNum DESC LIMIT 1")
+                temp=cur.fetchall()
                 packetFlags.append(temp[0])
             else:
-                conn.execute("SELECT flagNum FROM flags WHERE ? = flag", (flag,))
-                check = conn.fetchall()
+                cur.execute("SELECT flagNum FROM flags WHERE ? = flag", (flag,))
+                check = cur.fetchall()
                 if not check in packetFlags:
-                    conn.execute("SELECT flagNum FROM flags WHERE ? = flag", (flag,))
-                    temp=conn.fetchall()
+                    cur.execute("SELECT flagNum FROM flags WHERE ? = flag", (flag,))
+                    temp=cur.fetchall()
                     packetFlags.append(temp[0])
         for Flag in packetFlags:
             flagNumbers.append(Flag)
+    conn.commit()
     return flagNumbers
 
-def searchSqlFlowsPortIn(inp,conn):
-    conn.execute('SELECT timest FROM flows where portIn = ?',(inp,))
-    ret = conn.fetchall()
+#finds flows with a given port in
+def searchSqlFlowsPortIn(inp,cur):
+    cur.execute('SELECT flowReference FROM flows where portIn = ?',(inp,))
+    ret = cur.fetchall()
     return ret
 
-def searchSqlFlowsPortOut(inp,conn):
-    conn.execute('SELECT timest FROM flows where portOut = ?',(inp,))
-    ret = conn.fetchall()
+#finds flows with a given port out
+def searchSqlFlowsPortOut(inp,cur):
+    cur.execute('SELECT flowReference FROM flows where portOut = ?',(inp,))
+    ret = cur.fetchall()
     return ret
 
-def searchSqlFlowsFlags(inp, conn):
-    conn.execute('SELECT flowReference, flag FROM flows INNER JOIN connection on flows.flowNum = connection.flowNum INNER JOIN flags on flags.flagNum = connection.flagNum ORDER BY timest DESC LIMIT ?',(inp,))
-    ret = conn.fetchall()
+#Finds flows with a minimum number of flags sorted by the time incoming
+def searchSqlFlowsFlags(inp, cur):
+    cur.execute('SELECT flowReference, flag FROM flows INNER JOIN connection on flows.flowNum = connection.flowNum INNER JOIN flags on flags.flagNum = connection.flagNum ORDER BY timest DESC LIMIT ?',(inp,))
+    ret = cur.fetchall()
     return ret
 
-def searchSql(inp,conn):
-    conn.execute(inp)
-    ret = conn.fetchall()
+#finds flows with a given port in and at least 1 flag
+def searchSqlPortInWithFlags(inp, cur):
+    cur.execute('SELECT flowReference, flag FROM flows INNER JOIN connection on flows.flowNum = connection.flowNum INNER JOIN flags on flags.flagNum = connection.flagNum where portIn = ? ORDER BY timest',(inp,))
+    ret = cur.fetchall()
     return ret
+
+#finds flows with a given port out and at least 1 flag
+def searchSqlPortOutWithFlags(inp, cur):
+    cur.execute('SELECT flowReference, flag FROM flows INNER JOIN connection on flows.flowNum = connection.flowNum INNER JOIN flags on flags.flagNum = connection.flagNum where portOut = ? ORDER BY timest',(inp,))
+    ret = cur.fetchall()
+    return ret
+
+#allows generalized queries on database
+def searchSql(inp,cur):
+    cur.execute(inp)
+    ret = cur.fetchall()
+    return ret
+
+def getCur():
+    conn= sqlite3.connect('packets.db')
+    cur = conn.cursor()
+    return cur
 
 def printSqlDatabase():
     conn= sqlite3.connect('packets.db')
     sql = conn.cursor()
+    #flow='testDB.csv'
+    #addPacket(flow,conn,sql)
     flows = searchSql('SELECT * FROM flows',sql)
     relationships = searchSql('SELECT * FROM connection',sql)
     flags = searchSql('SELECT * FROM flags',sql)
-    print(flows)
     add = ''
     a = open('flows.csv','w+')
-    for i in a:
-        add = add + i
+    for i in flows:
+        for j in i:
+            add = add + str(j) + ','
+        add = add + '\n'
     a.write(add)
     a.close()
     add = ''
     a = open('relationships.csv','w+')
-    for i in a:
-        add = add + i
+    for i in relationships:
+        for j in i:
+            add = add + str(j) + ','
+        add = add + '\n'
     a.write(add)
     a.close()
     add = ''
     a = open('flags.csv','w+')
-    for i in a:
-        add = add + i
+    for i in flags:
+        for j in i:
+            add = add + str(j) + ','
+        add = add + '\n'
     a.write(add)
     a.close()
 
 def testDB():
     conn= sqlite3.connect('packets.db')
     sql = conn.cursor()
-    generateDB(sql)
-    flow='testDB.csv'
-    addPacket(flow,sql)
+    #generateDB(sql)
+    #flow='testDB.csv'
+    #addPacket(flow,sql)
     test1 = searchSqlFlowsPortIn('8081',sql)
     test2 = searchSqlFlowsPortOut('35934',sql)
     test3 = searchSqlFlowsFlags('2',sql)
