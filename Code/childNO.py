@@ -171,11 +171,6 @@ def run_attacks():
                 complete = False
             currNum = currNum+1
 
-
-def run_chaff():
-    # use generalized
-    return "incomplete"
-
 def main():
     """[prints out childNO and then] checks for the type
 
