@@ -50,12 +50,16 @@ def main():
     numberChanged = pcaphandler.split()
     #Pcaps in put pcaps here should be moved or deleted
     #Will start with moved
+    #if there is more than one file, move it to processed
+    #only moves files
     if numberChanged > 0:
-        for i in pcap_dir:
-            i.move to storage #pseudocode
+        for i in os.listdir(pcap_dir)::
+            if os.path.isfile(i):
+                os.rename(os.pcap_dir+'\\'+i,os.getcwd()+'\\processed\\'+i)
     flows = pcaphandler.getSqlData()
-    for dir_name in os.walk(pcap_dir):
-        dir.move to storage
+    for dir_name in os.listdir(pcap_dir):
+        if os.path.isdir(dir_name) and not dir_name == "processed":
+            os.rename(pcap_dir+'\\'+dir_name,pcap_dir+'\\processed\\'+dir_name) #may not be stable
     for flow in flows:
         addPacket(flow, cur)
     #testing success

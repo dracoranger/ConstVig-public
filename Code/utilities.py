@@ -242,8 +242,8 @@ def generateDefaultConfig():
 
                     }
     config['NetworkIn'] = {
-                        '#Premade SQL queries are as follows\n#searchSqlFlowsPortIn(\'port as string\',getCur()) - shows flows matching port in\n#searchSqlFlowsPortOut(\'port as string\',getCur()) - shows flows matching port out\n#searchSqlFlowsFlags(\'minimun number of flags as string\',getCur()) - finds flows that have a minimum number of flags\n#searchSqlPortInWithFlags(\'port as string\',getCur()) - shows flows that have flags present given the port in \n#searchSqlPortOutWithFlags(\'port as string\',getCur()) - shows flows that have flags present given the port out \n#searchSql(inp,cur) - generalized search function on sql.  Feeds query directly to database, so needs to be a valid sql query':''
-
+                        '#Premade SQL queries are as follows\n#searchSqlFlowsPortIn(\'port as string\',getCur()) - shows flows matching port in\n#searchSqlFlowsPortOut(\'port as string\',getCur()) - shows flows matching port out\n#searchSqlFlowsFlags(\'minimun number of flags as string\',getCur()) - finds flows that have a minimum number of flags\n#searchSqlPortInWithFlags(\'port as string\',getCur()) - shows flows that have flags present given the port in \n#searchSqlPortOutWithFlags(\'port as string\',getCur()) - shows flows that have flags present given the port out \n#searchSql(inp,cur) - generalized search function on sql.  Feeds query directly to database, so needs to be a valid sql query':'',
+                        'pcapFolder': os.getcwd()[:(os.getcwd().rfind('\\')-len(os.getcwd))]+'\\'+'put_pcaps_here'
                         }
     config['NetworkOut'] = {
                         '#The range of IPs that should be targeted should be in the format XXX.XXX.XXX.XXX/XX with the first IP and the subnet mask\n#Separate the ports to be attacked with a ,\n#Both paths are defaults, it grabs the current working directory when it is run, then appends chaff and attack.':'',
