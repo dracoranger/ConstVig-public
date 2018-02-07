@@ -242,6 +242,7 @@ def generateDefaultConfig():
 
                     }
     config['NetworkIn'] = {
+                        '#Premade SQL queries are as follows\n#searchSqlFlowsPortIn(\'port as string\',getCur()) - shows flows matching port in\n#searchSqlFlowsPortOut(\'port as string\',getCur()) - shows flows matching port out\n#searchSqlFlowsFlags(\'minimun number of flags as string\',getCur()) - finds flows that have a minimum number of flags\n#searchSqlPortInWithFlags(\'port as string\',getCur()) - shows flows that have flags present given the port in \n#searchSqlPortOutWithFlags(\'port as string\',getCur()) - shows flows that have flags present given the port out \n#searchSql(inp,cur) - generalized search function on sql.  Feeds query directly to database, so needs to be a valid sql query':''
 
                         }
     config['NetworkOut'] = {
