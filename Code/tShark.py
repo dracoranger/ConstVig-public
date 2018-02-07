@@ -35,7 +35,7 @@ for fil in range(1): #os.listdir(pcap_dir):
 						"-r",
 						fname,
 						"-Y",
-						"ip.src",
+						"frame contains 31:41:47:33:35:39:54:",
 						"-T",
 						"fields",
 						"-e",
@@ -60,3 +60,4 @@ for fil in range(1): #os.listdir(pcap_dir):
 		process = subprocess.Popen(tsharkCall2, shell=True, stdout=subprocess.PIPE)
 		process.wait()
 #		os.unlink(fname)
+#		hex: 31:41:47:33:35:39:54:47:47:41:47:47:37:41:4b:54:35:58:54:49:4f:38:4b:48:59:59:4c:58:30:4f:53:3d
