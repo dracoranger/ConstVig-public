@@ -9,12 +9,19 @@ net_in --
 
 import socket
 import sys
-import utilities
+
 #from scapy.all import *
 import sqlite3
 import os
 #import tShark
+import utilities
+import pcaphandler
 
+#TODO change packets.db to a constant that can be set by the user
+#TODO change put_pcaps_here to a constant, possibly not necessary
+#TODO need to make pcaphandler have segregated functions
+#TODO need to make main mesh better with pcaphandler
+#TODO run stress test
 def main():
     """
     Checks for type and returns the input, otherwise returns an error message
@@ -28,16 +35,31 @@ def main():
     work_dir = os.getcwd()
     tgt_dir = os.path.dirname(work_dir)
     pcap_dir = ''
+    db_already_made = False
+    if os.basename(packets.db):
+        db_already_made = True
     for dir_name in os.walk(tgt_dir):
         if 'put_pcaps_here' == os.path.basename(dir_name[0]):
             pcap_dir = dir_name[0]
 
-    #while(my_var < 20):
-    #    tShark
-    #
-        #enters metadata into database
-    #    my_var +=1
-    return sql
+    #Here is where database stuff begins
+    conn= sqlite3.connect('packets.db')
+    cur = conn.cursor()
+    if not db_already_made:
+        generateDB(sql)
+    numberChanged = pcaphandler.split()
+    #Pcaps in put pcaps here should be moved or deleted
+    #Will start with moved
+    if numberChanged > 0:
+        for i in pcap_dir:
+            i.move to storage #pseudocode
+    flows = pcaphandler.getSqlData()
+    for dir_name in os.walk(pcap_dir):
+        dir.move to storage
+    for flow in flows:
+        addPacket(flow, cur)
+    #testing success
+    printSqlDatabase()
 
 
 def net_in(host, port):
@@ -70,34 +92,6 @@ def net_in(host, port):
 #main()
 
 #scapy
-
-def analyzer(inp):
-    '''
-        >>>analyzer()
-        return [80[n, n+20, n+40, n+80, n+100],7558[n+5,n+10,n+15],...],[jklasdnvhiuopq[n, n+20, n+40, n+80, n+100],qiuopnjvpasewrnjkaxpjbnadfsjiopea[n+5,n+10,n+15],...]
-    '''
-    ports, timest, data = parser(inp)
-
-    ret = analyzer_ports(ports,timest)
-    ret = ret + analyzer_data(data,timest)
-
-def analyzer_data(dat, timest):
-    '''
-        >>>analyzer_data()
-        [jklasdnvhiuopq[n, n+20, n+40, n+80, n+100],qiuopnjvpasewrnjkaxpjbnadfsjiopea[n+5,n+10,n+15],...]
-    '''
-
-def analyzer_ports(ports, timest):
-    '''
-        >>>analyzer_ports()
-        [80[n, n+20, n+40, n+80, n+100],7558[n+5,n+10,n+15],...]
-    '''
-
-def parser(inp):
-    '''
-        >>>parser()
-        [80,7558,7558,80,7558,80,7558...],[n, n+5,n+10,n+15,n+20,n+40,n+80],[jklasdnvhiuopq,qiuopnjvpasewrnjkaxpjbnadfsjiopea,qiuopnjvpasewrnjkaxpjbnadfsjiopea,qiuopnjvpasewrnjkaxpjbnadfsjiopea,jklasdnvhiuopq,jklasdnvhiuopq]
-    '''
 
 def generateDB(conn):
     conn.execute('''CREATE TABLE flows
