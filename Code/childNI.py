@@ -1,5 +1,4 @@
 """ handles incoming network traffic
-
 Classes: None
 Exceptions:
 Functions:
@@ -27,41 +26,44 @@ def main():
     Checks for type and returns the input, otherwise returns an error message
     """
     keep_going = True
+    '''
     conn = sqlite3.connect('packets.db')
     packetNum = 0
-    sql = conn.cursor()
-    generateDB(sql)
+    cur = conn.cursor()
+    generateDB(cur)
     my_var = 0
-    work_dir = os.getcwd()
-    tgt_dir = os.path.dirname(work_dir)
-    pcap_dir = ''
-    db_already_made = False
-    if os.basename(packets.db):
-        db_already_made = True
-    for dir_name in os.walk(tgt_dir):
-        if 'put_pcaps_here' == os.path.basename(dir_name[0]):
-            pcap_dir = dir_name[0]
-
+    '''
     #Here is where database stuff begins
+    db_already_made = False
+    if 'packets.db' in os.listdir():
+        db_already_made = True
     conn= sqlite3.connect('packets.db')
     cur = conn.cursor()
     if not db_already_made:
-        generateDB(sql)
+        generateDB(cur)
+
+    work_dir = os.getcwd()
+    tgt_dir = os.path.dirname(work_dir)
+    pcap_dir = ''
+
+    for dir_name in os.walk(tgt_dir):
+        if 'put_pcaps_here' == os.path.basename(dir_name[0]):
+            pcap_dir = dir_name[0]
     numberChanged = pcaphandler.split()
     #Pcaps in put pcaps here should be moved or deleted
     #Will start with moved
     #if there is more than one file, move it to processed
     #only moves files
     if numberChanged > 0:
-        for i in os.listdir(pcap_dir)::
+        for i in os.listdir(pcap_dir):
             if os.path.isfile(i):
-                os.rename(os.pcap_dir+'\\'+i,os.getcwd()+'\\processed\\'+i)
+                os.rename(pcap_dir+'\\'+i,os.getcwd()+'\\processed\\'+i)
     flows = pcaphandler.getSqlData()
     for dir_name in os.listdir(pcap_dir):
         if os.path.isdir(dir_name) and not dir_name == "processed":
             os.rename(pcap_dir+'\\'+dir_name,pcap_dir+'\\processed\\'+dir_name) #may not be stable
     for flow in flows:
-        addPacket(flow, cur)
+        addPacket(flow, conn, cur)
     #testing success
     printSqlDatabase()
 
