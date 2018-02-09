@@ -58,8 +58,8 @@ def getSqlData():
 								"E:\\Programs\\Wireshark\\tshark.exe",
 								"-r",
 								fname,
-								"-Y",
-								"frame contains 31:41:47:33:35:39:54:",
+								#"-Y",
+								#"frame contains 31:41:47:33:35:39:54:",
 								"-T",
 								"fields",
 								"-e",
@@ -79,7 +79,9 @@ def getSqlData():
 								"-E",
 								"occurrence=f",
 								">",
-								sub_dir[0] +"\\"+newf
+								'C:\\Users\\T\\Documents\\GitHub\\ConstVig\\put_pcaps_here'+"\\"+newf
+								#sub_dir[0] +"\\"+newf
+
 				]
 				process = subprocess.Popen(tsharkCall, shell=True, stdout=subprocess.PIPE)
 				process.wait()

@@ -122,6 +122,10 @@ def run_processes(which, dicti, path, log):
                     remove.append(launch)
                     #push to logfile success
                 else:
+                    response = str(launch.communicate())
+                    log = open(log, 'a')
+                    log.write(str(launchOrder[currNum]) + ' success: '+response+ '\n')
+                    log.close()
                     print(str(launchOrder[currNum])+ str(launch.communicate()))#+attack.process.stderr)
             elif isinstance(launch.poll(), type(None)):
                 print(launchOrder[currNum]+' on going')

@@ -65,6 +65,7 @@ def main():
     for flow in flows:
         addPacket(flow, conn, cur)
     #testing success
+    os.chdir('C:\\Users\\T\\Documents\\GitHub\\ConstVig\\Code')
     printSqlDatabase()
 
 
@@ -154,13 +155,14 @@ def addPacket(flows, conn, cur):
     for packet in flagPacketRelationship:
         for flag in packet:
             flagSub.append((recent, flag))
-        recent = recent + 1
+        #recent = recent + 1
     #print(flagSub)
     for dataGroup in range(0,len(dataGroups)):
         cur.execute("INSERT INTO flows(timest, portIn, portOut, flowReference) VALUES (?, ?, ?, ?)", dataGroups[dataGroup])
         #for flag in flagSub[dataGroup]:
         #    print(flag)
-        cur.execute("INSERT INTO connection(flagNum,flowNum) VALUES (?, ?)", flagSub[dataGroup])
+        #Note, need to be careful if flags do not exist
+        #cur.execute("INSERT INTO connection(flagNum,flowNum) VALUES (?, ?)", flagSub[dataGroup])
     conn.commit()
 #I think htis is how it works?
 #in order of input, returns the flags and how they're related
