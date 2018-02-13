@@ -27,7 +27,7 @@ get_input -- gets input from the user interface
 
 #any global constants- there should be none
 #might need log file location
-LOG_FILE = "log"
+LOG_FILE = "main.log"
 PATH = os.path.dirname(os.path.realpath(__file__))#file path of settings file
 CHILD_NUM = 4
 
@@ -227,7 +227,7 @@ def main():
 
     """
     settings = "" #other settings stuff, placeholder currently
-    death_limit = 5
+    death_limit = 3
     round_length = [300, 300, 300, 300, 300]#array of round lengths
     total_rounds = 0
     safety_buffer = 10
@@ -251,14 +251,13 @@ def main():
         if success != 1:
             print("log failure")
 
-    #childmaster = [CHILD("ChildFS",15550)]
+    childmaster = [CHILD("ChildUI",15550)]
     #childmaster.append(CHILD("ChildNI",15551))
     #childmaster.append(CHILD("ChildNO",15552))
-    #childmaster.append(CHILD("ChildUI",15553))
-    childmaster = [CHILD("ChildNO", 15551)]
+    childmaster.append(CHILD("ChildDeath",15551))
+    #childmaster = [CHILD("ChildNO", 15551)]
     time.sleep(1)
     #generate sockets
-
     for i in childmaster:
         connection_socket, addr = i.get_socket().accept()
         i.set_listener(chatThread(i.get_port(), connection_socket))
@@ -296,11 +295,13 @@ def main():
                     if isinstance(child.process.poll(), type(None)):
                         child.update_is_alive(True)
                     #need to figure out how to replace with necessary data
+                    if isinstance(child.process.poll(), type(0)):
+                        child.update_is_alive(False)
+                    print(child.is_alive())
                     if child.is_alive():
                         child.get_socket().send(get_input().encode())
-
                     elif child.is_keep_running():
-                        child.recreate_subprocess()
+                        #child.recreate_subprocess()
                         child.inc_deaths()
                         temp = child.get_name()+""" has died.
                         Total deaths for """+ child.get_name()+": "+str(child.get_deaths())

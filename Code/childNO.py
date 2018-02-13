@@ -115,17 +115,17 @@ def run_processes(which, dicti, path, log):
                     #probably a good idea
                     #COMMENT OUT THIS LINE TO NOT SUBMIT THE FLAG BASED ON WHATEVER IS SENT TO STDOUT
                     utilities.submit_flag(SUBMIT_FLAG_IP,SUBMIT_FLAG_PORT,response)
-                    log = open(log, 'a')
-                    log.write(str(launchOrder[currNum]) + ' success: '+response+ '\n')
-                    log.close()
+                    logPointer = open(log, 'a')
+                    logPointer.write(str(launchOrder[currNum]) + ' success: '+response+ '\n')
+                    logPointer.close()
                     #print(str(launchOrder[currNum]) + ' success: '+str(launch.communicate()))
                     remove.append(launch)
                     #push to logfile success
                 else:
                     response = str(launch.communicate())
-                    log = open(log, 'a')
-                    log.write(str(launchOrder[currNum]) + ' success: '+response+ '\n')
-                    log.close()
+                    logPointer = open(log, 'a')
+                    logPointer.write(str(launchOrder[currNum]) + ' success: '+response+ '\n')
+                    logPointer.close()
                     print(str(launchOrder[currNum])+ str(launch.communicate()))#+attack.process.stderr)
             elif isinstance(launch.poll(), type(None)):
                 print(launchOrder[currNum]+' on going')
