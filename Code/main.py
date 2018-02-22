@@ -9,20 +9,19 @@ import utilities
 #easysockets?
 #twisted.internet?
 
-""" runs and manages everything, including child processes
+#runs and manages everything, including child processes
 
-Classes:
-TARGET -- will hold target IP addresses. To be finished later.
-CHILD -- each child is a processes, e.g. NetIn (NI) that serves a specific purpose.
-Exceptions:
-Functions:
-main -- loops through the children, checking for deaths and restarting when appropriate
-log -- adds to the log file to track errors, etc.
-gui_minus -- acts as a debugger
-set_log_file -- creates and returns the log file
-parse_settings -- parses the settings file, returning as a array
-get_input -- gets input from the user interface
-"""
+#Classes:
+#TARGET -- will hold target IP addresses. To be finished later.
+#CHILD -- each child is a processes, e.g. NetIn (NI) that serves a specific purpose.
+#Exceptions:
+#Functions:
+#main -- loops through the children, checking for deaths and restarting when appropriate
+#log -- adds to the log file to track errors, etc.
+#gui_minus -- acts as a debugger
+#set_log_file -- creates and returns the log file
+#parse_settings -- parses the settings file, returning as a array
+#get_input -- gets input from the user interface
 
 
 #any global constants- there should be none
@@ -34,14 +33,12 @@ CHILD_NUM = 4
 #structures
 
 class chatThread(threading.Thread):
-    """
-    Class: chatThread
-    Purpose: Each client connection spawns a new chatThread object
-      and interaction with the client is via this thread.
-    """
+    #Class: chatThread
+    #Purpose: Each client connection spawns a new chatThread object
+    #and interaction with the client is via this thread.
 
     def __init__(self, parent, csock):
-        """ chatThread constructor """
+        #chatThread constructor
         # Call parent class constructor
         threading.Thread.__init__(self)
         self.csock = csock
@@ -50,7 +47,7 @@ class chatThread(threading.Thread):
         self.parent = parent
 
     def run(self):
-        """ Main loop for chatThread objects """
+        #Main loop for chatThread objects
 
         try:
             while 1:
@@ -73,39 +70,39 @@ class chatThread(threading.Thread):
             self.csock.close()
 
     def sendMsg(self, msg):
-        """ Send a message to the client in this thread. """
+        #Send a message to the client in this thread.
         # message must be in bytes format
         self.csock.send(msg)
 
 class TARGET:
-    """ tracks target data, such as IP and type
+    #tracks target data, such as IP and type
 
-    Summary of behavior: This function takes in targeting formation and stores it for use later
-    just an intention at the moment
-    Public methods:
-    Instance variables: None
-    Creator: Tate Bowers
-    """
+    #Summary of behavior: This function takes in targeting formation and stores it for use later
+    #just an intention at the moment
+    #Public methods:
+    #Instance variables: None
+    #Creator: Tate Bowers
+
     def __init__(self, placeholder):
-        """class constructor documentation goes here"""
+        #class constructor documentation goes here
         self.ip_addr = 0 #make attack vars, need to make integrate well with networking pieces
     #targets, array of target?
 
 
 class CHILD:
 
-    """ each unit of functionality in the program is given to a child process.
+    #each unit of functionality in the program is given to a child process.
 
-    Summary of behavior: tracks each child and information pertinent to the child
-    Public methods: get_listener, get_socket, get_port, set_port, get_name, num_deaths, inc_deaths, reset_deaths, get_deaths, is_alive, is_keep_running, update_is_alive, toggle_keep_running, recreate_subprocess
-    Instance variables: None
-    Creator: Tate Bowers
+    #Summary of behavior: tracks each child and information pertinent to the child
+    #Public methods: get_listener, get_socket, get_port, set_port, get_name, num_deaths, inc_deaths, reset_deaths, get_deaths, is_alive, is_keep_running, update_is_alive, toggle_keep_running, recreate_subprocess
+    #Instance variables: None
+    #Creator: Tate Bowers
 
-    UPDATE 10-22: Changed from subprocesses to Popen, which is the thing subprocesses is built on
-    TODO: Kill socket when dying
-    """
+    #UPDATE 10-22: Changed from subprocesses to Popen, which is the thing subprocesses is built on
+    #TODO: Kill socket when dying
+
     def __init__(self, nam, por):
-        """class constructor documentation goes here"""
+        #class constructor documentation goes here
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind(("127.0.0.1", por))
         sock.listen(5)
@@ -120,112 +117,111 @@ class CHILD:
 
         #need to catch socket errors
     def set_listener(self, inp):
-        """self explanatory"""
+        #self explanatory
         self.listener = inp
 
     def get_listener(self):
-        """self explanatory"""
+        #self explanatory
         return self.listener
 
     def get_socket(self):
-        """self explanatory"""
+        #self explanatory
         return self.socket
 
     def set_socket(self, inp):
-        """self explanatory"""
+        #self explanatory
         self.socket = inp
 
     def get_port(self):
-        """self explanatory"""
+        #self explanatory
         return self.port
 
     def set_port(self, new_port):
-        """self explanatory"""
+        #self explanatory
         self.port = new_port
 
     def get_name(self):
-        """self explanatory"""
+        #self explanatory
         return self.name
 
     def num_deaths(self):
-        """self explanatory"""
+        #self explanatory
         return self.deaths
 
     def inc_deaths(self):
-        """self explanatory"""
+        #self explanatory
         self.deaths = self.deaths + 1
 
     def reset_deaths(self):
-        """self explanatory"""
+        #self explanatory
         self.deaths = 0
 
     def get_deaths(self):
-        """returns number of times child has died"""
+        #returns number of times child has died
         return self.deaths
 
     def is_alive(self):
-        """self explanatory, returns Boolean"""
+        #self explanatory, returns Boolean
         return self.alive
 
     def is_keep_running(self):
-        """returns whether the child is to restart if it dies"""
+        #returns whether the child is to restart if it dies
         return self.keep_running
 
     def update_is_alive(self, boo):
-        """self explanatory"""
+        #self explanatory
         self.alive = boo
 
     def toggle_keep_running(self):
-        """switches the state of whether the child restarts upon death"""
+        #switches the state of whether the child restarts upon death
         if self.keep_running:
             self.keep_running = False
         else:
             self.keep_running = True
 
     def recreate_subprocess(self):
-        """kills and then creates the child process"""
+        #kills and then creates the child process
         self.process.kill()
         self.process = utilities.create_child(self.name, "")
 
 def main():
-    """ checks on, spawns, and recreates child processes
+    #checks on, spawns, and recreates child processes
 
-    Summary of behavior: starts, restarts, and manages the child processes
-    Arguments: None
-    Return values:
-    Side effects: child processes launched and monitored for success
-    Exceptions raised:
-    Restrictions on when it can be called: None
+    #Summary of behavior: starts, restarts, and manages the child processes
+    #Arguments: None
+    #Return values:
+    #Side effects: child processes launched and monitored for success
+    #Exceptions raised:
+    #Restrictions on when it can be called: None
 
-    main function
+    #main function
 
-    Basic loop
-    0. read in settings data
-    1. Spin up children
-        a. log errors
-        b. restart if failure
-        c. prompt if multiple failures
-    2. children for
-        a. UI
-        b. Network incoming
-        c. Network outgoing
-        d. filesystem parsing
-        e. spin up individual child for each hack discovered by filesystem
-    3. iterate through rounds
-    4. every x seconds, check to see that children are still alive
-    5. attempt to restore any dead children, prompting user
-    6. write out error log
-    7. generate alerts
-    8. save the state of the children in case of failure -- is this necessary?
+    #Basic loop
+    #0. read in settings data
+    #1. Spin up children
+    #    a. log errors
+    #    b. restart if failure
+    #    c. prompt if multiple failures
+    #2. children for
+    #    a. UI
+    #    b. Network incoming
+    #    c. Network outgoing
+    #    d. filesystem parsing
+    #    e. spin up individual child for each hack discovered by filesystem
+    #3. iterate through rounds
+    #4. every x seconds, check to see that children are still alive
+    #5. attempt to restore any dead children, prompting user
+    #6. write out error log
+    #7. generate alerts
+    #8. save the state of the children in case of failure -- is this necessary?
 
-    Conditionals
-    if reach end of the rounds, prompt for do more
-    if children crash, prompt user to restart, log, prompt if multiple failures on same child
+    #Conditionals
+    #if reach end of the rounds, prompt for do more
+    #if children crash, prompt user to restart, log, prompt if multiple failures on same child
 
-    possibles
-    sync timer?  Probably not necessary on same system
+    #possibles
+    #sync timer?  Probably not necessary on same system
 
-    """
     settings = "" #other settings stuff, placeholder currently
     death_limit = 3
     round_length = [300, 300, 300, 300, 300]#array of round lengths
@@ -240,6 +236,8 @@ def main():
 
     round_length, total_rounds, targets, additional = parse_settings(PATH,
                                                                      settings)
+
+                                                                     
     #additional is a temp name here
 
     #setSettings = parse_settings(additional)
@@ -266,9 +264,7 @@ def main():
         #start new chatThread
         i.get_listener().start()
         print(i.get_listener())
-        """
-        should generate the proper connection and acception
-        """
+        #should generate the proper connection and acception
     #childHackArray=[0]
     # push down to network outgoing? Stores each hack,
     # ensures that failing hack only kills itself, not everything.
@@ -339,14 +335,11 @@ def main():
     # who not to attack, expected operating systems, attacks to ignore, more data will be there.
 
 def log(inpu):
-    """
-    Creator: Tate Bowers
-    Input: string that should be pushed to the logging file
-    Output: updated logging file, nothing returned to user
-    This function pushes strings to the logging file for future observation
-    appends it to the end of the file
-
-    """
+    #Creator: Tate Bowers
+    #Input: string that should be pushed to the logging file
+    #Output: updated logging file, nothing returned to user
+    #This function pushes strings to the logging file for future observation
+    #appends it to the end of the file
 
     ret = -1
     if utilities.check_input("str", inpu):
@@ -357,32 +350,15 @@ def log(inpu):
         ret = 1
     return ret
 
-def gui_minus():
-    """ TODO -- fill in one line Summary
-
-    Summary of behavior: This function acts as the debugging function while the actual user
-     input child is being generated
-    Arguments: None
-    Return values: None
-    Side effects:
-    Exceptions raised:
-    Restrictions on when it can be called: None
-    Creator: Tate Bowers
-
-    >>>gui_minus()
-    ""
-    """
-    return ""
-
 
 def set_log_file(path):
-    """
-    Creator: Tate Bowers
-    Input: intended file location
-    Output: returns the file name
-    This function creates and returns the log file
-    the log file is named log+the day+ the hour+ the minute to prevent overlaps
-    """
+
+    #Creator: Tate Bowers
+    #Input: intended file location
+    #Output: returns the file name
+    #This function creates and returns the log file
+    #the log file is named log+the day+ the hour+ the minute to prevent overlaps
+
     ret = -1
     if utilities.check_input("str", path):
         nam = "log"+ time.strftime("%d_%h_%m")
@@ -393,47 +369,20 @@ def set_log_file(path):
 
 
 def parse_settings(path, name):
-    """
-    TODO -- fill in one line Summary
+    #TODO -- fill in one line Summary
 
-    Summary of behavior: This function parses the settings file, returns it as array
-    Arguments: path of settings file, name of settings file
-    Return values:settings as an array
-    Side effects:
-    Exceptions raised:
-    Restrictions on when it can be called: None
-    """
-
-    current_setting = ""
-    placeholder = ""
-    make_happy = 0
-    ret = [[20, 20, 20, 20, 20], 5, "", ""]
-    if utilities.check_input("str", path):
-        if utilities.check_input("str", name):
-            fil = open(path+name, "r")
-            for i in fil.read():
-                if current_setting == "":
-                    current_setting = i[:-1]
-                elif current_setting == placeholder:
-                    #do stuff
-                    make_happy = make_happy + 1
-                elif current_setting == placeholder:
-                    #do stuff
-                    make_happy = make_happy + 1
-                else:
-                    log("Unknown Setting")
-
-    return ret[0], ret[1], ret[2], ret[3]
-
+    #Summary of behavior: This function parses the settings file, returns it as array
+    #Arguments: path of settings file, name of settings file
+    #Return values:settings as an array
+    #Side effects:
+    #Exceptions raised:
+    #Restrictions on when it can be called: None
+    return "Incomplete"
 
 def get_input():
-    """
-    Creator: Tate Bowers
-
-    TODO: fill out logic
-    """
+    #Creator: Tate Bowers
     #list of queues?
-    return "Is this what is causing the failue?"
+    return "Incomplete"
 
 
 #Runs the main function
