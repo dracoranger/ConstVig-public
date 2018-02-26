@@ -74,21 +74,6 @@ class chatThread(threading.Thread):
         # message must be in bytes format
         self.csock.send(msg)
 
-class TARGET:
-    #tracks target data, such as IP and type
-
-    #Summary of behavior: This function takes in targeting formation and stores it for use later
-    #just an intention at the moment
-    #Public methods:
-    #Instance variables: None
-    #Creator: Tate Bowers
-
-    def __init__(self, placeholder):
-        #class constructor documentation goes here
-        self.ip_addr = 0 #make attack vars, need to make integrate well with networking pieces
-    #targets, array of target?
-
-
 class CHILD:
 
     #each unit of functionality in the program is given to a child process.
@@ -110,7 +95,7 @@ class CHILD:
         self.alive = False
         self.keep_running = True
         self.deaths = 0
-        self.process = utilities.create_child(self.name, "")
+        self.process = utilities.create_child_gen("python "+ self.name +".py")
         self.port = por
         self.listener = ""
         self.socket = sock#utilities.comm_in(self.port-100)
@@ -182,7 +167,7 @@ class CHILD:
     def recreate_subprocess(self):
         #kills and then creates the child process
         self.process.kill()
-        self.process = utilities.create_child(self.name, "")
+        self.process = utilities.create_child_gen("python "+ self.name +".py")
 
 def main():
     #checks on, spawns, and recreates child processes
@@ -237,7 +222,7 @@ def main():
     round_length, total_rounds, targets, additional = parse_settings(PATH,
                                                                      settings)
 
-                                                                     
+
     #additional is a temp name here
 
     #setSettings = parse_settings(additional)
