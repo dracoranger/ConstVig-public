@@ -37,7 +37,6 @@ def split():
 
 
 def getSqlData():
-<<<<<<< HEAD
 	work_dir = os.getcwd() #gets current directory
 	tgt_dir = os.path.dirname(work_dir) #moves up one level
 	pcap_dir = ''
@@ -84,7 +83,6 @@ def getSqlData():
 								">",
 								'C:\\Users\\T\\Documents\\GitHub\\ConstVig\\put_pcaps_here'+"\\"+newf
 								#sub_dir[0] +"\\"+newf
-=======
     work_dir = os.getcwd() #gets current directory
     tgt_dir = os.path.dirname(work_dir) #moves up one level
     pcap_dir = ''
@@ -131,7 +129,6 @@ def getSqlData():
                     ">",
                     'C:\\Users\\T\\Documents\\GitHub\\ConstVig\\put_pcaps_here'+"\\"+newf
                     #sub_dir[0] +"\\"+newf
->>>>>>> 5458192dadcb4ce072c0158b071b3c330550311a
 
                 ]
                 process = subprocess.Popen(tsharkCall, shell=True, stdout=subprocess.PIPE)

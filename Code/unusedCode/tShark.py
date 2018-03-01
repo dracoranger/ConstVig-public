@@ -13,7 +13,7 @@ import re
 
 
 for fil in range(1): #os.listdir(pcap_dir):
-	sname = "test1.pcap"
+	sname = "small.pcap"
 	fname = "C:\\Users\\x86075\\Documents\\GitHub\\ConstVig\\pcap_test_backups" + "\\"+sname #pcap_dir+"\\"+sname
 	fbase = sname.split(".")[0]
 	newf = fbase + ".csv"
@@ -35,7 +35,7 @@ for fil in range(1): #os.listdir(pcap_dir):
 						"-r",
 						fname,
 						"-Y",
-						"frame contains 31:41:47:33:35:39:54:",
+						"frame contains ^\w{31}=$",
 						"-T",
 						"fields",
 						"-e",
