@@ -59,7 +59,7 @@ def getSqlData():
 								"-r",
 								fname,
 								#"-Y",
-								#"frame contains 31:41:47:33:35:39:54:",
+								#"frame contains 31:41:47:33:35:39:54:^\w{31}=$",
 								"-T",
 								"fields",
 								"-e",
