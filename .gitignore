@@ -108,3 +108,6 @@ log
 #sqlite3
 *.db
 *.db-journal
+*.pcap
+
+SplitCap_2-1
