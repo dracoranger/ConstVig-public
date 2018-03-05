@@ -14,11 +14,9 @@ import re
 
 for fil in range(1): #os.listdir(pcap_dir):
 	sname = "small.pcap"
-	fname = "C:\\Users\\x86075\\Documents\\GitHub\\ConstVig\\pcap_test_backups" + "\\"+sname #pcap_dir+"\\"+sname
+	fname = "C:\\Users\\x86075\\Documents\\GitHub\\ConstVig\\Code\\unusedCode" + "\\"+sname #pcap_dir+"\\"+sname
 	fbase = sname.split(".")[0]
 	newf = fbase + ".csv"
-	r=r"^\w\t"
-	regx = re.compile(r)
 	if ".pcap" == sname[-5:]:
 		tsharkCall1 = [
 						"tshark",
@@ -35,7 +33,7 @@ for fil in range(1): #os.listdir(pcap_dir):
 						"-r",
 						fname,
 						"-Y",
-						"frame contains ^\w{31}=$",
+						"frame contains '^\w{31}='",
 						"-T",
 						"fields",
 						"-e",
@@ -55,7 +53,7 @@ for fil in range(1): #os.listdir(pcap_dir):
 						"-E",
 						"occurrence=f",
 						">",
-						"C:\\Users\\x86075\\Documents\\GitHub\\ConstVig\\pcap_test_backups" + "\\"+newf
+						"C:\\Users\\x86075\\Documents\\GitHub\\ConstVig\\Code\\unusedCode" + "\\"+newf
 		]
 		process = subprocess.Popen(tsharkCall2, shell=True, stdout=subprocess.PIPE)
 		process.wait()
