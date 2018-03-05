@@ -1,5 +1,6 @@
 import pytest
 import ipaddress
+import os
 import dad
 import childNO
 import childNI
@@ -19,6 +20,30 @@ def check_NO_log():
     with open('attack.log','r+') as log:
         dat = log.readlines()
     return dat
+
+def reset_database():
+    starting_locl = os.getcwd()
+    os.remove('packets.db')
+    os.chdir('..')
+    os.chdir('put_pcaps_here')
+    locl_path = os.getcwd()
+    for i in os.listdir('.'):
+        if os.path.isfile(i):
+            comp=i.split('.')
+            if comp[1]=='csv':
+                os.remove(i)
+    os.chdir('processed')
+    for dir_name in os.listdir(os.getcwd()):
+        if os.path.isdir(dir_name):
+            os.chdir(dir_name)
+            for fil in os.listdir(os.getcwd()):
+                os.remove(fil)
+            os.chdir('..')
+            os.rmdir(dir_name)
+        elif os.path.isfile(dir_name):
+            os.rename(os.getcwd()+'\\'+dir_name, locl_path+'\\'+dir_name)
+    os.chdir(starting_locl)
+    childNI.main()
 
 def main():
 
@@ -41,5 +66,18 @@ def main():
 
     #network in
     #waiting on regex for flag
-    #will need to do some manual stuff
+    reset_database()
     #test
+    cur = childNI.getCur()
+    test1 = childNI.searchSqlFlowsPortIn('port value',cur)
+    test2 = childNI.searchSqlFlowsPortOut('port value',cur)
+    test3 = childNI.searchSqlFlowsFlags('number',cur) #probably need to change this with tshark shift
+    test4 = childNI.searchSqlPortInWithFlags('port value',cur)
+    test5 = childNI.searchSqlPortOutWithFlags('port value',cur)
+    assert len(test1) == 'x'
+    assert len(test2) == 'x'
+    assert len(test3) == 'x'
+    assert len(test4) == 'x'
+    assert len(test5) == 'x'
+
+    #dad

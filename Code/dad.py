@@ -336,23 +336,6 @@ def log(inpu):
     return ret
 
 
-def set_log_file(path):
-
-    #Creator: Tate Bowers
-    #Input: intended file location
-    #Output: returns the file name
-    #This function creates and returns the log file
-    #the log file is named log+the day+ the hour+ the minute to prevent overlaps
-
-    ret = -1
-    if utilities.check_input("str", path):
-        nam = "log"+ time.strftime("%d_%h_%m")
-        ret = nam
-    temp = open(path+nam, "w+")
-    temp.close()
-    return ret
-
-
 def parse_settings(path, name):
     #TODO -- fill in one line Summary
 
