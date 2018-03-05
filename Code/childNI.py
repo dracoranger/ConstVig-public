@@ -1,19 +1,8 @@
-""" handles incoming network traffic
-Classes: None
-Exceptions:
-Functions:
-main --
-net_in --
-"""
-
 import socket
 import sys
-
-#from scapy.all import *
 import sqlite3
 import os
 import csv
-#import tShark
 import utilities
 import pcaphandler
 
@@ -43,10 +32,10 @@ def main():
         if 'put_pcaps_here' == os.path.basename(dir_name[0]):
             pcap_dir = dir_name[0]
     numberChanged = pcaphandler.split()
-    #Pcaps in put pcaps here should be moved or deleted
-    #Will start with moved
-    #if there is more than one file, move it to processed
-    #only moves files
+    # Pcaps in put pcaps here should be moved or deleted
+    # Will start with moved
+    # if there is more than one file, move it to processed
+    # only moves files
     if numberChanged > 0:
         for i in os.listdir(pcap_dir):
             if os.path.isfile(i):
@@ -55,10 +44,10 @@ def main():
     for dir_name in os.listdir(pcap_dir):
         if os.path.isdir(dir_name) and not dir_name == "processed":
             os.rename(pcap_dir+'\\'+dir_name,pcap_dir+'\\processed\\'+dir_name)
-            #may not be stable
+            # TODO may not be stable
     for flow in flows:
         addPacket(flow, conn, cur)
-    #testing success
+    # testing success
     os.chdir('C:\\Users\\T\\Documents\\GitHub\\ConstVig\\Code')
     printSqlDatabase()
 

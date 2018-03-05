@@ -1,15 +1,6 @@
 import subprocess
 import os
-#import datetime
-'''
-work_dir = os.getcwd() #gets current directory
-tgt_dir = os.path.dirname(work_dir) #moves up one level
-pcap_dir = ''
-for dir_name in os.walk(tgt_dir):
-    #walks through all sister directories of current directory
-    if 'put_pcaps_here' == os.path.basename(dir_name[0]):
-        pcap_dir = dir_name[0]
-'''
+
 def split():
     work_dir = os.getcwd() #gets current directory
     tgt_dir = os.path.dirname(work_dir) #moves up one level
