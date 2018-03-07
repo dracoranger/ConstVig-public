@@ -1,19 +1,21 @@
-""" handles the user interface
+# handles the user interface
 
-Classes: None
-Exceptions:
-Functions:
-main --
-"""
+# NAME: Child User Interface
+# FILE: ConstVig/Code/childUI.py
+# CLASSES: N/A
+# EXCEPTIONS:
+# FUNCTIONS:
+#     main
 
-import utilities
+
 import sys
 import socket
 
+import utilities
+
+
 def main():
-    """
-    For now, this just asserts what child is being used and checks for the type
-    """
+    #For now, asserts what child is being used and checks for the type
     keep_going = True
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(('localhost', 15550))
@@ -24,4 +26,6 @@ def main():
         if utilities.check_input((bytes), able):
             sock.send(able.encode())
     sock.close()
+
+
 main()

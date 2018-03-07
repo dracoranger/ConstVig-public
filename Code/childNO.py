@@ -1,23 +1,21 @@
-#handles traffic leaving to the rest of the network
+# handles traffic leaving to the rest of the network
 
-#Classes: None
-#Exceptions:
-#Functions:
-#main -- TBA
-#network_out --
+# NAME: Child Network In
+# FILE: ConstVig/Code/childNO.py
+# CLASSES: N/A
+# EXCEPTIONS:
+# FUNCTIONS:
+#   main
+#   iter_thru_config
+#   run_processes
+
 import os
 import time
 import ipaddress
 import utilities
 
-
-#NetworkOut
-
 #Constants or user set variables
 
-#Path variables
-#os.path.dirname(os.path.realpath(__file__)) or os.getcwd()
-#https://stackoverflow.com/questions/5137497/find-current-directory-and-files-directory
 dictionA = utilities.parseConfig('Attacks')
 dictionC = utilities.parseConfig('Chaff')
 dictionNO=utilities.parseConfig('NetworkOut')
