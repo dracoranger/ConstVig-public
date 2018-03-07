@@ -1,5 +1,13 @@
 # handles traffic leaving to the rest of the network
 
+# NAME: Child Network In
+# FILE: ConstVig/Code/childNO.py
+# CLASSES: N/A
+# EXCEPTIONS:
+# FUNCTIONS:
+#   main
+#   iter_thru_config
+#   run_processes
 
 import os
 import time
@@ -41,28 +49,31 @@ def run_processes(which, dicti, path, log):
         #print(attackDictionary)
         run = dicti[filename]
         run = run.replace(filename, PATH_ATTACK+'\\'+filename)
-        temp = run
+
         #allow replacement of IP and Ports accessed
         #might chose how flag is sent.
-        if not run.find('-f') == -1:
-            temp = temp.replace('-f', SUBMIT_FLAG_IP + ' '+ SUBMIT_FLAG_PORT)
-        if not run.find('-i') == -1 and not run.find('-p') == -1:
+        if '-f' in run:
+            run = run.replace('-f', '-f ' + SUBMIT_FLAG_IP + ','+ SUBMIT_FLAG_PORT)
+
+        temp = run
+
+        if '-ip' in temp and '-p' in temp:
             for p in PORTS:
                 for i in IP_RANGE:
-                    temp = temp.replace('-i',str(i))
-                    temp = temp.replace('-p',p)
+                    temp = run.replace('-ip', '-ip ' + str(i))
+                    temp = temp.replace('-p','-p ' + str(p))
                     launch = utilities.create_child_gen(temp)
                     launchStorage.append(launch)
                     launchOrder.append(filename)
-        elif not run.find('-i') == -1:
+        elif '-ip' in temp:
             for i in IP_RANGE:
-                temp = temp.replace('-i',str(i))
+                temp = run.replace('-ip', '-ip ' + str(i))
                 launch = utilities.create_child_gen(temp)
                 launchStorage.append(launch)
                 launchOrder.append(filename)
-        elif not run.find('-p') == -1:
+        elif '-p' in temp:
             for p in PORTS:
-                temp = temp.replace('-p',p)
+                temp = run.replace('-p','-p ' + str(p))
                 launch = utilities.create_child_gen(temp)
                 launchStorage.append(launch)
                 launchOrder.append(filename)
@@ -79,14 +90,13 @@ def run_processes(which, dicti, path, log):
         complete = True
         for launch in launchStorage:
             if utilities.check_input(launch.poll(), 1):
-                 #think this should work.  Not sure since not a child class.  Might just be process.poll
                 if launch.poll() == 0:
                     response = str(launch.communicate())
                     #COMMENT OUT THIS LINE TO NOT SUBMIT THE FLAG BASED ON WHATEVER IS SENT TO STDOUT
                     utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT, response)
                     #TODO, make sure this is correct
                     with open(log, 'a') as logpointer:
-                        logpointer.write('%n success: %s\n', str(launchOrder[currNum]), response)
+                        logpointer.write('%s success: %s\n' % (str(launchOrder[currNum]), response))
                     remove.append(launch)
                     #push to logfile success
                 else:
