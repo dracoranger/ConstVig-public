@@ -1,7 +1,7 @@
 import pytest
 import ipaddress
 import os
-import dad
+#import dad
 import childNO
 import childNI
 import utilities
@@ -29,8 +29,8 @@ def reset_database():
     locl_path = os.getcwd()
     for i in os.listdir('.'):
         if os.path.isfile(i):
-            comp=i.split('.')
-            if comp[1]=='csv':
+            comp = i.split('.')
+            if comp[1] == 'csv':
                 os.remove(i)
     os.chdir('processed')
     for dir_name in os.listdir(os.getcwd()):
@@ -57,12 +57,12 @@ def main():
     attackDictionary={}
     assert childNO.run_processes("Attacks", attackDictionary, PATH_ATTACK, "attack.log") == ['python hello_world.py','python failure.py']
     results = check_NO_log()
-    assert results[:-1] == "hello_world.py success: (b'Hello world!\r\n', None)"
-    assert results[:-2] == "failure.py failure: (b'trying an impossibility!\r\n', None)"
-    assert results[:-3] == ''#flag result
-    assert results[:-4] == ''#ip result
-    assert results[:-5] == ''#port result
-    assert results[:-6] == ''#both result
+    assert results[-5] == "hello_world.py success: (b'Hello world!\r\n', None)"
+    assert results[-7] == "failure.py failure: (b'trying an impossibility!\r\n', None)"
+    assert results[-6] == 'flag.py success: (b"Namespace(f=[\'192.168.1.1,9001\'])\r\n", None)'#flag result
+    assert results[-4] == 'ip.py success: (b"Namespace(ip=[\'192.168.1.0\'])\r\n", None)'#ip result
+    assert results[-2] == 'port.py success: (b"Namespace(p=[\'23\'])\r\n", None)'#port result
+    assert results[-9] == 'both.py success: (b"Namespace(ip=[\'192.168.1.0\'], p=[\'23\'])\r\n", None)'#both result
 
     #network in
     #waiting on regex for flag
@@ -81,3 +81,4 @@ def main():
     assert len(test5) == 'x'
 
     #dad
+    #manually

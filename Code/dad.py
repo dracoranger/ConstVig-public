@@ -23,13 +23,6 @@ import utilities
 #parse_settings -- parses the settings file, returning as a array
 #get_input -- gets input from the user interface
 
-
-#any global constants- there should be none
-#might need log file location
-LOG_FILE = "main.log"
-PATH = os.path.dirname(os.path.realpath(__file__))#file path of settings file
-CHILD_NUM = 4
-
 #structures
 
 class chatThread(threading.Thread):
@@ -215,12 +208,6 @@ def main():
     time_between_check = 5
     global LOG_FILE
     global SETTING
-
-    settings = [PATH, settings, death_limit, round_length,
-                total_rounds, time_between_check, LOG_FILE]
-
-    round_length, total_rounds, targets, additional = parse_settings(PATH,
-                                                                     settings)
 
 
     #additional is a temp name here

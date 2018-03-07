@@ -64,9 +64,15 @@ def create_child_gen(run):
 
 def generateDefaultConfig():
     config = configparser.ConfigParser()
-    config['Main'] = {'Rounds' : '100',
-                      'Round length':'300'
-                     }
+    config['dad'] = {'rounds' : '100',
+                     'round_length':'300',
+                     'PATH':os.getcwd()+'\\dad.py',
+                     'death_limit':'3',
+                     'time_between_check':'5',
+                     'LOG_FILE':'main.log',
+                     'CHILD_NUM':'2',
+                     '0':'0'
+                    }
     config['NetworkIn'] = {
         '''#Premade SQL queries are as follows\n
         #searchSqlFlowsPortIn(\'port as string\',getCur()) - shows flows matching port in\n
@@ -75,7 +81,7 @@ def generateDefaultConfig():
         #searchSqlPortInWithFlags(\'port as string\',getCur()) - shows flows that have flags present given the port in\n
         #searchSqlPortOutWithFlags(\'port as string\',getCur()) - shows flows that have flags present given the port out\n
         #searchSql(inp,cur) - generalized search function on sql.  Feeds query directly to database, so needs to be a valid sql query''':'',
-        'pcapFolder': os.getcwd()[:(os.getcwd().rfind('\\')-len(os.getcwd))]+'\\'+'put_pcaps_here'
+        'pcapFolder': os.getcwd()[:(os.getcwd().rfind('\\')-len(os.getcwd()))]+'\\'+'put_pcaps_here'
         }
     config['NetworkOut'] = {
         '''#The range of IPs that should be targeted should be in the format XXX.XXX.XXX.XXX/XX with the first IP and the subnet mask\n

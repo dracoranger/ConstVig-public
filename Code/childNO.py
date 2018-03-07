@@ -1,13 +1,5 @@
 # handles traffic leaving to the rest of the network
 
-# NAME: Child Network In
-# FILE: ConstVig/Code/childNO.py
-# CLASSES: N/A
-# EXCEPTIONS:
-# FUNCTIONS:
-#   main
-#   iter_thru_config
-#   run_processes
 
 import os
 import time
