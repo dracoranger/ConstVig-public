@@ -12,6 +12,8 @@
 import subprocess
 import os
 
+#TODO DON"T USE RELATIVE PATHS
+
 
 def split():
     work_dir = os.getcwd() # Gets current directory
@@ -31,8 +33,7 @@ def split():
             sname = os.fsdecode(fil)
             fname = pcap_dir+"\\"+sname
 			# This is the path to SplitCap; not just a string.
-            splitLocl = '''C:\\Users\\T\\Documents
-			\\GitHub\\ConstVig\\SplitCap_2-1\\SplitCap_2-1\\SplitCap.exe'''
+            splitLocl = 'C:\\Users\\T\\Documents\\GitHub\\ConstVig\\SplitCap_2-1\\SplitCap_2-1\\SplitCap.exe'
             inp = splitLocl + " -r " + fname + " -s session"
             process = subprocess.Popen(inp, stdout=subprocess.PIPE)
             process.wait()
@@ -43,12 +44,12 @@ def split():
 def get_sql_data():
     work_dir = os.getcwd() # Gets current directory
     tgt_dir = os.path.dirname(work_dir) # Moves up one level
-    pcap_dir = ''
     ret = []
     for dir_name in os.walk(tgt_dir):
         # Walks through all sister directories of current directory
         if os.path.basename(dir_name[0]) == 'put_pcaps_here':
             pcap_dir = dir_name[0]
+    print(pcap_dir)
     for sub_dir in os.walk(pcap_dir):
         for fil in os.listdir(sub_dir[0]):
             sname = os.fsdecode(fil)
@@ -74,7 +75,7 @@ def get_sql_data():
                     "-e",
                     "tcp.dstport",
                     "-E",
-                    "header=y",
+                    "header=n",
                     "-E",
                     "separator=,",
                     "-E",
@@ -82,10 +83,9 @@ def get_sql_data():
                     "-E",
                     "occurrence=f",
                     ">",
-                    'C:\\Users\\T\\Documents\\GitHub\\ConstVig\\\
-                    put_pcaps_here'+"\\"+newf
+                    'C:\\Users\\T\\Documents\\GitHub\\ConstVig\\put_pcaps_here'+"\\"+newf
                 ]
                 process = subprocess.Popen(tsharkCall,
-                          shell=True, stdout=subprocess.PIPE)
+                                           shell=True, stdout=subprocess.PIPE)
                 process.wait()
     return ret
