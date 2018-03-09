@@ -6,7 +6,7 @@
 # EXCEPTIONS:
 # FUNCTIONS:
 #     split
-#     getSqlData
+#     get_sql_data
 
 
 import subprocess
@@ -37,10 +37,10 @@ def split():
             process = subprocess.Popen(inp, stdout=subprocess.PIPE)
             process.wait()
             #os.unlink(fname)
-    return changed
+    return changed # why?
 
 
-def getSqlData():
+def get_sql_data():
     work_dir = os.getcwd() # Gets current directory
     tgt_dir = os.path.dirname(work_dir) # Moves up one level
     pcap_dir = ''
@@ -53,10 +53,9 @@ def getSqlData():
         for fil in os.listdir(sub_dir[0]):
             sname = os.fsdecode(fil)
             fname = sub_dir[0] +"\\"+sname
-            fbase = sname.split(".")[0] # File name without '.pcap'
-            #tname = datetime.datetime.now().strftime("%d_%H.%M.%S")
+            fbase = sname.split(".")[0] # File name minus '.pcap'
             newf = fbase + ".csv"
-            if sname[-5:] == ".pcap":
+            if sname.endswith(".pcap"):
                 ret.append(newf)
                 tsharkCall = [
                     "E:\\Programs\\Wireshark\\tshark.exe",

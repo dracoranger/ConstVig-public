@@ -40,7 +40,7 @@ def main():
         for i in os.listdir(pcap_dir):
             if os.path.isfile(i):
                 os.rename(pcap_dir+'\\'+i,os.getcwd()+'\\processed\\'+i)
-    flows = pcaphandler.getSqlData()
+    flows = pcaphandler.get_sql_data()
     for dir_name in os.listdir(pcap_dir):
         if os.path.isdir(dir_name) and not dir_name == "processed":
             os.rename(pcap_dir+'\\'+dir_name,pcap_dir+'\\processed\\'+dir_name)
