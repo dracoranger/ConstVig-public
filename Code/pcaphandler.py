@@ -52,7 +52,7 @@ def get_sql_data():
     for sub_dir in os.walk(pcap_dir):
         for fil in os.listdir(sub_dir[0]):
             sname = os.fsdecode(fil)
-            fname = sub_dir[0] +"\\"+sname
+            fname = sub_dir[0] + "\\" + sname
             fbase = sname.split(".")[0] # File name minus '.pcap'
             newf = fbase + ".csv"
             if sname.endswith(".pcap"):
