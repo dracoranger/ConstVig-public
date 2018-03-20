@@ -62,7 +62,7 @@ def create_child_gen(run):
     return ret
 
 
-def generateDefaultConfig():
+def generate_default_config():
     config = configparser.ConfigParser()
     config['dad'] = {'rounds' : '100',
                      'round_length':'300',
@@ -109,10 +109,10 @@ def generateDefaultConfig():
     with open('constvig.conf','w') as configfile:
         config.write(configfile)
 
-def parseConfig(section):
+def parse_config(section):
     config = configparser.ConfigParser()
     #taken from python.org wiki
-    def configSectionMap(section):
+    def config_section_map(section):
 
         dict1 = {}
         options = config.options(section)
@@ -127,7 +127,7 @@ def parseConfig(section):
         return dict1
 
     config.read('constvig.conf')
-    ret = configSectionMap(section)
+    ret = config_section_map(section)
     return ret
 
 def submit_flag(ip, port, data):

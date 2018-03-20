@@ -17,10 +17,10 @@ import ipaddress
 import utilities
 
 
-#Constants or user set variables
-dictionA = utilities.parseConfig('Attacks')
-dictionC = utilities.parseConfig('Chaff')
-dictionNO=utilities.parseConfig('NetworkOut')
+# Constants & user set variables (naming exception made for variables)
+dictionA = utilities.parse_config('Attacks')
+dictionC = utilities.parse_config('Chaff')
+dictionNO = utilities.parse_config('NetworkOut')
 PATH_ATTACK = dictionNO['path_attack']
 PATH_CHAFF = dictionNO['path_chaff']
 IP_RANGE =  list(ipaddress.ip_network(dictionNO['iprange']).hosts())
@@ -28,16 +28,15 @@ PORTS = dictionNO['ports'].split(',')
 SUBMIT_FLAG_PORT = dictionNO['submit_flag_port']
 SUBMIT_FLAG_IP = dictionNO['submit_flag_ip']
 
-# filename: running arugments stored as a list
 
-# generalized version of below
 def iter_thru_config(which, dicti):
     # "which" is either "Attack" or "Chaff"
-    diction = utilities.parseConfig(which)
+    diction = utilities.parse_config(which)
     for i in diction:
-        if not i in dicti:
+        if not i in dicti
             # dicti is either chaff or attack dictionary
             dicti[i] = diction[i]
+
 
 def run_processes(which, dicti, path, log):
     # "which" is either "Attack" or "Chaff"
@@ -52,24 +51,25 @@ def run_processes(which, dicti, path, log):
         run = dicti[filename]
         run = run.replace(filename, PATH_ATTACK+'\\'+filename)
 
-        #allow replacement of IP and Ports accessed
-        #might chose how flag is sent.
+        # allow replacement of IP and Ports accessed
+        # might chose how flag is sent.
         if '-f' in run:
-            run = run.replace('-f', '-f '+SUBMIT_FLAG_IP+','+SUBMIT_FLAG_PORT)
+            run = run.replace('-f', '-f '+SUBMIT_FLAG_IP+', '
+                              +SUBMIT_FLAG_PORT)
 
         temp = run
 
         if '-ip' in temp and '-p' in temp:
             for p in PORTS:
                 for i in IP_RANGE:
-                    temp = run.replace('-ip', '-ip '+str(i))
+                    temp = run.replace('-ip','-ip '+str(i))
                     temp = temp.replace('-p','-p '+str(p))
                     launch = utilities.create_child_gen(temp)
                     launchStorage.append(launch)
                     launchOrder.append(filename)
         elif '-ip' in temp:
             for i in IP_RANGE:
-                temp = run.replace('-ip', '-ip '+str(i))
+                temp = run.replace('-ip','-ip '+str(i))
                 launch = utilities.create_child_gen(temp)
                 launchStorage.append(launch)
                 launchOrder.append(filename)
@@ -87,7 +87,7 @@ def run_processes(which, dicti, path, log):
     while not complete:
         # TODO make an escape to kill indefinitely running processes
         remove = []
-        currNum = 0
+        curr_num = 0
         time.sleep(3)
         complete = True
         for launch in launchStorage:
@@ -96,50 +96,43 @@ def run_processes(which, dicti, path, log):
                     response = str(launch.communicate())
                     # COMMENT OUT THIS LINE TO NOT SUBMIT THE FLAG
                     # BASED ON WHATEVER IS SENT TO STDOUT
-                    utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,\
+                    utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
                                           response)
-                    #TODO make sure this is correct
+                    # TODO make sure this is correct
                     with open(log, 'a') as logpointer:
-                        logpointer.write('%s success: %s\n' % \
-                                         (str(launchOrder[currNum]), response))
+                        logpointer.write('%s success: %s\n' % (str(
+                                         launchOrder[curr_num]), response))
                     remove.append(launch)
-                    #push to logfile success
+                    # push to logfile success
                 else:
                     response = str(launch.communicate())
                     with open(log, 'a') as logpointer:
-                        logpointer.write(str(launchOrder[currNum])+
-                                         ' failure: '+response+'\n')
-                    print(str(launchOrder[currNum])+str(launch.communicate()))
+                        logpointer.write(str(launchOrder[curr_num])
+                                         +' failure: '+response+'\n')
+                    print(str(launchOrder[curr_num])+str(launch.communicate()))
                     # +attack.process.stderr)
                     remove.append(launch)
             elif isinstance(launch.poll(), type(None)):
-                print(launchOrder[currNum]+' on going')
+                print(launchOrder[curr_num]+' on going')
                 complete = False
-            currNum = currNum+1
+            curr_num = curr_num + 1
         for i in remove:
             temp = launchStorage.index(i)
             launchStorage.remove(i)
             launchOrder.pop(temp)
 
+
 def main():
-    #[prints out childNO and then] checks for the type
+    # checks for the type
 
-    #Summary of behavior:
-    #Arguments: None
-    #Return values:
-    #Side effects:
-    #Exceptions raised:
-    #Restrictions on when it can be called:
+    attack_dictionary = {
+    }
+    chaff_dictionary = {
+    }
+    # Either preferences in main or here
+    # read_preferences()
+    # which, dicti, path
+    run_processes("Chaff", chaff_dictionary, PATH_CHAFF, "chaff.log")
+    run_processes("Attacks", attack_dictionary,PATH_ATTACK, "attack.log")
 
-    attackDictionary = {
-    }
-    chaffDictionary = {
-    }
-    #Either preferences in main or here
-    #read_preferences()
-    #which, dicti, path
-    run_processes("Chaff", chaffDictionary, PATH_CHAFF, "chaff.log")
-    run_processes("Attacks", attackDictionary,PATH_ATTACK, "attack.log")
-        #commented out the print() and input()
-        #print('NO')
 main()
