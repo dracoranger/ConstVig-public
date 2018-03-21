@@ -5,6 +5,7 @@ import os
 import childNO
 import childNI
 import utilities
+import difflib
 
 dictionA = utilities.parseConfig('Attacks')
 dictionC = utilities.parseConfig('Chaff')
@@ -16,10 +17,18 @@ PORTS = dictionNO['ports'].split(',')
 SUBMIT_FLAG_PORT = dictionNO['submit_flag_port']
 SUBMIT_FLAG_IP = dictionNO['submit_flag_ip']
 
+comparisons = ["both.py success: (b\"Namespace(ip=[\'192.168.1.0\'], p=[\'23\'])\\r\\n\", None)","","flag.py success: (b\"Namespace(f=[\'192.168.1.1,9001\'])\\r\\n\", None)","hello_world.py success: (b\'Hello world!\\r\\n\', None)","ip.py success: (b\"Namespace(ip=[\'192.168.1.0\'])\\r\\n\", None)","","port.py success: (b\"Namespace(p=[\'23\'])\\r\\n\", None)"]
+
 def check_NO_log(val):
     with open('attack.log','r+') as log:
         dat = log.readlines()
-    return dat[val]
+    checker = True
+    for i in range(0,len(dat[val][:-1])-1):
+        #print(str(i)+" "+dat[val][i]+" "+comparisons[val][i])
+        if(dat[val][i] != comparisons[val][i]):
+            checker = False
+            print(dat[val][i])
+    return checker
 
 def test():
     return True
@@ -61,12 +70,13 @@ def main():
     childNO.run_processes("Attacks", attackDictionary, PATH_ATTACK, "attack.log")
     #results = check_NO_log()
     assert test() == True
-    #assert check_NO_log(-4) == "hello_world.py success: (b'Hello world!\r\n', None)"
-    #assert check_NO_log(-7) == "failure.py failure: (b'trying an impossibility!\r\n', None)"
-    #assert check_NO_log(-5) == 'flag.py success: (b"Namespace(f=[\'192.168.1.1,9001\'])\r\n", None)'#flag result
-    #assert check_NO_log(-3) == 'ip.py success: (b"Namespace(ip=[\'192.168.1.0\'])\r\n", None)'#ip result
-    #assert check_NO_log(-1) == 'port.py success: (b"Namespace(p=[\'23\'])\r\n", None)'#port result
-    #assert check_NO_log(-7) == 'both.py success: (b"Namespace(ip=[\'192.168.1.0\'], p=[\'23\'])\r\n", None)'#both result
+    assert check_NO_log(-7) == True#both result
+    assert check_NO_log(-5) == True#flag result
+    assert check_NO_log(-4) == True
+    #assert check_NO_log(-7) == "failure.py failure: (b\'trying an impossibility!\r\n\', None)"
+    assert check_NO_log(-3) == True#ip result
+    assert check_NO_log(-1) == True#port result
+
 
     #network in
     #waiting on regex for flag
