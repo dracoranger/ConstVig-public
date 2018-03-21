@@ -7,9 +7,9 @@ import childNI
 import utilities
 import difflib
 
-dictionA = utilities.parseConfig('Attacks')
-dictionC = utilities.parseConfig('Chaff')
-dictionNO=utilities.parseConfig('NetworkOut')
+dictionA = utilities.parse_config('Attacks')
+dictionC = utilities.parse_config('Chaff')
+dictionNO=utilities.parse_config('NetworkOut')
 PATH_ATTACK = dictionNO['path_attack']
 PATH_CHAFF = dictionNO['path_chaff']
 IP_RANGE =  list(ipaddress.ip_network(dictionNO['iprange']).hosts())

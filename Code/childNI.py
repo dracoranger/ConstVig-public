@@ -141,8 +141,8 @@ def addpacket(flows, conn, cur):
             for flag in flag_sub[dataGroup]:
                 print(flag)
         # Note, need to be careful if flags do not exist
-            cur.execute("INSERT INTO connection(flagNum,flowNum)
-                        VALUES (?, ?)", flag_sub[dataGroup])
+            cur.execute("""INSERT INTO connection(flagNum,flowNum)
+                        VALUES (?, ?)""", flag_sub[dataGroup])
     conn.commit()
 
 
@@ -156,8 +156,8 @@ def addflags(flags,conn, cur):
             comp = cur.fetchall()
             if comp.isEmpty():
                 cur.execute("INSERT INTO flags(flag) VALUES (?)", (flag,))
-                cur.execute("SELECT flagNum FROM flags ORDER BY flagNum
-                            DESC LIMIT 1")
+                cur.execute("""SELECT flagNum FROM flags ORDER BY flagNum
+                            DESC LIMIT 1""")
                 temp = cur.fetchall()
                 packet_flags.append(temp[0])
             else:
