@@ -33,7 +33,7 @@ def iter_thru_config(which, dicti):
     # "which" is either "Attack" or "Chaff"
     diction = utilities.parse_config(which)
     for i in diction:
-        if not i in dicti
+        if not i in dicti:
             # dicti is either chaff or attack dictionary
             dicti[i] = diction[i]
 
@@ -50,11 +50,10 @@ def run_processes(which, dicti, path, log):
         filename = os.fsdecode(fil)
         run = dicti[filename]
         run = run.replace(filename, PATH_ATTACK+'\\'+filename)
-
         # allow replacement of IP and Ports accessed
         # might chose how flag is sent.
         if '-f' in run:
-            run = run.replace('-f', '-f '+SUBMIT_FLAG_IP+', '
+            run = run.replace('-f', '-f '+SUBMIT_FLAG_IP+','
                               +SUBMIT_FLAG_PORT)
 
         temp = run

@@ -70,24 +70,24 @@ def main():
     childNO.run_processes("Attacks", attackDictionary, PATH_ATTACK, "attack.log")
     #results = check_NO_log()
     assert test() == True
-    assert check_NO_log(-7) == True#both result
-    assert check_NO_log(-5) == True#flag result
-    assert check_NO_log(-4) == True
+    assert check_NO_log(-7) is True#both result
+    assert check_NO_log(-5) is True#flag result
+    assert check_NO_log(-4) is True
     #assert check_NO_log(-7) == "failure.py failure: (b\'trying an impossibility!\r\n\', None)"
-    assert check_NO_log(-3) == True#ip result
-    assert check_NO_log(-1) == True#port result
+    assert check_NO_log(-3) is True#ip result
+    assert check_NO_log(-1) is True#port result
 
 
     #network in
     #waiting on regex for flag
     reset_database()
     #test
-    cur = childNI.getCur()
-    test1 = childNI.searchSqlFlowsPortIn('port value',cur)
-    test2 = childNI.searchSqlFlowsPortOut('port value',cur)
-    test3 = childNI.searchSqlFlowsFlags('number',cur) #probably need to change this with tshark shift
-    test4 = childNI.searchSqlPortInWithFlags('port value',cur)
-    test5 = childNI.searchSqlPortOutWithFlags('port value',cur)
+    cur = childNI.getcur()
+    test1 = childNI.search_sql_flows_port_in('port value',cur)
+    test2 = childNI.search_sql_flows_port_out('port value',cur)
+    test3 = childNI.search_sql_flows_flags('number',cur) #probably need to change this with tshark shift
+    test4 = childNI.search_sql_port_in_with_flags('port value',cur)
+    test5 = childNI.search_sql_port_out_with_flags('port value',cur)
     assert len(test1) == 'x'
     assert len(test2) == 'x'
     assert len(test3) == 'x'
