@@ -85,14 +85,14 @@ def main():
     cur = childNI.getcur()
     test1 = childNI.search_sql_flows_port_in('port value',cur)
     test2 = childNI.search_sql_flows_port_out('port value',cur)
-    test3 = childNI.search_sql_flows_flags('number',cur) #probably need to change this with tshark shift
-    test4 = childNI.search_sql_port_in_with_flags('port value',cur)
-    test5 = childNI.search_sql_port_out_with_flags('port value',cur)
+    #test3 = childNI.search_sql_flows_flags('number',cur) #probably need to change this with tshark shift
+    #test4 = childNI.search_sql_port_in_with_flags('port value',cur)
+    #test5 = childNI.search_sql_port_out_with_flags('port value',cur)
     assert len(test1) == 'x'
     assert len(test2) == 'x'
-    assert len(test3) == 'x'
-    assert len(test4) == 'x'
-    assert len(test5) == 'x'
+    #assert len(test3) == 'x'
+    #assert len(test4) == 'x'
+    #assert len(test5) == 'x'
 
     #dad
     #manually

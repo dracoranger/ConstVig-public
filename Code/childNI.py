@@ -40,7 +40,6 @@ def main():
 
     # Checks for type and returns the input,
     # otherwise returns an error message
-    keep_going = True
     # Here is where database stuff begins
     db_already_made = False
     if 'packets.db' in os.listdir():
@@ -86,13 +85,15 @@ def generate_db(conn):
               portIn integer,
               portOut integer,
               flowReference text)''')
-    conn.execute('''CREATE TABLE flags
-             (flagNum integer primary key,
-             flag text)''')
-    conn.execute('''CREATE TABLE connection
-             (flagDiscNumber integer primary key,
-             flowNum integer references flows(flowNum),
-             flagNum integer references flags(flagNum))''')
+    #Shifting from multiple databases to one.
+    #Necessary b/c how pcaphandler grabs flows
+    #conn.execute('''CREATE TABLE flags
+    #         (flagNum integer primary key,
+    #         flag text)''')
+    #conn.execute('''CREATE TABLE connection
+    #         (flagDiscNumber integer primary key,
+    #         flowNum integer references flows(flowNum),
+    #         flagNum integer references flags(flagNum))''')
 
 
 # need to know payload, in/out, build flows, separated by time
@@ -107,6 +108,7 @@ def addpacket(flows, conn, cur):
         recent = 0
     else:
         recent = recent[0]
+    #TODO pythonize this
     flo = open(flows, 'r+')
     lines = flo.readlines()
     flo.close()
@@ -116,18 +118,18 @@ def addpacket(flows, conn, cur):
         fields = i.split(',')
         temp = (fields[0], fields[1], fields[2], fields[3])
         data_groups.append(temp)
-        tem = []
-        for j in range(4, len(fields)):
-            if not fields[j] == '' and not fields[j] == '\n':
-                tem.append(fields[j])
-        flags.append(tem)
-    flag_packet_relationship = addflags(flags, conn, cur)
+        #tem = []
+        #for j in range(4, len(fields)):
+        #    if not fields[j] == '' and not fields[j] == '\n':
+        #        tem.append(fields[j])
+        #flags.append(tem)
+    #flag_packet_relationship = addflags(flags, conn, cur)
 
     # print(flag_packet_relationship)
-    flag_sub = []
-    for packet in flag_packet_relationship:
-        for flag in packet:
-            flag_sub.append((recent, flag))
+    #flag_sub = []
+    #for packet in flag_packet_relationship:
+    #    for flag in packet:
+    #        flag_sub.append((recent, flag))
         # recent = recent + 1
     # print(flag_sub)
     # TODO can I just do a full insert?
@@ -137,16 +139,17 @@ def addpacket(flows, conn, cur):
                     flowReference) VALUES (?, ?, ?, ?)""",
                     data_groups[dataGroup]
                     )
-        if flag_sub != []:
-            for flag in flag_sub[dataGroup]:
-                print(flag)
+    #    if flag_sub != []:
+    #        for flag in flag_sub[dataGroup]:
+    #            print(flag)
         # Note, need to be careful if flags do not exist
-            cur.execute("""INSERT INTO connection(flagNum,flowNum)
-                        VALUES (?, ?)""", flag_sub[dataGroup])
+    #        cur.execute("""INSERT INTO connection(flagNum,flowNum)
+    #                    VALUES (?, ?)""", flag_sub[dataGroup])
     conn.commit()
 
 
 # in order of input, returns the flags and how they're related
+#will never be called
 def addflags(flags,conn, cur):
     flag_numbers = []
     for packet in flags:
@@ -188,30 +191,31 @@ def search_sql_flows_port_out(inp,cur):
 
 
 # Finds flows with a minimum number of flags sorted by the time incoming
-def search_sql_flows_flags(inp, cur):
-    cur.execute('''SELECT flowReference, flag FROM flows
-    INNER JOIN connection on flows.flowNum = connection.flowNum
-    INNER JOIN flags on flags.flagNum = connection.flagNum
-    ORDER BY timest DESC LIMIT ?''', (inp,))
-    return cur.fetchall()
+#all flows have at least one flag
+#def search_sql_flows_flags(inp, cur):
+#    cur.execute('''SELECT flowReference, flag FROM flows
+#    INNER JOIN connection on flows.flowNum = connection.flowNum
+#    INNER JOIN flags on flags.flagNum = connection.flagNum
+#    ORDER BY timest DESC LIMIT ?''', (inp,))
+#    return cur.fetchall()
 
 
 # finds flows with a given port in and at least 1 flag
-def search_sql_port_in_with_flags(inp, cur):
-    cur.execute('''SELECT flowReference, flag FROM flows
-    INNER JOIN connection on flows.flowNum = connection.flowNum
-    INNER JOIN flags on flags.flagNum = connection.flagNum
-    where portIn = ? ORDER BY timest''', (inp,))
-    return cur.fetchall()
+#def search_sql_port_in_with_flags(inp, cur):
+#    cur.execute('''SELECT flowReference, flag FROM flows
+#    INNER JOIN connection on flows.flowNum = connection.flowNum
+#    INNER JOIN flags on flags.flagNum = connection.flagNum
+#    where portIn = ? ORDER BY timest''', (inp,))
+#    return cur.fetchall()
 
 
 # finds flows with a given port out and at least 1 flag
-def search_sql_port_out_with_flags(inp, cur):
-    cur.execute('''SELECT flowReference, flag FROM flows
-    INNER JOIN connection on flows.flowNum = connection.flowNum
-    INNER JOIN flags on flags.flagNum = connection.flagNum
-    where portOut = ? ORDER BY timest''', (inp,))
-    return cur.fetchall()
+#def search_sql_port_out_with_flags(inp, cur):
+#    cur.execute('''SELECT flowReference, flag FROM flows
+#    INNER JOIN connection on flows.flowNum = connection.flowNum
+#    INNER JOIN flags on flags.flagNum = connection.flagNum
+#    where portOut = ? ORDER BY timest''', (inp,))
+#    return cur.fetchall()
 
 
 # allows generalized queries on database
@@ -231,14 +235,14 @@ def print_sql_datbase():
     # flow='testDB.csv'
     # addpacket(flow,conn,sql)
     flows = search_sql('SELECT * FROM flows', cur)
-    relationships = search_sql('SELECT * FROM connection', cur)
-    flags = search_sql('SELECT * FROM flags', cur)
+    #relationships = search_sql('SELECT * FROM connection', cur)
+    #flags = search_sql('SELECT * FROM flags', cur)
     with open('flows.csv', 'w+') as flows:
         writer = csv.writer(flows)
         writer.writerows(flows)
-    with open('relationships.csv', 'w+') as relationships:
-        writer = csv.writer(relationships)
-        writer.writerows(relationships)
-    with open('flags.csv', 'w+') as flags:
-        writer = csv.writer(flags)
-        writer.writerows(flags)
+    #with open('relationships.csv', 'w+') as relationships:
+    #    writer = csv.writer(relationships)
+    #    writer.writerows(relationships)
+    #with open('flags.csv', 'w+') as flags:
+    #    writer = csv.writer(flags)
+    #    writer.writerows(flags)
