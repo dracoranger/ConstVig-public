@@ -85,8 +85,8 @@ def generate_db(conn):
               portIn integer,
               portOut integer,
               flowReference text)''')
-    #Shifting from multiple databases to one.
-    #Necessary b/c how pcaphandler grabs flows
+    # Shifting from multiple databases to one.
+    # Necessary b/c how pcaphandler grabs flows
     #conn.execute('''CREATE TABLE flags
     #         (flagNum integer primary key,
     #         flag text)''')
@@ -96,13 +96,13 @@ def generate_db(conn):
     #         flagNum integer references flags(flagNum))''')
 
 
-# need to know payload, in/out, build flows, separated by time
+# Need to know payload, in/out, build flows, separated by time
 # flows is the pointer to to csv that is already opened
 # might want to change in the future
 def addpacket(flows, conn, cur):
     # parse
-    # must be last most recent packet, every one following is appended
-    cur.execute("SELECT flowNum FROM flows ORDER BY flowNum DESC LIMIT 1")
+    # Must be last most recent packet, every one following is appended
+    cur.execute('''SELECT flowNum FROM flows ORDER BY flowNum DESC LIMIT 1''')
     recent = cur.fetchall()
     if len(recent) == 0:
         recent = 0
@@ -142,14 +142,14 @@ def addpacket(flows, conn, cur):
     #    if flag_sub != []:
     #        for flag in flag_sub[dataGroup]:
     #            print(flag)
-        # Note, need to be careful if flags do not exist
+        # Note: need to be careful if flags do not exist
     #        cur.execute("""INSERT INTO connection(flagNum,flowNum)
     #                    VALUES (?, ?)""", flag_sub[dataGroup])
     conn.commit()
 
 
 # in order of input, returns the flags and how they're related
-#will never be called
+# will never be called
 def addflags(flags,conn, cur):
     flag_numbers = []
     for packet in flags:
@@ -158,17 +158,17 @@ def addflags(flags,conn, cur):
             cur.execute("SELECT * FROM flags WHERE ? = flag", (flag,))
             comp = cur.fetchall()
             if comp.isEmpty():
-                cur.execute("INSERT INTO flags(flag) VALUES (?)", (flag,))
-                cur.execute("""SELECT flagNum FROM flags ORDER BY flagNum
-                            DESC LIMIT 1""")
+                cur.execute('''INSERT INTO flags(flag) VALUES (?)''', (flag,))
+                cur.execute('''SELECT flagNum FROM flags ORDER BY flagNum
+                            DESC LIMIT 1''')
                 temp = cur.fetchall()
                 packet_flags.append(temp[0])
             else:
-                cur.execute("SELECT flagNum FROM flags WHERE ? = flag",
+                cur.execute('''SELECT flagNum FROM flags WHERE ? = flag''',
                             (flag,))
                 check = cur.fetchall()
                 if not check in packet_flags:
-                    cur.execute("SELECT flagNum FROM flags WHERE ? = flag",
+                    cur.execute('''SELECT flagNum FROM flags WHERE ? = flag''',
                                 (flag,))
                     temp = cur.fetchall()
                     packet_flags.append(temp[0])
@@ -180,13 +180,13 @@ def addflags(flags,conn, cur):
 
 # finds flows with a given port in
 def search_sql_flows_port_in(inp,cur):
-    cur.execute('SELECT flowReference FROM flows where portIn = ?', (inp,))
+    cur.execute('''SELECT flowReference FROM flows where portIn = ?''', (inp,))
     return cur.fetchall()
 
 
 # finds flows with a given port out
 def search_sql_flows_port_out(inp,cur):
-    cur.execute('SELECT flowReference FROM flows where portOut = ?', (inp,))
+    cur.execute('''SELECT flowReference FROM flows where portOut = ?''', (inp,))
     return cur.fetchall()
 
 
