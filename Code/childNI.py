@@ -138,8 +138,8 @@ def addpacket(flows, conn, cur):
     # TODO can I just do a full insert?
     # Fast enough now, but not sure if I need to do iterate
     for dataGroup in range(0, len(data_groups)):
-        cur.execute("""INSERT INTO flows(timest, portIn, portOut,
-                    flowReference) VALUES (?, ?, ?, ?)""",
+        cur.execute('''INSERT INTO flows(timest, portIn, portOut,
+                    flowReference) VALUES (?, ?, ?, ?)''',
                     data_groups[dataGroup]
                     )
     #    if flag_sub != []:
@@ -158,7 +158,7 @@ def addflags(flags,conn, cur):
     for packet in flags:
         packet_flags = []
         for flag in packet:
-            cur.execute("SELECT * FROM flags WHERE ? = flag", (flag,))
+            cur.execute('''SELECT * FROM flags WHERE ? = flag''', (flag,))
             comp = cur.fetchall()
             if comp.isEmpty():
                 cur.execute('''INSERT INTO flags(flag) VALUES (?)''', (flag,))
