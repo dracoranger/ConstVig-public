@@ -19,10 +19,12 @@ for ts, buf in pcap:
         line = tcp.data.strip()
         match = reg.findall(line.decode('utf-8',errors='ignore'))
         if len(match)>0:
-            matches.append(match)
-
+            for thing in match:
+                if thing not in matches:
+                    matches.append(thing)
 for match in matches:
     print(match)
+print(len(matches))
 e = time.time()
 
 print("Total is: ", e-s)
