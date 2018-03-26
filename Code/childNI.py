@@ -42,6 +42,7 @@ def main():
     # Here is where database stuff begins
     config = utilities.parse_config('NetworkIn')
     regex = config['regex']
+    length = config['length']
 
     db_already_made = False
     if 'packets.db' in os.listdir():
@@ -67,7 +68,7 @@ def main():
         for i in os.listdir(pcap_dir):
             if os.path.isfile(i):
                 os.rename(pcap_dir+'\\'+i,os.getcwd()+'\\processed\\'+i)
-    flows = pcaphandler.get_sql_data(regex)
+    flows = pcaphandler.get_sql_data(regex, length)
     for dir_name in os.listdir(pcap_dir):
         if os.path.isdir(dir_name) and not dir_name == "processed":
             os.rename(pcap_dir+'\\'+dir_name,pcap_dir+'\\processed\\'
@@ -77,7 +78,7 @@ def main():
         addpacket(flow, conn, cur)
     # testing success
     os.chdir('C:\\Users\\T\\Documents\\GitHub\\ConstVig\\Code')
-    print_sql_datbase()
+    print_sql_database()
 
 
 def generate_db(conn):
@@ -231,7 +232,7 @@ def getcur():
     return conn.cursor()
 
 
-def print_sql_datbase():
+def print_sql_database():
     conn = sqlite3.connect('packets.db')
     cur = conn.cursor()
     # flow='testDB.csv'

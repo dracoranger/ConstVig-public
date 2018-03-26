@@ -44,8 +44,11 @@ def split():
     return changed # why?
 
 
-def get_sql_data(regex):
-    reg=re.compile(regex)
+def get_sql_data(regex, length):
+    assembled = regex.format(length)
+
+    reg=re.compile(assembled)
+    #print(reg)
     work_dir = os.getcwd() # Gets current directory
     tgt_dir = os.path.dirname(work_dir) # Moves up one level
     ret = []
@@ -53,7 +56,7 @@ def get_sql_data(regex):
         # Walks through all sister directories of current directory
         if os.path.basename(dir_name[0]) == 'put_pcaps_here':
             pcap_dir = dir_name[0]
-    print(pcap_dir)
+    #print(pcap_dir)
     for sub_dir in os.walk(pcap_dir):
         for fil in os.listdir(sub_dir[0]):
             sname = os.fsdecode(fil)
@@ -61,17 +64,19 @@ def get_sql_data(regex):
             fbase = sname.split(".")[0] # File name minus '.pcap'
             newf = fbase + ".csv"
             if sname.endswith(".pcap"):
-
+                #print(fname)
                 #checks the regex
-                with open(sname, 'rb') as sn:
-                    pcap = dpkt.pcap.Reader(sn)
-                for ts, buf in pcap:
-                    eth = dpkt.ethernet.Ethernet(buf)
-                    ip = eth.data
-                    tcp = ip.data
+                with open(fname, 'rb') as fn:
+                    pcap = dpkt.pcap.Reader(fn)
+                    for ts, buf in pcap:
+                        eth = dpkt.ethernet.Ethernet(buf)
+                        ip = eth.data
+                        tcp = ip.data
                     if tcp.data:
                         line = tcp.data.strip()
+                        #print(line)
                         match = reg.findall(line.decode('utf-8',errors='ignore'))
+                        #print(match)
                         if len(match)>0:
                             #if regex matches, call tshark on object
                             ret.append(newf)

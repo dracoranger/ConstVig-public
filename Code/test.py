@@ -35,7 +35,8 @@ def test():
 
 def reset_database():
     starting_locl = os.getcwd()
-    os.remove('packets.db')
+    if 'packets.db' in os.listdir():
+        os.remove('packets.db')
     os.chdir('..')
     os.chdir('put_pcaps_here')
     locl_path = os.getcwd()
@@ -69,12 +70,18 @@ def main():
     attackDictionary={}
     childNO.run_processes("Attacks", attackDictionary, PATH_ATTACK, "attack.log")
     #results = check_NO_log()
+    print('test functionality of testing platform: ' + str(test() is True))
     assert test() == True
+    print('test functionality of Port alone: ' + str(check_NO_log(-7) is True))
     assert check_NO_log(-7) is True#both result
+    print('test functionality of IP alone: ' + str(check_NO_log(-5) is True))
     assert check_NO_log(-5) is True#flag result
+    print('test functionality of HelloWorld: ' + str(check_NO_log(-4) is True))
     assert check_NO_log(-4) is True
     #assert check_NO_log(-7) == "failure.py failure: (b\'trying an impossibility!\r\n\', None)"
+    print('test functionality of Flag sending: ' + str(check_NO_log(-3) is True))
     assert check_NO_log(-3) is True#ip result
+    print('test functionality of both IP and Port: ' + str(check_NO_log(-1) is True))
     assert check_NO_log(-1) is True#port result
 
 
@@ -83,13 +90,15 @@ def main():
     reset_database()
     #test
     cur = childNI.getcur()
-    test1 = childNI.search_sql_flows_port_in('port value',cur)
-    test2 = childNI.search_sql_flows_port_out('port value',cur)
+    test1 = childNI.search_sql_flows_port_in('52304',cur)
+    test2 = childNI.search_sql_flows_port_out('4280',cur)
+    print(test1)
+    print(test2)
     #test3 = childNI.search_sql_flows_flags('number',cur) #probably need to change this with tshark shift
     #test4 = childNI.search_sql_port_in_with_flags('port value',cur)
     #test5 = childNI.search_sql_port_out_with_flags('port value',cur)
-    assert len(test1) == 'x'
-    assert len(test2) == 'x'
+    assert len(test1) == '1'
+    assert len(test2) == '1'
     #assert len(test3) == 'x'
     #assert len(test4) == 'x'
     #assert len(test5) == 'x'

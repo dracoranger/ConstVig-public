@@ -82,7 +82,8 @@ def generate_default_config():
         #searchSqlPortOutWithFlags(\'port as string\',getCur()) - shows flows that have flags present given the port out\n
         #searchSql(inp,cur) - generalized search function on sql.  Feeds query directly to database, so needs to be a valid sql query''':'',
         'pcapFolder': os.getcwd()[:(os.getcwd().rfind('\\')-len(os.getcwd()))]+'\\'+'put_pcaps_here',
-        'regex' : 'r"[A-Z0-9]{}=".format("{31}")'
+        'regex' : '"[A-Z0-9]{}="',
+        'length' : '{31}'
         }
     config['NetworkOut'] = {
         '''#The range of IPs that should be targeted should be in the format XXX.XXX.XXX.XXX/XX with the first IP and the subnet mask\n
