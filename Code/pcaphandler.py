@@ -11,6 +11,9 @@
 
 import subprocess
 import os
+import dpkt
+import re
+import time
 
 #TODO DON"T USE RELATIVE PATHS
 
@@ -41,7 +44,8 @@ def split():
     return changed # why?
 
 
-def get_sql_data():
+def get_sql_data(regex):
+    reg=re.compile(regex)
     work_dir = os.getcwd() # Gets current directory
     tgt_dir = os.path.dirname(work_dir) # Moves up one level
     ret = []
@@ -57,35 +61,48 @@ def get_sql_data():
             fbase = sname.split(".")[0] # File name minus '.pcap'
             newf = fbase + ".csv"
             if sname.endswith(".pcap"):
-                ret.append(newf)
-                tsharkCall = [
-                    "E:\\Programs\\Wireshark\\tshark.exe",
-                    "-r",
-                    fname,
-                    #"-Y",
-                    #"frame contains 31:41:47:33:35:39:54:",
-                    "-T",
-                    "fields",
-                    "-e",
-                    "frame.number",
-                    "-e",
-                    "frame.time_epoch",
-                    "-e",
-                    "tcp.srcport",
-                    "-e",
-                    "tcp.dstport",
-                    "-E",
-                    "header=n",
-                    "-E",
-                    "separator=,",
-                    "-E",
-                    "quote=d",
-                    "-E",
-                    "occurrence=f",
-                    ">",
-                    'C:\\Users\\T\\Documents\\GitHub\\ConstVig\\put_pcaps_here'+"\\"+newf
-                ]
-                process = subprocess.Popen(tsharkCall,
-                                           shell=True, stdout=subprocess.PIPE)
-                process.wait()
+
+                #checks the regex
+                with open(sname, 'rb') as sn:
+                    pcap = dpkt.pcap.Reader(sn)
+                for ts, buf in pcap:
+                    eth = dpkt.ethernet.Ethernet(buf)
+                    ip = eth.data
+                    tcp = ip.data
+                    if tcp.data:
+                        line = tcp.data.strip()
+                        match = reg.findall(line.decode('utf-8',errors='ignore'))
+                        if len(match)>0:
+                            #if regex matches, call tshark on object
+                            ret.append(newf)
+                            tsharkCall = [
+                                "E:\\Programs\\Wireshark\\tshark.exe",
+                                "-r",
+                                fname,
+                                #"-Y",
+                                #"frame contains 31:41:47:33:35:39:54:",
+                                "-T",
+                                "fields",
+                                "-e",
+                                "frame.number",
+                                "-e",
+                                "frame.time_epoch",
+                                "-e",
+                                "tcp.srcport",
+                                "-e",
+                                "tcp.dstport",
+                                "-E",
+                                "header=n",
+                                "-E",
+                                "separator=,",
+                                "-E",
+                                "quote=d",
+                                "-E",
+                                "occurrence=f",
+                                ">",
+                                'C:\\Users\\T\\Documents\\GitHub\\ConstVig\\put_pcaps_here'+"\\"+newf
+                            ]
+                            process = subprocess.Popen(tsharkCall,
+                                                       shell=True, stdout=subprocess.PIPE)
+                            process.wait()
     return ret

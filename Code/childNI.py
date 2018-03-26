@@ -37,10 +37,12 @@ import pcaphandler
 
 
 def main():
-
     # Checks for type and returns the input,
     # otherwise returns an error message
     # Here is where database stuff begins
+    config = utilities.parse_config('NetworkIn')
+    regex = config['regex']
+
     db_already_made = False
     if 'packets.db' in os.listdir():
         db_already_made = True
@@ -65,7 +67,7 @@ def main():
         for i in os.listdir(pcap_dir):
             if os.path.isfile(i):
                 os.rename(pcap_dir+'\\'+i,os.getcwd()+'\\processed\\'+i)
-    flows = pcaphandler.get_sql_data()
+    flows = pcaphandler.get_sql_data(regex)
     for dir_name in os.listdir(pcap_dir):
         if os.path.isdir(dir_name) and not dir_name == "processed":
             os.rename(pcap_dir+'\\'+dir_name,pcap_dir+'\\processed\\'
