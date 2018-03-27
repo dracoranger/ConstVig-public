@@ -159,7 +159,7 @@ def addflags(flags,conn, cur):
     for packet in flags:
         packet_flags = []
         for flag in packet:
-            cur.execute("SELECT * FROM flags WHERE ? = flag", (flag,))
+            cur.execute('''SELECT * FROM flags WHERE ? = flag''', (flag,))
             comp = cur.fetchall()
             if comp.isEmpty():
                 cur.execute('''INSERT INTO flags(flag) VALUES (?)''', (flag,))
