@@ -61,7 +61,7 @@ def get_sql_data(regex, length):
         for fil in os.listdir(sub_dir[0]):
             sname = os.fsdecode(fil)
             fname = sub_dir[0] + "\\" + sname
-            fbase = sname.split(".")[0] # File name minus '.pcap'
+            fbase = sname[:-5]#sname.split(".")[:-1] # File name minus '.pcap'
             newf = fbase + ".csv"
             if sname.endswith(".pcap"):
                 #print(fname)
@@ -89,13 +89,13 @@ def get_sql_data(regex, length):
                                 "-T",
                                 "fields",
                                 "-e",
-                                "frame.number",
-                                "-e",
                                 "frame.time_epoch",
                                 "-e",
                                 "tcp.srcport",
                                 "-e",
                                 "tcp.dstport",
+                                "-e",
+                                "ip.addr",
                                 "-E",
                                 "header=n",
                                 "-E",

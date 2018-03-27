@@ -74,8 +74,10 @@ def main():
             os.rename(pcap_dir+'\\'+dir_name,pcap_dir+'\\processed\\'
                       +dir_name)
             # TODO may not be stable
-    for flow in flows:
-        addpacket(flow, conn, cur)
+    flowsCSV = flows[0]
+    #for flow in flowsCSV:
+        #print(flow)
+    addpacket(flowsCSV, conn, cur)
     # testing success
     os.chdir('C:\\Users\\T\\Documents\\GitHub\\ConstVig\\Code')
     print_sql_database()
@@ -102,30 +104,32 @@ def generate_db(conn):
 # Need to know payload, in/out, build flows, separated by time
 # flows is the pointer to to csv that is already opened
 # might want to change in the future
-def addpacket(flows, conn, cur):
+def addpacket(flow, conn, cur):
     # parse
     # Must be last most recent packet, every one following is appended
-    cur.execute('''SELECT flowNum FROM flows ORDER BY flowNum DESC LIMIT 1''')
-    recent = cur.fetchall()
-    if len(recent) == 0:
-        recent = 0
-    else:
-        recent = recent[0]
+    #cur.execute('''SELECT flowNum FROM flows ORDER BY flowNum DESC LIMIT 1''')
+    #recent = cur.fetchall()
+    #if len(recent) == 0:
+    #    recent = 0
+    #else:
+    #    recent = recent[0]
     #TODO pythonize this
-    flo = open(flows, 'r+')
+    #print(flow)
+    flo = open(flow, 'r+')
     lines = flo.readlines()
     flo.close()
+    #print(lines)
     data_groups = []
-    flags = []
+    #flags = []
     for i in lines:
         fields = i.split(',')
         temp = (fields[0], fields[1], fields[2], fields[3])
         data_groups.append(temp)
-        #tem = []
-        #for j in range(4, len(fields)):
-        #    if not fields[j] == '' and not fields[j] == '\n':
-        #        tem.append(fields[j])
-        #flags.append(tem)
+    #    tem = []
+    #    for j in range(4, len(fields)):
+    #        if not fields[j] == '' and not fields[j] == '\n':
+    #            tem.append(fields[j])
+    #    flags.append(tem)
     #flag_packet_relationship = addflags(flags, conn, cur)
 
     # print(flag_packet_relationship)
@@ -137,11 +141,8 @@ def addpacket(flows, conn, cur):
     # print(flag_sub)
     # TODO can I just do a full insert?
     # Fast enough now, but not sure if I need to do iterate
-    for dataGroup in range(0, len(data_groups)):
-        cur.execute("""INSERT INTO flows(timest, portIn, portOut,
-                    flowReference) VALUES (?, ?, ?, ?)""",
-                    data_groups[dataGroup]
-                    )
+    for line in range(0, len(data_groups)):
+        cur.execute("""INSERT INTO flows(timest, portIn, portOut, flowReference) VALUES (?, ?, ?, ?)""", data_groups[line])
     #    if flag_sub != []:
     #        for flag in flag_sub[dataGroup]:
     #            print(flag)
@@ -237,11 +238,11 @@ def print_sql_database():
     cur = conn.cursor()
     # flow='testDB.csv'
     # addpacket(flow,conn,sql)
-    flows = search_sql('SELECT * FROM flows', cur)
+    flows = search_sql("""SELECT * FROM flows""", cur)
     #relationships = search_sql('SELECT * FROM connection', cur)
     #flags = search_sql('SELECT * FROM flags', cur)
-    with open('flows.csv', 'w+') as flows:
-        writer = csv.writer(flows)
+    with open('flows.csv', 'w+') as fCSV:
+        writer = csv.writer(fCSV)
         writer.writerows(flows)
     #with open('relationships.csv', 'w+') as relationships:
     #    writer = csv.writer(relationships)

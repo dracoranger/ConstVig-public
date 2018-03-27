@@ -27,7 +27,7 @@ def check_NO_log(val):
         #print(str(i)+" "+dat[val][i]+" "+comparisons[val][i])
         if(dat[val][i] != comparisons[val][i]):
             checker = False
-            print(dat[val][i])
+            #print(dat[val][i])
     return checker
 
 def test():
@@ -43,7 +43,7 @@ def reset_database():
     for i in os.listdir('.'):
         if os.path.isfile(i):
             comp = i.split('.')
-            if comp[1] == 'csv':
+            if comp[-1] == 'csv':
                 os.remove(i)
     os.chdir('processed')
     for dir_name in os.listdir(os.getcwd()):
@@ -70,18 +70,18 @@ def main():
     attackDictionary={}
     childNO.run_processes("Attacks", attackDictionary, PATH_ATTACK, "attack.log")
     #results = check_NO_log()
-    print('test functionality of testing platform: ' + str(test() is True))
+    print('Functional testing platform is: ' + str(test() is True))
     assert test() == True
-    print('test functionality of Port alone: ' + str(check_NO_log(-7) is True))
+    print('Functional Port alone is:  ' + str(check_NO_log(-7) is True))
     assert check_NO_log(-7) is True#both result
-    print('test functionality of IP alone: ' + str(check_NO_log(-5) is True))
+    print('Functional IP alone is:  ' + str(check_NO_log(-5) is True))
     assert check_NO_log(-5) is True#flag result
-    print('test functionality of HelloWorld: ' + str(check_NO_log(-4) is True))
+    print('Functional HelloWorld is: ' + str(check_NO_log(-4) is True))
     assert check_NO_log(-4) is True
     #assert check_NO_log(-7) == "failure.py failure: (b\'trying an impossibility!\r\n\', None)"
-    print('test functionality of Flag sending: ' + str(check_NO_log(-3) is True))
+    print('Functional Flag sending is: ' + str(check_NO_log(-3) is True))
     assert check_NO_log(-3) is True#ip result
-    print('test functionality of both IP and Port: ' + str(check_NO_log(-1) is True))
+    print('Functional both IP and Port is: ' + str(check_NO_log(-1) is True))
     assert check_NO_log(-1) is True#port result
 
 
@@ -90,19 +90,21 @@ def main():
     reset_database()
     #test
     cur = childNI.getcur()
-    test1 = childNI.search_sql_flows_port_in('52304',cur)
-    test2 = childNI.search_sql_flows_port_out('4280',cur)
-    print(test1)
-    print(test2)
+    test1 = childNI.search_sql_flows_port_in('"4280"',cur)
+    test2 = childNI.search_sql_flows_port_out('"48724"',cur)
+    #print(test1)
+    #print(test2)
     #test3 = childNI.search_sql_flows_flags('number',cur) #probably need to change this with tshark shift
     #test4 = childNI.search_sql_port_in_with_flags('port value',cur)
     #test5 = childNI.search_sql_port_out_with_flags('port value',cur)
-    assert len(test1) == '1'
-    assert len(test2) == '1'
+    print('Functional find flags given port in is: ' + str(len(test1) == 30))
+    assert len(test1) == 30
+    print('Functional find flags given port out is: ' + str(len(test1) == 30))
+    assert len(test2) == 1
     #assert len(test3) == 'x'
     #assert len(test4) == 'x'
     #assert len(test5) == 'x'
-
+    assert False #used to display output
     #dad
     #manually
 
