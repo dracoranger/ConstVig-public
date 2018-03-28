@@ -44,20 +44,15 @@ def run_processes(which, dicti, path, log):
     # either PATH_ATTACK or PATH_CHAFF
     directory = os.fsencode(path)
     launchStorage = []
-    # inefficent. Unsure how else to ensure aphebetical w/o duplicates
     launchOrder = []
     for fil in os.listdir(directory):
         filename = os.fsdecode(fil)
         run = dicti[filename]
         run = run.replace(filename, PATH_ATTACK+'\\'+filename)
-        # allow replacement of IP and Ports accessed
-        # might chose how flag is sent.
         if '-f' in run:
             run = run.replace('-f', '-f '+SUBMIT_FLAG_IP+','
                               +SUBMIT_FLAG_PORT)
-
         temp = run
-
         if '-ip' in temp and '-p' in temp:
             for p in PORTS:
                 for i in IP_RANGE:
@@ -109,7 +104,6 @@ def run_processes(which, dicti, path, log):
                         logpointer.write(str(launchOrder[curr_num])
                                          +' failure: '+response+'\n')
                     print(str(launchOrder[curr_num])+str(launch.communicate()))
-                    # +attack.process.stderr)
                     remove.append(launch)
             elif isinstance(launch.poll(), type(None)):
                 print(launchOrder[curr_num]+' on going')
@@ -123,7 +117,6 @@ def run_processes(which, dicti, path, log):
 
 def main():
     # checks for the type
-
     attack_dictionary = {
     }
     chaff_dictionary = {

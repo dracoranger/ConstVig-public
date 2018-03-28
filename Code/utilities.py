@@ -6,18 +6,11 @@
 #parser -- parses data from files
 #check_input -- checks whether the input is of the correct type
 #create_child -- runs the file (will be a child process) given as input
-#comm_out -- sends communications out through ports
-#comm_in -- creates a listener
-#read_from_server -- prints messages received from server
-#network_out -- actual process for outgoing network communications
-#network_in -- actual process for incoming network communications
-
 
 import subprocess
 import socket
 import os
 import configparser
-# struct target
 
 def check_input(expected, recieved):
     #checks whether input is of the expected type.
@@ -35,10 +28,6 @@ def check_input(expected, recieved):
     return isinstance(recieved, type(expected))
 
 def create_child_gen(run):
-    #creates a child that is given in fileName.
-    #Same as above except can run more than python files
-    #depends on user properly uploading a run[] with the reuqired arguements
-
     ret = -1
     temp = ''
     if check_input(temp, run):

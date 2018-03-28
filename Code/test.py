@@ -24,10 +24,8 @@ def check_NO_log(val):
         dat = log.readlines()
     checker = True
     for i in range(0,len(dat[val][:-1])-1):
-        #print(str(i)+" "+dat[val][i]+" "+comparisons[val][i])
         if(dat[val][i] != comparisons[val][i]):
             checker = False
-            #print(dat[val][i])
     return checker
 
 def test():
@@ -59,17 +57,8 @@ def reset_database():
     childNI.main()
 
 def main():
-
-    #network out
-    #Ignoring ongoing.  Might need to offer ability to kill
-    #test flag replacement
-    #test ip replacement
-    #test port replacement
-    #test both
-    #test completion <-sort of already done.  Check log?
     attackDictionary={}
     childNO.run_processes("Attacks", attackDictionary, PATH_ATTACK, "attack.log")
-    #results = check_NO_log()
     print('Functional testing platform is: ' + str(test() is True))
     assert test() == True
     print('Functional Port alone is:  ' + str(check_NO_log(-7) is True))
@@ -78,35 +67,17 @@ def main():
     assert check_NO_log(-5) is True#flag result
     print('Functional HelloWorld is: ' + str(check_NO_log(-4) is True))
     assert check_NO_log(-4) is True
-    #assert check_NO_log(-7) == "failure.py failure: (b\'trying an impossibility!\r\n\', None)"
     print('Functional Flag sending is: ' + str(check_NO_log(-3) is True))
     assert check_NO_log(-3) is True#ip result
     print('Functional both IP and Port is: ' + str(check_NO_log(-1) is True))
     assert check_NO_log(-1) is True#port result
 
-
-    #network in
-    #waiting on regex for flag
     reset_database()
-    #test
     cur = childNI.getcur()
     test1 = childNI.search_sql_flows_port_in('"4280"',cur)
     test2 = childNI.search_sql_flows_port_out('"48724"',cur)
-    #print(test1)
-    #print(test2)
-    #test3 = childNI.search_sql_flows_flags('number',cur) #probably need to change this with tshark shift
-    #test4 = childNI.search_sql_port_in_with_flags('port value',cur)
-    #test5 = childNI.search_sql_port_out_with_flags('port value',cur)
     print('Functional find flags given port in is: ' + str(len(test1) == 30))
     assert len(test1) == 30
     print('Functional find flags given port out is: ' + str(len(test1) == 30))
     assert len(test2) == 1
-    #assert len(test3) == 'x'
-    #assert len(test4) == 'x'
-    #assert len(test5) == 'x'
-    assert False #used to display output
-    #dad
-    #manually
-
-
 main()

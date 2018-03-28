@@ -40,32 +40,26 @@ def split():
             inp = splitLocl + " -r " + fname + " -s session"
             process = subprocess.Popen(inp, stdout=subprocess.PIPE)
             process.wait()
-            #os.unlink(fname)
-    return changed # why?
+    return changed
 
 
 def get_sql_data(regex, length):
     assembled = regex.format(length)
 
     reg=re.compile(assembled)
-    #print(reg)
     work_dir = os.getcwd() # Gets current directory
     tgt_dir = os.path.dirname(work_dir) # Moves up one level
     ret = []
     for dir_name in os.walk(tgt_dir):
-        # Walks through all sister directories of current directory
         if os.path.basename(dir_name[0]) == 'put_pcaps_here':
             pcap_dir = dir_name[0]
-    #print(pcap_dir)
     for sub_dir in os.walk(pcap_dir):
         for fil in os.listdir(sub_dir[0]):
             sname = os.fsdecode(fil)
             fname = sub_dir[0] + "\\" + sname
-            fbase = sname[:-5]#sname.split(".")[:-1] # File name minus '.pcap'
+            fbase = sname[:-5] # File name minus '.pcap'
             newf = fbase + ".csv"
             if sname.endswith(".pcap"):
-                #print(fname)
-                #checks the regex
                 with open(fname, 'rb') as fn:
                     pcap = dpkt.pcap.Reader(fn)
                     for ts, buf in pcap:
@@ -74,9 +68,7 @@ def get_sql_data(regex, length):
                         tcp = ip.data
                     if tcp.data:
                         line = tcp.data.strip()
-                        #print(line)
                         match = reg.findall(line.decode('utf-8',errors='ignore'))
-                        #print(match)
                         if len(match)>0:
                             #if regex matches, call tshark on object
                             ret.append(newf)
