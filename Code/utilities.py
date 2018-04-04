@@ -53,7 +53,7 @@ def create_child_gen(run):
 
 def generate_default_config():
     config = configparser.ConfigParser()
-    config['dad'] = {'rounds' : '100',
+    config['dad'] = {'total_rounds' : '100',
                      'round_length':'300',
                      'PATH':os.getcwd()+'\\dad.py',
                      'death_limit':'3',
@@ -77,13 +77,18 @@ def generate_default_config():
     config['NetworkOut'] = {
         '''#The range of IPs that should be targeted should be in the format XXX.XXX.XXX.XXX/XX with the first IP and the subnet mask\n
         #Separate the ports to be attacked with a ,\n
-        #Both paths are defaults, it grabs the current working directory when it is run, then appends chaff and attack.''':'',
+        #Both paths are defaults, it grabs the current working directory when it is run, then appends chaff and attack.\n
+        #Randomized and spaced launches attacks in a random order over the entire round, will reduce the chances for completion for all targets.\n
+        #If randomized and spaced launches don't finish, increase the safety_buffer\n''':'',
         'ipRange':'192.168.1.0/24',
         'ports': '23,24,35',
         'SUBMIT_FLAG_IP':'192.168.1.1',
         'SUBMIT_FLAG_PORT':'9001',
         'PATH_CHAFF':os.getcwd()+'\\chaff',
-        'PATH_ATTACK':os.getcwd()+'\\attacks'
+        'PATH_ATTACK':os.getcwd()+'\\attacks',
+        'chaff_per_attack' : '1',
+        'randomized_and_spaced' : '1',
+        'safety_buffer' : '10'
         }
     config['Attacks'] = {
         '''#Format should be the file name followed by the command line argument to run it.\n
@@ -128,5 +133,5 @@ def submit_flag(ip, port, data):
         sock.connect((ip, port))
         sock.send(data)
         sock.close()
-        reply = sock.recv(512).decode()
+        reply = sock.recv(1024).decode()
     return reply
