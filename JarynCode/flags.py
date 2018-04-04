@@ -20,7 +20,7 @@ def inet_to_str(inet):
 
 s = time.time()
 
-f = open("test1.pcap",'rb')
+f = open("small2.pcap",'rb')
 pcap = dpkt.pcap.Reader(f)
 r = r"[A-Z0-9]{}=".format("{31}")
 reg=re.compile(r)
@@ -39,6 +39,10 @@ for ts, buf in pcap:
             for thing in match:
                 if thing not in matches:
                     matches.append(thing)
+                    print(inet_to_str(ip.src),' --> ', inet_to_str(ip.dst))
+                    print('From: ',tcp.sport,' --> ', tcp.dport)
+                    print(thing)
+                    break
 for match in matches:
     print(match)
 print(len(matches))
