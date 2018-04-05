@@ -17,7 +17,7 @@
 import socket
 import sys
 import os
-
+import time
 import csv
 import sqlite3
 
@@ -32,6 +32,7 @@ import pcaphandler
 
 
 def main():
+    s = time.time()
     cwd = os.getcwd()
     config = utilities.parse_config('NetworkIn')
     pcap_dir = config['pcapfolder']
@@ -71,8 +72,15 @@ def main():
         if sub_dir == 'PROCESSED':
             continue
         os.chdir(sub_dir)
-        addpacket(sub_dir+'.csv',cwd)
+        try:
+            addpacket(sub_dir+'.csv',cwd)
+            os.chdir(pcap_dir)
+            os.rename(os.getcwd()+'\\'+sub_dir+'\\'+sub_dir+'.csv',os.getcwd()+'\\'+sub_dir+'\\PROCESSED\\'+sub_dir+'.csv')
+        except FileNotFoundError:
+            print('File has been moved ')
     print_sql_database(cwd)
+    e=time.time()
+    print("Total time: ", e-s)
     return "Analyzer is complete"
 
 def generate_db(conn):
