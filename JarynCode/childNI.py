@@ -12,7 +12,7 @@
 #     search_sql_flows_port_out
 #     search_sql
 #     getcur
-#     print_sql_datbase
+#     print_sql_database
 
 import socket
 import sys
@@ -37,8 +37,7 @@ def main():
     pcap_dir = config['pcapfolder']
     regex = config['regex']
     length = config['length']
-    regex= regex.format(length)
-
+    regex= regex.format(length)[1:-1]
 
                                 # db_already_made = False
                                 # if 'packets.db' in os.listdir():
@@ -60,26 +59,45 @@ def main():
                 os.rename(pcap_dir+'\\'+fil,pcap_dir+'\\PROCESSED\\'+fil)
         os.chdir(cwd)
     scan = pcaphandler.get_sql_data(regex,pcap_dir)
-    return scan
+    #DATABASE STARTS HERE
+    os.chdir(cwd)
+    if 'packets.db' not in os.listdir(cwd):
+        conn = sqlite3.connect('packets.db')
+        cur = conn.cursor()
+        generate_db(conn)
+    os.chdir(pcap_dir)
+    for sub_dir in os.listdir(os.getcwd()):
+        os.chdir(pcap_dir)
+        if sub_dir == 'PROCESSED':
+            continue
+        os.chdir(sub_dir)
+        addpacket(sub_dir+'.csv',cwd)
+    print_sql_database(cwd)
+    return "Analyzer is complete"
 
 def generate_db(conn):
     conn.execute('''CREATE TABLE flows
-             (flowNum integer primary key,
-              timest real,
+             (id integer primary key UNIQUE,
+              timest text not NULL,
+              srcIP text not NULL,
+              dstIP text not NULL,
               portIn integer,
               portOut integer,
-              flowReference text)''')
+              flag text not NULL,
+              flowReference text not NULL)''')
+    conn.commit()
 
-def addpacket(flow, conn, cur):
-    with open(flow, 'r+') as flo:
+def addpacket(flow,cwd):
+    with open(flow, 'r') as flo:
         lines = flo.readlines()
+    os.chdir(cwd)
+    conn = sqlite3.connect('packets.db')
+    cur = conn.cursor()
     data_groups = []
     for i in lines:
-        fields = i.split(',')
-        temp = (fields[0], fields[1], fields[2], fields[3])
-        data_groups.append(temp)
-    for line in range(0, len(data_groups)):
-        cur.execute("""INSERT INTO flows(timest, portIn, portOut, flowReference) VALUES (?, ?, ?, ?)""", data_groups[line])
+        fields = i.strip().split(',')
+        cur.execute("""INSERT INTO flows(timest,srcIP,dstIP,portIn,portOut,flag,flowReference) VALUES (?,?,?,?,?,?,?)""",
+        (fields[0],fields[1],fields[2],fields[3],fields[4],fields[5],fields[6]))
     conn.commit()
 
 # finds flows with a given port in
@@ -104,13 +122,14 @@ def getcur():
     return conn.cursor()
 
 
-def print_sql_database():
+def print_sql_database(cwd):
+    os.chdir(cwd)
     conn = sqlite3.connect('packets.db')
     cur = conn.cursor()
     #These were used to recreate the database
     # flow='testDB.csv'
     # addpacket(flow,conn,sql)
     flows = search_sql("""SELECT * FROM flows""", cur)
-    with open('flows.csv', 'w+') as fCSV:
+    with open('flows.csv', 'w+', newline='') as fCSV:
         writer = csv.writer(fCSV)
         writer.writerows(flows)

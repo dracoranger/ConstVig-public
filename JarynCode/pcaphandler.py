@@ -13,23 +13,13 @@ import subprocess
 import os
 import dpkt
 import re
-import time
 import socket
+import datetime
 
 #TODO DON"T USE RELATIVE PATHS
 
 
 def split(pcap_dir):
-    # Use the below to test the split() function alone:
-        # work_dir = os.getcwd() # Gets current directory
-        # tgt_dir = os.path.dirname(work_dir) # Moves up one level
-        # pcap_dir = ''
-        # changed = 0
-        # for dir_name in os.walk(tgt_dir):
-        #     # Walks through all sister directories of current directory
-        #     if os.path.basename(dir_name[0]) == 'put_pcaps_here':
-        #         pcap_dir = dir_name[0]
-        #         os.chdir(pcap_dir)
     os.chdir(pcap_dir)
     changed=0
     for fil in os.listdir(pcap_dir):
@@ -64,14 +54,12 @@ def get_sql_data(regex,pcap_dir):#, length):
     #assembled = regex.format(length)
 
     reg=re.compile(regex)
-    print(reg)
                     # work_dir = os.getcwd() # Gets current directory
                     # tgt_dir = os.path.dirname(work_dir) # Moves up one level
                     # for dir_name in os.walk(tgt_dir):
                     #     if os.path.basename(dir_name[0]) == 'put_pcaps_here':
                     #         pcap_dir = dir_name[0]
                     #         break
-    s =time.time()
     os.chdir(pcap_dir)
     cwd=os.getcwd()
     for sub_dir in os.listdir(pcap_dir):
@@ -79,18 +67,15 @@ def get_sql_data(regex,pcap_dir):#, length):
         if sub_dir == 'PROCESSED':
             continue
         os.chdir(sub_dir)
+        if 'PROCESSED' in os.listdir(os.getcwd()):
+            continue
         newf = sub_dir +".csv"
-        # if newf not in os.listdir(os.getcwd()):
-        #     with open(newf,'w') as w:
-        #         w.write('Filename,SRC IP,DST IP,SRC Port,DST Port,Flag\n')
-        # with open(newf,'a') as data:
         os.mkdir('PROCESSED')
         info=[]
+        redundant=[]
         for fil in os.listdir(cwd+'\\'+sub_dir):
             if fil=='PROCESSED':
                 continue
-            if fil.endswith('.csv'):
-                print(True)
             with open(fil,'rb') as fn:
                 pcap = dpkt.pcap.Reader(fn)
                 for ts,buf in pcap:
@@ -102,15 +87,16 @@ def get_sql_data(regex,pcap_dir):#, length):
                         matches=reg.findall(line.decode('utf-8',errors='ignore'),0)
                         if len(matches)>0:
                             for match in matches:
-
-                                data = '{},{},{},{},{},{}\n'.format(fil,inet_to_str(ip.src),inet_to_str(ip.dst),tcp.sport,tcp.dport,match)
-                                if data not in info:
-                                    info.append(data)
+                                if match not in redundant:
+                                    redundant.append(match)
+                                    time = str(datetime.datetime.utcfromtimestamp(ts))
+                                    data = '{},{},{},{},{},{},{}\n'.format(time,inet_to_str(ip.src),inet_to_str(ip.dst),tcp.sport,tcp.dport,match,fil)
+                                    if data not in info:
+                                        info.append(data)
             os.rename(os.getcwd()+'\\'+fil,os.getcwd()+'\\PROCESSED\\'+fil)
 
         with open(newf,'w') as w:
-            w.write('Filename,SRC IP,DST IP,SRC Port,DST Port,Flag\n')
+            #w.write('Time,SRC IP,DST IP,SRC Port,DST Port,Flag,Filename\n')
             for item in info:
                 w.write(item)
-    e =time.time()
-    return ("Time was: ",e-s)
+    return True
