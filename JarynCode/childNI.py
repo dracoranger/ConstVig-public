@@ -34,10 +34,12 @@ import pcaphandler
 def main():
     s = time.time()
     cwd = os.getcwd()
+
     config = utilities.parse_config('NetworkIn')
     pcap_dir = config['pcapfolder']
     regex = config['regex']
     length = config['length']
+
     regex= regex.format(length)[1:-1]
 
                                 # db_already_made = False
@@ -53,6 +55,7 @@ def main():
     # Will start with moved
     # if there is more than one file, move it to processed
     # only moves files
+    #TODO OS changes in pcaphandler
     if numberChanged > 0:
         os.chdir(pcap_dir)
         for fil in os.listdir(pcap_dir):

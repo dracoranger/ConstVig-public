@@ -70,8 +70,12 @@ def create_process_names(which, dicti, path):
             for p in PORTS:
                 temp = run.replace('-p','-p '+str(p))
                 process_names.append((temp,filename))
+        else:
+            process_names.append((temp,filename))
     return process_names
 
+#TODO Attack in series for a single service
+#TODO Attack in parallel for every service
 def run_attacks(attacks, log):
     launchStorage = []
     launchOrder = []

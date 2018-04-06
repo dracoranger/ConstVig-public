@@ -33,21 +33,8 @@ def create_child_gen(run):
     if check_input(temp, run):
         try:
             ret = subprocess.Popen(run, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-
-                #should run to completion, probably should pipe output to a log file
         except ChildProcessError:
             print('scream and run')
-            #run debug process and try again later
-            #logBuffer = logBuffer + "UI Error: Failed to init"
-            #try this
-                #try
-                #except ChildProcessError
-                #except as otr: again
-            #seems like it would be a good idea to push this to a function.
-        #except:
-            #something else went wrong, try to make better
-            #logBuffer=logBuffer+"UI Error: " + sys.exc_info()[0]#think this is the syntax
-
     return ret
 
 
