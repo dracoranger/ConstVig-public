@@ -59,7 +59,8 @@ def generate_default_config():
         #searchSql(inp,cur) - generalized search function on sql.  Feeds query directly to database, so needs to be a valid sql query''':'',
         'pcapFolder': os.getcwd()[:(os.getcwd().rfind('\\')-len(os.getcwd()))]+'\\'+'put_pcaps_here',
         'regex' : '"[A-Z0-9]{}="',
-        'length' : '{31}'
+        'length' : '{31}',
+        'splitLocl':os.getcwd()+'\\SplitCap_2-1\\SplitCap_2-1\\SplitCap.exe'
         }
     config['NetworkOut'] = {
         '''#The range of IPs that should be targeted should be in the format XXX.XXX.XXX.XXX/XX with the first IP and the subnet mask\n
