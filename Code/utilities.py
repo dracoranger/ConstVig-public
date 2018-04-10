@@ -37,7 +37,7 @@ def create_child_gen(run):
             print('scream and run')
     return ret
 
-
+#TODO make iprange or iplist
 def generate_default_config():
     config = configparser.ConfigParser()
     config['dad'] = {'total_rounds' : '100',

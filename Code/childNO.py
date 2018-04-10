@@ -51,7 +51,7 @@ def create_process_names(which, dicti, path):
     for fil in os.listdir(directory):
         filename = os.fsdecode(fil)
         run = dicti[filename]
-        run = run.replace(filename, PATH_ATTACK+'\\'+filename)
+        run = run.replace(filename, path+'\\'+filename)
         if '-f' in run:
             run = run.replace('-f', '-f '+SUBMIT_FLAG_IP+','
                               +SUBMIT_FLAG_PORT)
@@ -211,7 +211,7 @@ def main():
     }
 
     if RANDOMIZED_AND_SPACED == 1:#TODO just leave as if RAS: ?
-        attacks = create_process_names("Attacks", attack_dictionary,PATH_ATTACK)
+        attacks = create_process_names("Attacks", attack_dictionary, PATH_ATTACK)
         for i in range(0, CHAFF_PER_ATTACK):
             attacks = attacks + create_process_names("Chaff", chaff_dictionary, PATH_CHAFF)
         random.shuffle(attacks) #TODO check if this is correct
