@@ -13,24 +13,26 @@
 import os
 import time
 import ipaddress
-import queue
-import subprocess
+import random
+
 import utilities
-import threading
-import ssResponse as sub
 
 
 # Constants & user set variables (naming exception made for variables)
 dictionA = utilities.parse_config('Attacks')
 dictionC = utilities.parse_config('Chaff')
 dictionNO = utilities.parse_config('NetworkOut')
+dictionLaunch = utilities.parse_config('dad')
 PATH_ATTACK = dictionNO['path_attack']
 PATH_CHAFF = dictionNO['path_chaff']
-IP_RANGE =  dictionNO['iprange'].split(',')
+IP_RANGE =  list(ipaddress.ip_network(dictionNO['iprange']).hosts())
 PORTS = dictionNO['ports'].split(',')
 SUBMIT_FLAG_PORT = dictionNO['submit_flag_port']
 SUBMIT_FLAG_IP = dictionNO['submit_flag_ip']
-
+RANDOMIZED_AND_SPACED = int(dictionNO['randomized_and_spaced'])
+CHAFF_PER_ATTACK=int(dictionNO['chaff_per_attack'])
+ROUND_LENGTH = int(dictionLaunch['round_length'])
+SAFETY_BUFFER = int(dictionNO['safety_buffer'])
 
 def iter_thru_config(which, dicti):
     # "which" is either "Attack" or "Chaff"
@@ -40,84 +42,183 @@ def iter_thru_config(which, dicti):
             # dicti is either chaff or attack dictionary
             dicti[i] = diction[i]
 
-def ip(ipRange):
-    try:
-        for i in ipRange:
-            if ipaddress.ip_address(i):
-                continue
-        return True
-    except ValueError:
-        return False
+def create_process_names(which, dicti, path):
+    # "which" is either "Attack" or "Chaff"
+    iter_thru_config(which, dicti)
+    # either PATH_ATTACK or PATH_CHAFF
+    directory = os.fsencode(path)
+    process_names = []
+    for fil in os.listdir(directory):
+        filename = os.fsdecode(fil)
+        run = dicti[filename]
+        run = run.replace(filename, PATH_ATTACK+'\\'+filename)
+        if '-f' in run:
+            run = run.replace('-f', '-f '+SUBMIT_FLAG_IP+','
+                              +SUBMIT_FLAG_PORT)
+        temp = run
+        if '-ip' in temp and '-p' in temp:
+            for p in PORTS:
+                for i in IP_RANGE:
+                    temp = run.replace('-ip','-ip '+str(i))
+                    temp = temp.replace('-p','-p '+str(p))
+                    process_names.append((temp,filename))
+        elif '-ip' in temp:
+            for i in IP_RANGE:
+                temp = run.replace('-ip','-ip '+str(i))
+                process_names.append((temp,filename))
+        elif '-p' in temp:
+            for p in PORTS:
+                temp = run.replace('-p','-p '+str(p))
+                process_names.append((temp,filename))
+        else:
+            process_names.append((temp,filename))
+    return process_names
+
+#TODO Attack in series for a single service
+#TODO Attack in parallel for every service
+def run_attacks(attacks, log):
+    launchStorage = []
+    launchOrder = []
+    time_between_launches = int((ROUND_LENGTH-SAFETY_BUFFER)/(len(attacks)))
+    for attack, filename in attacks:
+        launch = utilities.create_child_gen(attack)
+        launchStorage.append(launch)
+        launchOrder.append(filename)
+        time.sleep(time_between_launches)
+    with open(log, 'a') as logpointer:
+        logpointer.write('All attacks launched\n')
+    complete = False
+    while not complete:
+        # TODO make an escape to kill indefinitely running processes
+        remove = []
+        curr_num = 0
+        time.sleep(3)
+        complete = True
+        for launch in launchStorage:
+            if utilities.check_input(launch.poll(), 1):
+                if launch.poll() == 0:
+                    response = str(launch.communicate())
+                    # COMMENT OUT THIS LINE TO NOT SUBMIT THE FLAG
+                    # BASED ON WHATEVER IS SENT TO STDOUT
+                    utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
+                                          response)
+                    with open(log, 'a') as logpointer:
+                        logpointer.write('%s success: %s\n' % (str(
+                                         launchOrder[curr_num]), response))
+                    remove.append(launch)
+                    # push to logfile success
+                else:
+                    response = str(launch.communicate())
+                    with open(log, 'a') as logpointer:
+                        logpointer.write('%s failure: %s\n' % (str(
+                                         launchOrder[curr_num]), response))
+                    print(str(launchOrder[curr_num])+response)
+                    remove.append(launch)
+            elif isinstance(launch.poll(), type(None)):
+                logpointer.write('%s ongoing: %s\n' % (str(
+                                 launchOrder[curr_num]), response))
+                print(launchOrder[curr_num]+' on going')
+                complete = False
+            curr_num = curr_num + 1
+        for i in remove:
+            temp = launchStorage.index(i)
+            launchStorage.remove(i)
+            launchOrder.pop(temp)
 
 
 def run_processes(which, dicti, path, log):
     # "which" is either "Attack" or "Chaff"
     iter_thru_config(which, dicti)
-    range=ip(IP_RANGE)
-    if range is False:
-        return "Fix IP Range"
     # either PATH_ATTACK or PATH_CHAFF
     directory = os.fsencode(path)
-    for host in IP_RANGE:
-        for fil in os.listdir(directory):
-            filename = os.fsdecode(fil)
-            run = dicti[filename]
-            run = run.replace(filename, path+'\\'+filename+' {}'.format(host))
-
-            temp = run
-
+    launchStorage = []
+    launchOrder = []
+    for fil in os.listdir(directory):
+        filename = os.fsdecode(fil)
+        run = dicti[filename]
+        run = run.replace(filename, PATH_ATTACK+'\\'+filename)
+        if '-f' in run:
+            run = run.replace('-f', '-f '+SUBMIT_FLAG_IP+','
+                              +SUBMIT_FLAG_PORT)
+        temp = run
+        if '-ip' in temp and '-p' in temp:
+            for p in PORTS:
+                for i in IP_RANGE:
+                    temp = run.replace('-ip','-ip '+str(i))
+                    temp = temp.replace('-p','-p '+str(p))
+                    launch = utilities.create_child_gen(temp)
+                    launchStorage.append(launch)
+                    launchOrder.append(filename)
+        elif '-ip' in temp:
+            for i in IP_RANGE:
+                temp = run.replace('-ip','-ip '+str(i))
+                launch = utilities.create_child_gen(temp)
+                launchStorage.append(launch)
+                launchOrder.append(filename)
+        elif '-p' in temp:
+            for p in PORTS:
+                temp = run.replace('-p','-p '+str(p))
+                launch = utilities.create_child_gen(temp)
+                launchStorage.append(launch)
+                launchOrder.append(filename)
+        else:
             launch = utilities.create_child_gen(run)
-            complete = False
-            s = time.time()
-            while not complete:
-                complete = True
+            launchStorage.append(launch)
+            launchOrder.append(filename)
+    complete = False
+    while not complete:
+        # TODO make an escape to kill indefinitely running processes
+        remove = []
+        curr_num = 0
+        time.sleep(3)
+        complete = True
+        for launch in launchStorage:
+            if utilities.check_input(launch.poll(), 1):
                 if launch.poll() == 0:
                     response = str(launch.communicate())
                     # COMMENT OUT THIS LINE TO NOT SUBMIT THE FLAG
                     # BASED ON WHATEVER IS SENT TO STDOUT
-                    # utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
-                    #                       response)
-                    point = sub.submit(SUBMIT_FLAG_IP,response.strip())
-                    # TODO make sure this is correct
+                    utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
+                                          response)
                     with open(log, 'a') as logpointer:
-                        logpointer.write('%s success: %s %s\n' % (str(
-                                         filename), response, point))
-                    # remove.append(launch)
+                        logpointer.write('%s success: %s\n' % (str(
+                                         launchOrder[curr_num]), response))
+                    remove.append(launch)
                     # push to logfile success
-                elif launch.poll()== None:
-                    e = time.time()
-                    if int(e-s) > 5:
-                        print(filename+' on going')
-                        s=time.time()
-                    complete = False
                 else:
-                    if launch.poll()==0:
-                        response = str(launch.communicate())
-                        with open(log, 'a') as logpointer:
-                            logpointer.write(filename
-                                         +' success: '+response+'\n')
-                    else:
-                        print('it still failed')
-        print(host,'is Complete. Moving to next...')
-    return "{} is Done".format(path)
+                    response = str(launch.communicate())
+                    with open(log, 'a') as logpointer:
+                        logpointer.write('%s failure: %s\n' % (str(
+                                         launchOrder[curr_num]), response))
+                    print(str(launchOrder[curr_num])+response)
+                    remove.append(launch)
+            elif isinstance(launch.poll(), type(None)):
+                logpointer.write('%s ongoing: %s\n' % (str(
+                                 launchOrder[curr_num]), response))
+                print(launchOrder[curr_num]+' on going')
+                complete = False
+            curr_num = curr_num + 1
+        for i in remove:
+            temp = launchStorage.index(i)
+            launchStorage.remove(i)
+            launchOrder.pop(temp)
 
 
-def main(cwd):
-    # checks for the type
-    attack_dictionary = {}
-    chaff_dictionary = {}
-    # Either preferences in main or here
-    # read_preferences()
+def main():
+    attack_dictionary = {
+    }
+    chaff_dictionary = {
+    }
+
+    if RANDOMIZED_AND_SPACED == 1:#TODO just leave as if RAS: ?
+        attacks = create_process_names("Attacks", attack_dictionary,PATH_ATTACK)
+        for i in range(0, CHAFF_PER_ATTACK):
+            attacks = attacks + create_process_names("Chaff", chaff_dictionary, PATH_CHAFF)
+        random.shuffle(attacks) #TODO check if this is correct
+        run_attacks(attacks, 'mixed.log')
     # which, dicti, path
-    #run_processes("Chaff", chaff_dictionary, PATH_CHAFF, "chaff.log")
-    print(run_processes("Attacks", attack_dictionary,cwd, "attack.log"))
+    else:
+        run_processes("Chaff", chaff_dictionary, PATH_CHAFF, "chaff.log")
+        run_processes("Attacks", attack_dictionary, PATH_ATTACK, "attack.log")
 
-def func(cwd):
-    parent = threading.Thread(target=main,args=(cwd,))
-    parent.start()
-data=[]
-for dir in os.listdir(PATH_ATTACK):
-    data.append(PATH_ATTACK+'\\'+dir)
-
-for dir in data:
-    func(dir)
+main()
