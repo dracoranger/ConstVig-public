@@ -1,11 +1,10 @@
 import pytest
 import ipaddress
 import os
-#import dad
 import childNO
 import childNI
 import utilities
-import difflib
+
 
 dictionA = utilities.parse_config('Attacks')
 dictionC = utilities.parse_config('Chaff')
@@ -64,7 +63,7 @@ def reset_database():
 
 def main():
     attackDictionary = {}
-    childNO.run_processes("Attacks", attackDictionary, PATH_ATTACK, "attack.log")
+    childNO.generate_and_run_processes("Attacks", attackDictionary, PATH_ATTACK, "attack.log")
     print('Functional testing platform is: ' + str(test() is True))
     assert test() == True
     print('Functional Port alone is:  ' + str(check_NO_log(-7) is True))
@@ -80,8 +79,8 @@ def main():
 
     reset_database()
     cur = childNI.getcur()
-    test1 = childNI.search_sql_flows_port_in('"4280"',cur)
-    test2 = childNI.search_sql_flows_port_out('"48724"',cur)
+    test1 = childNI.search_sql_flows_port_in('"4280"', cur)
+    test2 = childNI.search_sql_flows_port_out('"48724"', cur)
     print('Functional find flags given port in is: ' + str(len(test1) == 30))
     assert len(test1) == 30
     print('Functional find flags given port out is: ' + str(len(test1) == 30))

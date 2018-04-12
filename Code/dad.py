@@ -9,8 +9,8 @@ import utilities
 
 class CHILD:
     #Summary of behavior: tracks each child and information pertinent to the child
-    #Public methods: get_listener, get_socket, get_port, set_port, get_name, num_deaths, inc_deaths, reset_deaths, get_deaths, is_alive, is_keep_running, update_is_alive, toggle_keep_running, recreate_subprocess
-    #Instance variables: None
+    #Public methods: get_name, recreate_subprocess
+    #Instance variables: Name
     #Creator: Tate Bowers
     def __init__(self, nam):
         self.name = nam
@@ -53,17 +53,17 @@ def main():
                     response = str(child.process.communicate())
                     with open(log_file, 'a') as logpointer:
                         logpointer.write('%s success: %s at %s\n' % (
-                                         child.get_name(), response, str(time.time())))
+                            child.get_name(), response, str(time.time())))
                 else:
                     response = str(child.process.communicate())
                     with open(log_file, 'a') as logpointer:
                         logpointer.write('%s failure: %s at %s\n' % (
-                                         child.get_name(), response, str(time.time())))
+                            child.get_name(), response, str(time.time())))
                     print(child.get_name()+response)
             elif isinstance(child.process.poll(), type(None)):
                 with open(log_file, 'a') as logpointer:
                     logpointer.write('%s Ongoing at %s\n' % (
-                                     child.get_name(), str(time.time())))
+                        child.get_name(), str(time.time())))
                 #print(child.get_name()+' on going: possibly too many files being launched')
             else:
                 print("please look up what happens if subprocess.poll() doesn't return 1 or None")
@@ -74,7 +74,7 @@ def main():
         print("round "+str(i)+" complete")
     with open(log_file, 'a') as logpointer:
         logpointer.write('Ended operations at %s\n' % (
-                     str(time.time())))
+            str(time.time())))
     print("fully complete")
 
 #Runs the main function
