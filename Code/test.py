@@ -9,22 +9,28 @@ import difflib
 
 dictionA = utilities.parse_config('Attacks')
 dictionC = utilities.parse_config('Chaff')
-dictionNO=utilities.parse_config('NetworkOut')
+dictionNO = utilities.parse_config('NetworkOut')
 PATH_ATTACK = dictionNO['path_attack']
 PATH_CHAFF = dictionNO['path_chaff']
-IP_RANGE =  list(ipaddress.ip_network(dictionNO['iprange']).hosts())
+IP_RANGE = list(ipaddress.ip_network(dictionNO['iprange']).hosts())
 PORTS = dictionNO['ports'].split(',')
 SUBMIT_FLAG_PORT = dictionNO['submit_flag_port']
 SUBMIT_FLAG_IP = dictionNO['submit_flag_ip']
 
-comparisons = ["both.py success: (b\"Namespace(ip=[\'192.168.1.0\'], p=[\'23\'])\\r\\n\", None)","","flag.py success: (b\"Namespace(f=[\'192.168.1.1,9001\'])\\r\\n\", None)","hello_world.py success: (b\'Hello world!\\r\\n\', None)","ip.py success: (b\"Namespace(ip=[\'192.168.1.0\'])\\r\\n\", None)","","port.py success: (b\"Namespace(p=[\'23\'])\\r\\n\", None)"]
+comparisons = ["both.py success: (b\"Namespace(ip=[\'192.168.1.0\'], p=[\'23\'])\\r\\n\", None)",
+               "",
+               "flag.py success: (b\"Namespace(f=[\'192.168.1.1,9001\'])\\r\\n\", None)",
+               "hello_world.py success: (b\'Hello world!\\r\\n\', None)",
+               "ip.py success: (b\"Namespace(ip=[\'192.168.1.0\'])\\r\\n\", None)",
+               "",
+               "port.py success: (b\"Namespace(p=[\'23\'])\\r\\n\", None)"]
 
 def check_NO_log(val):
-    with open('attack.log','r+') as log:
+    with open('attack.log', 'r+') as log:
         dat = log.readlines()
     checker = True
-    for i in range(0,len(dat[val][:-1])-1):
-        if(dat[val][i] != comparisons[val][i]):
+    for i in range(0, len(dat[val][:-1])-1):
+        if dat[val][i] != comparisons[val][i]:
             checker = False
     return checker
 
@@ -57,7 +63,7 @@ def reset_database():
     childNI.main()
 
 def main():
-    attackDictionary={}
+    attackDictionary = {}
     childNO.run_processes("Attacks", attackDictionary, PATH_ATTACK, "attack.log")
     print('Functional testing platform is: ' + str(test() is True))
     assert test() == True

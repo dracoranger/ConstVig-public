@@ -81,12 +81,14 @@ def generate_default_config():
     config['Attacks'] = {
         '''#Format should be the file name followed by the command line argument to run it.\n
         #Store the attacks in the PATH_ATTACK directory\n#add -i to have it iterate through the items in ipRange\n
-        #add -p to iterate through the ports\n#add -f to add the ip address and port of where the flag should be submitted in the format SUBMIT_FLAG_IP + \' \' + SUBMIT_FLAG_PORT''':'',
+        #add -p to iterate through the ports\n
+        #add -f to add the ip address and port of where the flag should be submitted in the format SUBMIT_FLAG_IP + \' \' + SUBMIT_FLAG_PORT''':'',
         "hello_world.py" : "python hello_world.py",
         "looper.py" : "python looper.py"
         }
     config['Chaff'] = {
-        '''#Format should be the file name followed by the command line argument to run it.\n#Store the chaff in the PATH_CHAFF directory\n
+        '''#Format should be the file name followed by the command line argument to run it.\n
+        #Store the chaff in the PATH_CHAFF directory\n
         #add -i to have it iterate through the items in ipRange\n#add -p to iterate through the ports\n
         #add -f to add the ip address and port of where the flag should be submitted in the format SUBMIT_FLAG_IP + \' \' + SUBMIT_FLAG_PORT''':'',
         }
