@@ -9,12 +9,10 @@
 #   iter_thru_config
 #   run_processes
 
-
 import os
 import time
 import ipaddress
 import random
-
 import utilities
 
 
@@ -25,14 +23,17 @@ dictionNO = utilities.parse_config('NetworkOut')
 dictionLaunch = utilities.parse_config('dad')
 PATH_ATTACK = dictionNO['path_attack']
 PATH_CHAFF = dictionNO['path_chaff']
-IP_RANGE =  list(ipaddress.ip_network(dictionNO['iprange']).hosts())
 PORTS = dictionNO['ports'].split(',')
 SUBMIT_FLAG_PORT = dictionNO['submit_flag_port']
 SUBMIT_FLAG_IP = dictionNO['submit_flag_ip']
 RANDOMIZED_AND_SPACED = int(dictionNO['randomized_and_spaced'])
-CHAFF_PER_ATTACK=int(dictionNO['chaff_per_attack'])
+CHAFF_PER_ATTACK = int(dictionNO['chaff_per_attack'])
 ROUND_LENGTH = int(dictionLaunch['round_length'])
 SAFETY_BUFFER = int(dictionNO['safety_buffer'])
+if int(dictionNO['UseIpRange']):
+    IP_RANGE = list(ipaddress.ip_network(dictionNO['iprange']).hosts())
+else:
+    IP_RANGE = dictionNO['ipList'].split(',')
 
 def iter_thru_config(which, dicti):
     # "which" is either "Attack" or "Chaff"
@@ -42,7 +43,7 @@ def iter_thru_config(which, dicti):
             # dicti is either chaff or attack dictionary
             dicti[i] = diction[i]
 
-def create_process_names(which, dicti, path):
+def generate_process_names(which, dicti, path):
     # "which" is either "Attack" or "Chaff"
     iter_thru_config(which, dicti)
     # either PATH_ATTACK or PATH_CHAFF
@@ -59,42 +60,42 @@ def create_process_names(which, dicti, path):
         if '-ip' in temp and '-p' in temp:
             for p in PORTS:
                 for i in IP_RANGE:
-                    temp = run.replace('-ip','-ip '+str(i))
-                    temp = temp.replace('-p','-p '+str(p))
-                    process_names.append((temp,filename))
+                    temp = run.replace('-ip', '-ip '+str(i))
+                    temp = temp.replace('-p', '-p '+str(p))
+                    process_names.append((temp, filename))
         elif '-ip' in temp:
             for i in IP_RANGE:
-                temp = run.replace('-ip','-ip '+str(i))
-                process_names.append((temp,filename))
+                temp = run.replace('-ip', '-ip '+str(i))
+                process_names.append((temp, filename))
         elif '-p' in temp:
             for p in PORTS:
-                temp = run.replace('-p','-p '+str(p))
-                process_names.append((temp,filename))
+                temp = run.replace('-p', '-p '+str(p))
+                process_names.append((temp, filename))
         else:
-            process_names.append((temp,filename))
+            process_names.append((temp, filename))
     return process_names
 
 #TODO Attack in series for a single service
 #TODO Attack in parallel for every service
-def run_attacks(attacks, log):
-    launchStorage = []
-    launchOrder = []
+#Simply runs given processes
+def run_processes(attacks, log):
+    launch_storage = []
+    launch_order = []
     time_between_launches = int((ROUND_LENGTH-SAFETY_BUFFER)/(len(attacks)))
     for attack, filename in attacks:
         launch = utilities.create_child_gen(attack)
-        launchStorage.append(launch)
-        launchOrder.append(filename)
+        launch_storage.append(launch)
+        launch_order.append(filename)
         time.sleep(time_between_launches)
     with open(log, 'a') as logpointer:
         logpointer.write('All attacks launched\n')
     complete = False
     while not complete:
-        # TODO make an escape to kill indefinitely running processes
         remove = []
         curr_num = 0
         time.sleep(3)
         complete = True
-        for launch in launchStorage:
+        for launch in launch_storage:
             if utilities.check_input(launch.poll(), 1):
                 if launch.poll() == 0:
                     response = str(launch.communicate())
@@ -104,29 +105,30 @@ def run_attacks(attacks, log):
                                           response)
                     with open(log, 'a') as logpointer:
                         logpointer.write('%s success: %s\n' % (str(
-                                         launchOrder[curr_num]), response))
+                            launch_order[curr_num]), response))
                     remove.append(launch)
                     # push to logfile success
                 else:
                     response = str(launch.communicate())
                     with open(log, 'a') as logpointer:
                         logpointer.write('%s failure: %s\n' % (str(
-                                         launchOrder[curr_num]), response))
-                    print(str(launchOrder[curr_num])+response)
+                            launch_order[curr_num]), response))
+                    print(str(launch_order[curr_num])+response)
                     remove.append(launch)
             elif isinstance(launch.poll(), type(None)):
                 logpointer.write('%s ongoing: %s\n' % (str(
-                                 launchOrder[curr_num]), response))
-                print(launchOrder[curr_num]+' on going')
+                    launch_order[curr_num]), response))
+                print(launch_order[curr_num]+' on going')
                 complete = False
             curr_num = curr_num + 1
         for i in remove:
-            temp = launchStorage.index(i)
-            launchStorage.remove(i)
-            launchOrder.pop(temp)
+            temp = launch_storage.index(i)
+            launch_storage.remove(i)
+            launch_order.pop(temp)
 
-
-def run_processes(which, dicti, path, log):
+#Generates process names and launches processes
+#not feasible for randomized and spaced attacks
+def generate_and_run_processes(which, dicti, path, log):
     # "which" is either "Attack" or "Chaff"
     iter_thru_config(which, dicti)
     # either PATH_ATTACK or PATH_CHAFF
@@ -144,20 +146,20 @@ def run_processes(which, dicti, path, log):
         if '-ip' in temp and '-p' in temp:
             for p in PORTS:
                 for i in IP_RANGE:
-                    temp = run.replace('-ip','-ip '+str(i))
-                    temp = temp.replace('-p','-p '+str(p))
+                    temp = run.replace('-ip', '-ip '+str(i))
+                    temp = temp.replace('-p', '-p '+str(p))
                     launch = utilities.create_child_gen(temp)
                     launchStorage.append(launch)
                     launchOrder.append(filename)
         elif '-ip' in temp:
             for i in IP_RANGE:
-                temp = run.replace('-ip','-ip '+str(i))
+                temp = run.replace('-ip', '-ip '+str(i))
                 launch = utilities.create_child_gen(temp)
                 launchStorage.append(launch)
                 launchOrder.append(filename)
         elif '-p' in temp:
             for p in PORTS:
-                temp = run.replace('-p','-p '+str(p))
+                temp = run.replace('-p', '-p '+str(p))
                 launch = utilities.create_child_gen(temp)
                 launchStorage.append(launch)
                 launchOrder.append(filename)
@@ -167,7 +169,6 @@ def run_processes(which, dicti, path, log):
             launchOrder.append(filename)
     complete = False
     while not complete:
-        # TODO make an escape to kill indefinitely running processes
         remove = []
         curr_num = 0
         time.sleep(3)
@@ -178,23 +179,24 @@ def run_processes(which, dicti, path, log):
                     response = str(launch.communicate())
                     # COMMENT OUT THIS LINE TO NOT SUBMIT THE FLAG
                     # BASED ON WHATEVER IS SENT TO STDOUT
-                    utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
-                                          response)
+                    reply = utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
+                                                  response)
                     with open(log, 'a') as logpointer:
                         logpointer.write('%s success: %s\n' % (str(
-                                         launchOrder[curr_num]), response))
+                            launchOrder[curr_num]), response))
+                        logpointer.write('submission response: %s\n' % reply)
                     remove.append(launch)
                     # push to logfile success
                 else:
                     response = str(launch.communicate())
                     with open(log, 'a') as logpointer:
                         logpointer.write('%s failure: %s\n' % (str(
-                                         launchOrder[curr_num]), response))
+                            launchOrder[curr_num]), response))
                     print(str(launchOrder[curr_num])+response)
                     remove.append(launch)
             elif isinstance(launch.poll(), type(None)):
                 logpointer.write('%s ongoing: %s\n' % (str(
-                                 launchOrder[curr_num]), response))
+                    launchOrder[curr_num]), response))
                 print(launchOrder[curr_num]+' on going')
                 complete = False
             curr_num = curr_num + 1
@@ -210,15 +212,14 @@ def main():
     chaff_dictionary = {
     }
 
-    if RANDOMIZED_AND_SPACED == 1:#TODO just leave as if RAS: ?
-        attacks = create_process_names("Attacks", attack_dictionary, PATH_ATTACK)
+    if RANDOMIZED_AND_SPACED == 1:
+        processes = generate_process_names("Attacks", attack_dictionary, PATH_ATTACK)
         for i in range(0, CHAFF_PER_ATTACK):
-            attacks = attacks + create_process_names("Chaff", chaff_dictionary, PATH_CHAFF)
-        random.shuffle(attacks) #TODO check if this is correct
-        run_attacks(attacks, 'mixed.log')
-    # which, dicti, path
+            processes = processes + generate_process_names("Chaff", chaff_dictionary, PATH_CHAFF)
+        random.shuffle(processes)
+        run_processes(processes, 'mixed.log')
     else:
-        run_processes("Chaff", chaff_dictionary, PATH_CHAFF, "chaff.log")
-        run_processes("Attacks", attack_dictionary, PATH_ATTACK, "attack.log")
+        generate_and_run_processes("Chaff", chaff_dictionary, PATH_CHAFF, "chaff.log")
+        generate_and_run_processes("Attacks", attack_dictionary, PATH_ATTACK, "attack.log")
 
 main()

@@ -69,6 +69,8 @@ def generate_default_config():
         #Randomized and spaced launches attacks in a random order over the entire round, will reduce the chances for completion for all targets.\n
         #If randomized and spaced launches don't finish, increase the safety_buffer\n''':'',
         'ipRange':'192.168.1.0/24',
+        'ipList':'192.168.1.0,192.168.1.1,192.168.1.2',
+        'UseIpRange':1,
         'ports': '23,24,35',
         'SUBMIT_FLAG_IP':'192.168.1.1',
         'SUBMIT_FLAG_PORT':'9001',
