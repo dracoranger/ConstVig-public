@@ -8,7 +8,6 @@ Under "Collaborators & Teams" in the Settings, remove the "CL2018" team (keep "F
 Replace this README with text that includes your project name, members, and a brief description.
 Commit your changes
 
-
 *************
 ## Constant Vigilance
 Constant Vigilance analyzes inbound network traffic for CTFs and automatically launches outbound attacks every round of the CTF. The critical portion of Constant Vigilance is in the Code folder.
