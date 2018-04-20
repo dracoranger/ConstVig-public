@@ -1,14 +1,14 @@
 # handles traffic leaving to the rest of the network
-
-# NAME: Child Network Out
-# FILE: ConstVig/Code/childNO.py
-# CLASSES: N/A
-# EXCEPTIONS:
-# FUNCTIONS:
-#   main
-#   iter_thru_config
-#   run_processes
-
+'''
+ NAME: Child Network Out
+ FILE: ConstVig/Code/childNO.py
+ CLASSES: N/A
+ EXCEPTIONS:
+ FUNCTIONS:
+   main
+   iter_thru_config
+   run_processes
+'''
 import os
 import time
 import ipaddress
@@ -30,10 +30,11 @@ RANDOMIZED_AND_SPACED = int(dictionNO['randomized_and_spaced'])
 CHAFF_PER_ATTACK = int(dictionNO['chaff_per_attack'])
 ROUND_LENGTH = int(dictionLaunch['round_length'])
 SAFETY_BUFFER = int(dictionNO['safety_buffer'])
-if int(dictionNO['UseIpRange']):
-    IP_RANGE = list(ipaddress.ip_network(dictionNO['iprange']).hosts())
+SUBMIT_AUTOMATICALLY = int(dictionNO['submit_flags_automatically'])
+if int(dictionNO['use_ip_range']):
+    IP_RANGE = list(ipaddress.ip_network(dictionNO['ip_range']).hosts())
 else:
-    IP_RANGE = dictionNO['ipList'].split(',')
+    IP_RANGE = dictionNO['ip_list'].split(',')
 
 def iter_thru_config(which, dicti):
     # "which" is either "Attack" or "Chaff"
@@ -78,7 +79,7 @@ def generate_process_names(which, dicti, path):
 #TODO Attack in series for a single service
 #TODO Attack in parallel for every service
 #Simply runs given processes
-def run_processes(attacks, log):
+def run_processes(attacks, log_file):
     launch_storage = []
     launch_order = []
     time_between_launches = int((ROUND_LENGTH-SAFETY_BUFFER)/(len(attacks)))
@@ -87,8 +88,7 @@ def run_processes(attacks, log):
         launch_storage.append(launch)
         launch_order.append(filename)
         time.sleep(time_between_launches)
-    with open(log, 'a') as logpointer:
-        logpointer.write('All attacks launched\n')
+    utilities.log_data(log_file, 'All attacks launched\n')
     complete = False
     while not complete:
         remove = []
@@ -99,25 +99,22 @@ def run_processes(attacks, log):
             if utilities.check_input(launch.poll(), 1):
                 if launch.poll() == 0:
                     response = str(launch.communicate())
-                    # COMMENT OUT THIS LINE TO NOT SUBMIT THE FLAG
-                    # BASED ON WHATEVER IS SENT TO STDOUT
-                    utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
-                                          response)
-                    with open(log, 'a') as logpointer:
-                        logpointer.write('%s success: %s\n' % (str(
-                            launch_order[curr_num]), response))
+                    if SUBMIT_AUTOMATICALLY:
+                        reply = utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
+                                                      response)
+                        utilities.log_data(log_file, 'Reply from server: ' + reply)
+                    utilities.log_data(log_file, '%s success: %s\n' %
+                                       (str(launch_order[curr_num]), response))
                     remove.append(launch)
-                    # push to logfile success
                 else:
                     response = str(launch.communicate())
-                    with open(log, 'a') as logpointer:
-                        logpointer.write('%s failure: %s\n' % (str(
-                            launch_order[curr_num]), response))
+                    utilities.log_data(log_file, '%s failure: %s\n' %
+                                       (str(launch_order[curr_num]), response))
                     print(str(launch_order[curr_num])+response)
                     remove.append(launch)
             elif isinstance(launch.poll(), type(None)):
-                logpointer.write('%s ongoing: %s\n' % (str(
-                    launch_order[curr_num]), response))
+                utilities.log_data(log_file, '%s ongoing: %s\n' %
+                                   (str(launch_order[curr_num]), response))
                 print(launch_order[curr_num]+' on going')
                 complete = False
             curr_num = curr_num + 1
@@ -128,7 +125,7 @@ def run_processes(attacks, log):
 
 #Generates process names and launches processes
 #not feasible for randomized and spaced attacks
-def generate_and_run_processes(which, dicti, path, log):
+def generate_and_run_processes(which, dicti, path, log_file):
     # "which" is either "Attack" or "Chaff"
     iter_thru_config(which, dicti)
     # either PATH_ATTACK or PATH_CHAFF
@@ -177,26 +174,22 @@ def generate_and_run_processes(which, dicti, path, log):
             if utilities.check_input(launch.poll(), 1):
                 if launch.poll() == 0:
                     response = str(launch.communicate())
-                    # COMMENT OUT THIS LINE TO NOT SUBMIT THE FLAG
-                    # BASED ON WHATEVER IS SENT TO STDOUT
-                    reply = utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
-                                                  response)
-                    with open(log, 'a') as logpointer:
-                        logpointer.write('%s success: %s\n' % (str(
-                            launchOrder[curr_num]), response))
-                        logpointer.write('submission response: %s\n' % reply)
+                    if SUBMIT_AUTOMATICALLY:
+                        reply = utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
+                                                      response)
+                        utilities.log_data(log_file, 'Reply from server: ' + reply)
+                    utilities.log_data(log_file, '%s success: %s\n' %
+                                       (str(launchOrder[curr_num]), response))
                     remove.append(launch)
-                    # push to logfile success
                 else:
                     response = str(launch.communicate())
-                    with open(log, 'a') as logpointer:
-                        logpointer.write('%s failure: %s\n' % (str(
-                            launchOrder[curr_num]), response))
+                    utilities.log_data(log_file, '%s failure: %s\n' %
+                                       (str(launchOrder[curr_num]), response))
                     print(str(launchOrder[curr_num])+response)
                     remove.append(launch)
             elif isinstance(launch.poll(), type(None)):
-                logpointer.write('%s ongoing: %s\n' % (str(
-                    launchOrder[curr_num]), response))
+                utilities.log_data(log_file, '%s ongoing: %s\n' %
+                                   (str(launchOrder[curr_num]), response))
                 print(launchOrder[curr_num]+' on going')
                 complete = False
             curr_num = curr_num + 1
@@ -213,13 +206,13 @@ def main():
     }
 
     if RANDOMIZED_AND_SPACED == 1:
-        processes = generate_process_names("Attacks", attack_dictionary, PATH_ATTACK)
-        for i in range(0, CHAFF_PER_ATTACK):
-            processes = processes + generate_process_names("Chaff", chaff_dictionary, PATH_CHAFF)
+        processes = generate_process_names('Attacks', attack_dictionary, PATH_ATTACK)
+        for i in range(CHAFF_PER_ATTACK):
+            processes = processes + generate_process_names('Chaff', chaff_dictionary, PATH_CHAFF)
         random.shuffle(processes)
         run_processes(processes, 'mixed.log')
     else:
-        generate_and_run_processes("Chaff", chaff_dictionary, PATH_CHAFF, "chaff.log")
-        generate_and_run_processes("Attacks", attack_dictionary, PATH_ATTACK, "attack.log")
+        generate_and_run_processes('Chaff', chaff_dictionary, PATH_CHAFF, 'chaff.log')
+        generate_and_run_processes('Attacks', attack_dictionary, PATH_ATTACK, 'attack.log')
 
 main()

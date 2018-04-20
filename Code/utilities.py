@@ -1,31 +1,31 @@
 #stores any functions that should be used across all systems in a local manner
-
-#Classes: None
-#Exceptions:
-#Functions:
-#parser -- parses data from files
-#check_input -- checks whether the input is of the correct type
-#create_child -- runs the file (will be a child process) given as input
-
+'''
+Classes: None
+Exceptions:
+Functions:
+parser -- parses data from files
+check_input -- checks whether the input is of the correct type
+create_child -- runs the file (will be a child process) given as input
+'''
 import subprocess
 import socket
 import os
 import configparser
 
-def check_input(expected, recieved):
+def check_input(expected, received):
     #checks whether input is of the expected type.
-
-    #Summary of behavior: Checks that the received input type matches
-    #the type that was expected (which is explicitly given in the input.
-    #For example, received "hello world" with type int would return false.
-	#Arguments: the type that is expected and what was actually receieved
-    #Return values: boolean stating whether the input types matched
-    #Side effects:
-    #Exceptions raised:
-    #Restrictions on when it can be called:
-    #Creator: Tate Bowers
-
-    return isinstance(recieved, type(expected))
+    '''
+    Summary of behavior: Checks that the received input type matches
+    the type that was expected (which is explicitly given in the input.
+    For example, received "hello world" with type int would return false.
+	Arguments: the type that is expected and what was actually receieved
+    Return values: boolean stating whether the input types matched
+    Side effects:
+    Exceptions raised:
+    Restrictions on when it can be called:
+    Creator: Tate Bowers
+    '''
+    return isinstance(received, type(expected))
 
 def create_child_gen(run):
     ret = -1
@@ -34,20 +34,17 @@ def create_child_gen(run):
         try:
             ret = subprocess.Popen(run, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         except ChildProcessError:
-            print('scream and run')
+            print('Subprocess generation error')
     return ret
 
-#TODO make iprange or iplist
 def generate_default_config():
     config = configparser.ConfigParser()
     config['dad'] = {'total_rounds' : '100',
-                     'round_length':'300',
-                     'PATH':os.getcwd()+'\\dad.py',
-                     'death_limit':'3',
-                     'time_between_check':'5',
-                     'LOG_FILE':'main.log',
-                     'CHILD_NUM':'2',
-                     '0':'0'
+                     'round_length' : '300',
+                     'PATH' : os.getcwd()+'\\dad.py',
+                     'time_between_check' : '5',
+                     'LOG_FILE' : 'main.log',
+                     'CHILD_NUM' : '2'
                     }
     config['NetworkIn'] = {
         '''#Premade SQL queries are as follows\n
@@ -57,10 +54,10 @@ def generate_default_config():
         #searchSqlPortInWithFlags(\'port as string\',getCur()) - shows flows that have flags present given the port in\n
         #searchSqlPortOutWithFlags(\'port as string\',getCur()) - shows flows that have flags present given the port out\n
         #searchSql(inp,cur) - generalized search function on sql.  Feeds query directly to database, so needs to be a valid sql query''':'',
-        'pcapFolder': os.getcwd()[:(os.getcwd().rfind('\\')-len(os.getcwd()))]+'\\'+'put_pcaps_here',
+        'pcapFolder' : os.getcwd()[:(os.getcwd().rfind('\\')-len(os.getcwd()))]+'\\'+'put_pcaps_here',
         'regex' : '"[A-Z0-9]{}="',
         'length' : '{31}',
-        'splitLocl':os.getcwd()+'\\SplitCap_2-1\\SplitCap_2-1\\SplitCap.exe'
+        'splitLocl' : os.getcwd()+'\\SplitCap_2-1\\SplitCap_2-1\\SplitCap.exe'
         }
     config['NetworkOut'] = {
         '''#The range of IPs that should be targeted should be in the format XXX.XXX.XXX.XXX/XX with the first IP and the subnet mask\n
@@ -68,21 +65,23 @@ def generate_default_config():
         #Both paths are defaults, it grabs the current working directory when it is run, then appends chaff and attack.\n
         #Randomized and spaced launches attacks in a random order over the entire round, will reduce the chances for completion for all targets.\n
         #If randomized and spaced launches don't finish, increase the safety_buffer\n''':'',
-        'ipRange':'192.168.1.0/24',
-        'ipList':'192.168.1.0,192.168.1.1,192.168.1.2',
-        'UseIpRange':1,
-        'ports': '23,24,35',
-        'SUBMIT_FLAG_IP':'192.168.1.1',
-        'SUBMIT_FLAG_PORT':'9001',
-        'PATH_CHAFF':os.getcwd()+'\\chaff',
-        'PATH_ATTACK':os.getcwd()+'\\attacks',
+        'ip_range' : '192.168.1.0/24',
+        'ip_list' : '192.168.1.0,192.168.1.1,192.168.1.2',
+        'use_ip_range' : 1,
+        'ports' : '23,24,35',
+        'SUBMIT_FLAG_IP' : '192.168.1.1',
+        'SUBMIT_FLAG_PORT' : '9001',
+        'PATH_CHAFF' : os.getcwd()+'\\chaff',
+        'PATH_ATTACK' : os.getcwd()+'\\attacks',
         'chaff_per_attack' : '1',
         'randomized_and_spaced' : '1',
-        'safety_buffer' : '10'
+        'safety_buffer' : '10',
+        'submit_flags_automatically' : '1'
         }
     config['Attacks'] = {
         '''#Format should be the file name followed by the command line argument to run it.\n
-        #Store the attacks in the PATH_ATTACK directory\n#add -i to have it iterate through the items in ipRange\n
+        #Store the attacks in the PATH_ATTACK directory\n
+        #add -ip to have it iterate through the items in ipRange\n
         #add -p to iterate through the ports\n
         #add -f to add the ip address and port of where the flag should be submitted in the format SUBMIT_FLAG_IP + \' \' + SUBMIT_FLAG_PORT''':'',
         "hello_world.py" : "python hello_world.py",
@@ -91,10 +90,10 @@ def generate_default_config():
     config['Chaff'] = {
         '''#Format should be the file name followed by the command line argument to run it.\n
         #Store the chaff in the PATH_CHAFF directory\n
-        #add -i to have it iterate through the items in ipRange\n#add -p to iterate through the ports\n
+        #add -ip to have it iterate through the items in ipRange\n#add -p to iterate through the ports\n
         #add -f to add the ip address and port of where the flag should be submitted in the format SUBMIT_FLAG_IP + \' \' + SUBMIT_FLAG_PORT''':'',
         }
-    with open('constvig.conf','w') as configfile:
+    with open('constvig.conf', 'w') as configfile:
         config.write(configfile)
 
 def parse_config(section):
@@ -127,3 +126,7 @@ def submit_flag(ip, port, data):
         sock.close()
         reply = sock.recv(1024).decode()
     return reply
+
+def log_data(log, dat):
+    with open(log, 'a') as logpointer:
+        logpointer.write(dat)
