@@ -1,4 +1,4 @@
-import pytest
+#import pytest
 import ipaddress
 import os
 import childNO
@@ -11,7 +11,7 @@ dictionC = utilities.parse_config('Chaff')
 dictionNO = utilities.parse_config('NetworkOut')
 PATH_ATTACK = dictionNO['path_attack']
 PATH_CHAFF = dictionNO['path_chaff']
-IP_RANGE = list(ipaddress.ip_network(dictionNO['iprange']).hosts())
+IP_RANGE = list(ipaddress.ip_network(dictionNO['ip_range']).hosts())
 PORTS = dictionNO['ports'].split(',')
 SUBMIT_FLAG_PORT = dictionNO['submit_flag_port']
 SUBMIT_FLAG_IP = dictionNO['submit_flag_ip']
@@ -85,4 +85,4 @@ def main():
     assert len(test1) == 30
     print('Functional find flags given port out is: ' + str(len(test1) == 30))
     assert len(test2) == 1
-main()
+#main()

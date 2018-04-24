@@ -15,9 +15,11 @@ import dpkt
 import re
 import socket
 import datetime
-
+import utilities
 #TODO DON"T USE RELATIVE PATHS
 
+DictionNI = utilities.parse_config("NetworkIn")
+PATH_SPLIT = DictionNI['splitlocl']
 
 def split(pcap_dir):
     os.chdir(pcap_dir)
@@ -30,8 +32,7 @@ def split(pcap_dir):
             sname = os.fsdecode(fil)
             fname = pcap_dir+"\\"+sname
 			# This is the path to SplitCap; not just a string.
-            splitLocl = 'C:\\Users\\x86075\\Desktop\\DeskCV\\SplitCap_2-1\\SplitCap.exe'
-            inp = splitLocl + " -r " + fname + " -s session"
+            inp = PATH_SPLIT + " -r " + fname + " -s session"
             process = subprocess.Popen(inp, stdout=subprocess.PIPE)
             process.wait()
     return changed
@@ -67,24 +68,24 @@ def get_sql_data(regex,pcap_dir):#, length):
         if sub_dir == 'PROCESSED':
             continue
         os.chdir(sub_dir)
-        if 'PROCESSED' in os.listdir(os.getcwd()):
-            continue
+        # if 'PROCESSED' in os.listdir(os.getcwd()):
+        #     continue
         newf = sub_dir +".csv"
-        os.mkdir('PROCESSED')
+        # os.mkdir('PROCESSED')
         info=[]
         redundant=[]
         for fil in os.listdir(cwd+'\\'+sub_dir):
-            if fil=='PROCESSED':
-                continue
+            # if fil=='PROCESSED':
+            #     continue
             with open(fil,'rb') as fn:
                 pcap = dpkt.pcap.Reader(fn)
-                for ts,buf in pcap:
-                    eth=dpkt.ethernet.Ethernet(buf)
-                    ip=eth.data
-                    tcp=ip.data
+                for ts , buf in pcap:
+                    eth = dpkt.ethernet.Ethernet(buf)
+                    ip = eth.data
+                    tcp = ip.data
                     if tcp.data:
-                        line =tcp.data.strip()
-                        matches=reg.findall(line.decode('utf-8',errors='ignore'),0)
+                        line = tcp.data.strip()
+                        matches = reg.findall(line.decode('utf-8',errors='ignore'),0)
                         if len(matches)>0:
                             for match in matches:
                                 if match not in redundant:
@@ -93,7 +94,7 @@ def get_sql_data(regex,pcap_dir):#, length):
                                     data = '{},{},{},{},{},{},{}\n'.format(time,inet_to_str(ip.src),inet_to_str(ip.dst),tcp.sport,tcp.dport,match,fil)
                                     if data not in info:
                                         info.append(data)
-            os.rename(os.getcwd()+'\\'+fil,os.getcwd()+'\\PROCESSED\\'+fil)
+            os.rename(os.getcwd()+'\\'+fil,cwd+'\\PROCESSED\\'+fil)
 
         with open(newf,'w') as w:
             #w.write('Time,SRC IP,DST IP,SRC Port,DST Port,Flag,Filename\n')

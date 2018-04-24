@@ -215,4 +215,4 @@ def main():
         generate_and_run_processes('Chaff', chaff_dictionary, PATH_CHAFF, 'chaff.log')
         generate_and_run_processes('Attacks', attack_dictionary, PATH_ATTACK, 'attack.log')
 
-main()
+# main()

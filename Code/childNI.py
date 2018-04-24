@@ -40,7 +40,7 @@ def main():
     regex = config['regex']
     length = config['length']
 
-    regex= regex.format(length)[1:-1]
+    regex= regex.format(length)
 
                                 # db_already_made = False
                                 # if 'packets.db' in os.listdir():
@@ -78,7 +78,11 @@ def main():
         try:
             addpacket(sub_dir+'.csv',cwd)
             os.chdir(pcap_dir)
-            os.rename(os.getcwd()+'\\'+sub_dir+'\\'+sub_dir+'.csv',os.getcwd()+'\\'+sub_dir+'\\PROCESSED\\'+sub_dir+'.csv')
+            print(os.getcwd())
+            os.rename(os.getcwd()+'\\'+sub_dir+'\\'+sub_dir+'.csv' , pcap_dir +'\\PROCESSED\\'+sub_dir+'.csv')
+            print('cwd',os.getcwd())
+            print('try remove:',sub_dir)
+            os.rmdir(sub_dir)
         except FileNotFoundError:
             print('File has been moved ')
     print_sql_database(cwd)
