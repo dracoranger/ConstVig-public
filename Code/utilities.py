@@ -41,10 +41,8 @@ def generate_default_config():
     config = configparser.ConfigParser()
     config['dad'] = {'total_rounds' : '100',
                      'round_length' : '300',
-                     'PATH' : os.getcwd()+'\\dad.py',
                      'time_between_check' : '5',
-                     'LOG_FILE' : 'main.log',
-                     'CHILD_NUM' : '2'
+                     'LOG_FILE' : 'main.log'
                     }
     config['NetworkIn'] = {
         '''#Premade SQL queries are as follows\n
@@ -81,11 +79,10 @@ def generate_default_config():
     config['Attacks'] = {
         '''#Format should be the file name followed by the command line argument to run it.\n
         #Store the attacks in the PATH_ATTACK directory\n
-        #add -ip to have it iterate through the items in ipRange\n
+        #add -ip to have it iterate through the items in ipRange and pass in the ip address at that location\n
         #add -p to iterate through the ports\n
         #add -f to add the ip address and port of where the flag should be submitted in the format SUBMIT_FLAG_IP + \' \' + SUBMIT_FLAG_PORT''':'',
         "hello_world.py" : "python hello_world.py",
-        "looper.py" : "python looper.py"
         }
     config['Chaff'] = {
         '''#Format should be the file name followed by the command line argument to run it.\n
