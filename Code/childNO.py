@@ -102,7 +102,7 @@ def run_processes(attacks, log_file):
                     if SUBMIT_AUTOMATICALLY:
                         reply = utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
                                                       response)
-                        utilities.log_data(log_file, 'Reply from server: ' + reply)
+                        utilities.log_data(log_file, 'Reply from server: ' + str(reply)+'\n')
                     utilities.log_data(log_file, '%s success: %s\n' %
                                        (str(launch_order[curr_num]), response))
                     remove.append(launch)
@@ -215,4 +215,4 @@ def main():
         generate_and_run_processes('Chaff', chaff_dictionary, PATH_CHAFF, 'chaff.log')
         generate_and_run_processes('Attacks', attack_dictionary, PATH_ATTACK, 'attack.log')
 
-# main()
+main()
