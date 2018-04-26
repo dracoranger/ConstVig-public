@@ -7,7 +7,7 @@
  FUNCTIONS:
      main
      generate_db
-     addpacket
+     add_packet
      search_sql_flows_port_in
      search_sql_flows_port_out
      search_sql
@@ -32,40 +32,27 @@ def main():
     length = config['length']
 
     regex = regex.format(length)
-    numberChanged = pcaphandler.split(pcap_dir)
+    pcaphandler.split(pcap_dir)
     # Pcaps in put pcaps here should be moved or deleted
     # Will start with moved
     # if there is more than one file, move it to processed
     # only moves files
-    if numberChanged > 0:
-        os.chdir(pcap_dir)
-        for fil in os.listdir(pcap_dir):
-            if os.path.isfile(fil):
-                os.rename(pcap_dir+'\\'+fil, pcap_dir+'\\PROCESSED\\'+fil)
-        os.chdir(cwd)
-    scan = pcaphandler.get_sql_data(regex, pcap_dir)
-    #DATABASE STARTS HERE
+    for directory in os.listdir(pcap_dir):
+        if not directory == 'processed' and os.path.isdir(pcap_dir+'\\'+directory):
+            os.mkdir(pcap_dir+'\\processed\\'+directory)
+            pcaphandler.get_sql_data(regex, directory, pcap_dir)
     os.chdir(cwd)
     if 'packets.db' not in os.listdir(cwd):
         conn = sqlite3.connect('packets.db')
         generate_db(conn)
     os.chdir(pcap_dir)
-    for sub_dir in os.listdir(os.getcwd()):
-        print('Sub'+sub_dir)
-        #os.chdir(pcap_dir)
-        if sub_dir == 'PROCESSED':
-            continue
-        os.chdir(sub_dir)
-        try:
-            addpacket(sub_dir+'.csv', cwd)
-            #os.chdir(pcap_dir)
-            #print(os.getcwd())
-            os.rename(os.getcwd()+'\\'+sub_dir+'\\'+sub_dir+'.csv', pcap_dir +'\\PROCESSED\\'+sub_dir+'.csv')
-            #print('cwd', os.getcwd())
-            #print('try remove:', sub_dir)
-            os.rmdir(sub_dir)
-        except FileNotFoundError:
-            print('File has been moved')
+    for directory in os.listdir(os.getcwd()):
+        if not directory == 'processed' and os.path.isdir(os.getcwd()+'\\'+directory):
+            os.chdir(directory)
+            add_packet(directory+'.csv', cwd)
+            os.rename(pcap_dir+'\\'+directory+'\\'+directory+'.csv', pcap_dir +'\\processed\\'+directory+'\\'+directory+'.csv')
+            os.chdir(pcap_dir)
+            os.rmdir(directory)
     print_sql_database(cwd)
     e = time.time()
     print('Total time: ', e-s)
@@ -83,7 +70,7 @@ def generate_db(conn):
               flowReference text not NULL)''')
     conn.commit()
 
-def addpacket(flow,cwd):
+def add_packet(flow, cwd):
     with open(flow, 'r') as flo:
         lines = flo.readlines()
     os.chdir(cwd)

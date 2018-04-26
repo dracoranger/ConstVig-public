@@ -1,4 +1,4 @@
-#import pytest
+
 import ipaddress
 import os
 import childNO
@@ -44,6 +44,7 @@ def reset_database():
     os.chdir('..')
     os.chdir('put_pcaps_here')
     locl_path = os.getcwd()
+    print("local "+locl_path)
     for i in os.listdir('.'):
         if os.path.isfile(i):
             comp = i.split('.')
@@ -64,7 +65,6 @@ def reset_database():
 
 def main():
     attackDictionary = {}
-    childNO.generate_and_run_processes("Attacks", attackDictionary, PATH_ATTACK, "attack.log")
     print('Functional testing platform is: ' + str(test() is True))
     #assert test() == True
     print('Functional Port alone is:  ' + str(check_NO_log(-7) is True))
@@ -80,10 +80,11 @@ def main():
 
     reset_database()
     cur = childNI.getcur()
-    test1 = childNI.search_sql_flows_port_in('"4280"', cur)
-    test2 = childNI.search_sql_flows_port_out('"48724"', cur)
+    test1 = childNI.search_sql_flows_port_in('4280', cur)
+    test2 = childNI.search_sql_flows_port_out('48724', cur)
+    print(test1)
     print('Functional find flags given port in is: ' + str(len(test1) == 30))
     assert len(test1) == 30
-    print('Functional find flags given port out is: ' + str(len(test1) == 30))
+    print('Functional find flags given port out is: ' + str(len(test2) == 1))
     assert len(test2) == 1
 main()
