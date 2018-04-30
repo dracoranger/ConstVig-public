@@ -1,4 +1,3 @@
-
 import ipaddress
 import os
 import childNO
@@ -64,7 +63,7 @@ def reset_database():
     childNI.main()
 
 def main():
-    attackDictionary = {}
+    print('These should fail due to randomization in launcher')
     print('Functional testing platform is: ' + str(test() is True))
     #assert test() == True
     print('Functional Port alone is:  ' + str(check_NO_log(-7) is True))

@@ -75,3 +75,4 @@ def get_sql_data(regex, working_directory, home_directory):#, length):
     with open(csv, 'w') as w:
         for item in info:
             w.write(item)
+    os.chdir('..')
