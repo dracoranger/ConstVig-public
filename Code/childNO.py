@@ -115,6 +115,7 @@ def run_processes(attacks, log_file):
                     print(str(launch_order[curr_num])+response)
                     remove.append(launch)
             elif isinstance(launch.poll(), type(None)):
+                response = str(launch.communicate())
                 utilities.log_data(log_file, '%s ongoing: %s\n' %
                                    (str(launch_order[curr_num]), response))
                 print(launch_order[curr_num]+' on going')
