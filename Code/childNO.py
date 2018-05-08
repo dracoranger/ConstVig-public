@@ -67,7 +67,7 @@ def generate_process_names(which, dicti, path):
                     process_names.append((temp, filename))
         elif '-ip' in temp:
             for i in IP_RANGE:
-                temp = run.replace('-ip', ''+str(i))
+                temp = run.replace('-ip', '-ip '+str(i))
                 process_names.append((temp, filename))
         elif '-p' in temp:
             for p in PORTS:
@@ -101,9 +101,8 @@ def run_processes(attacks, log_file):
                 if launch.poll() == 0:
                     response = str(launch.communicate())
                     if SUBMIT_AUTOMATICALLY:
-                        #reply = utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
-                        #                              response[1])
-                        reply = ssResponse.submit(SUBMIT_FLAG_IP,str(response))
+                        reply = utilities.submit_flag(SUBMIT_FLAG_IP, SUBMIT_FLAG_PORT,
+                                                      response[1])
                         utilities.log_data(log_file, 'Reply from server: ' + str(reply)+'\n')
                     utilities.log_data(log_file, '%s success: %s\n' %
                                        (str(launch_order[curr_num]), response))
