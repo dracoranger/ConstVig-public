@@ -15,7 +15,7 @@ Constant Vigilance analyzes inbound network traffic for CTFs and automatically l
 To use Constant Vigilance,  
 
 #### Prerequisites  
-To run Constant Vigilance, you will need to install SplitCap and the pytest, dpkt, and ipaddress python libraries. SplitCap can be found online. The python libraries can be installed by running the instillation.bat or installation.sh files, assuming you have pip and it's mapped to your python3 installation.  
+To run Constant Vigilance, you will need to install SplitCap and the pytest and dpkt python libraries. SplitCap can be found online. The python libraries can be installed by running the instillation.bat or installation.sh files, assuming you have pip and it's mapped to your python3 installation.  
 
 #### Installing  
 Run the installation files from the command prompt. Install SplitCap by following this link: https://www.netresec.com/?page=SplitCap  
