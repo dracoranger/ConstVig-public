@@ -1,14 +1,3 @@
-# ay18_capstones
-This is the base repository for XE401-XE402 AY181-182 capstone project code.
-
-One member of your capstone team should FORK this repo (click the button in the top right corner of GitHub).
-The same team member should navigate to the fork, and click "Settings"
-Rename your fork with a short version of your project name.
-Under "Collaborators & Teams" in the Settings, remove the "CL2018" team (keep "Faculty" access), and individually add your capstone teammates as well as any other collaborators.
-Replace this README with text that includes your project name, members, and a brief description.
-Commit your changes
-
-*************
 ## Constant Vigilance  
 Constant Vigilance analyzes inbound network traffic for CTFs and automatically launches outbound attacks every round of the CTF. The critical portion of Constant Vigilance is in the Code folder.  
 ### Getting Started  
@@ -23,7 +12,7 @@ A backup is present in the Constant Vigilance SharePoint.
 
 ### Running the tests  
 To run tests, navigate to the code file. Running pytest test.py will run all the tests for this program.  
-For optimal testing, place the file small.pcap from the CV SharePoint (http://usmasvddbackus/Courses/401-2/18SDP/Constant%20Vigilance-An%20Attack%20Defend%20CTF%20Tool%20Suite/IT%20Final%20Documents/Forms/AllItems.aspx?InitialTabId=Ribbon%2EDocument&VisibilityContext=WSSTabPersistence) in the put_pcaps_here folder. This tests the networkIn module against a known data point.  
+For optimal testing, place the file small.pcap from the CV SharePoint in the put_pcaps_here folder. This tests the networkIn module against a known data point.  
 
 ### General information  
 dad.py is the main launcher file. Dad launches childNO and kills it at the end of a round. Dad re-launches childNO every round of the CTF exercise. For future developers, it is possible to add more child processes for dad to launch and maintain, if desired.  You will need to create a storage system and a way of iterating through this system for the various children, so it is somewhat involved.  
